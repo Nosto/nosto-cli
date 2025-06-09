@@ -1,0 +1,24 @@
+{
+  "name": "nostocli",
+  "version": "1.0.0",
+  "main": "./src/index.js",
+  "bin": "./src/index.js",
+  "author": "Nosto",
+  "type": "module",
+  "license": "ISC",
+  "description": "",
+  "scripts": {
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "commander": "^14.0.0",
+    "ky": "^1.8.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.28.0",
+    "eslint": "^9.28.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.4.1",
+    "prettier": "^3.5.3"
+  }
+}
