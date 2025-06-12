@@ -5,7 +5,8 @@ export const EnvVariables = {
   merchant: "NOSTO_MERCHANT",
   templatesEnv: "NOSTO_TEMPLATES_ENV",
   apiUrl: "NOSTO_API_URL",
-  logLevel: "NOSTO_LOG_LEVEL"
+  logLevel: "NOSTO_LOG_LEVEL",
+  maxRequests: "NOSTO_MAX_REQUESTS"
 } as const
 
 export function getEnvConfig(): PartialConfig {
