@@ -1,5 +1,5 @@
 import { EnvVariables } from "../config/envConfig.ts"
-import { Logger } from "../logger/logger.ts"
+import { Logger } from "../console/logger.ts"
 import chalk from "chalk"
 
 export function printSetupHelp() {
@@ -16,12 +16,12 @@ export function printSetupHelp() {
   Logger.raw(chalk.bold("API Key:"))
   Logger.raw(`  • Config file: ${chalk.cyan("apiKey")}`)
   Logger.raw(`  • Env variable: ${chalk.magenta(EnvVariables.apiKey)}`)
-  Logger.raw(`  • Description: Your Nosto API key\n`)
+  Logger.raw(`  • Your Nosto API key\n`)
 
   Logger.raw(chalk.bold("Merchant ID:"))
   Logger.raw(`  • Config file: ${chalk.cyan("merchant")}`)
   Logger.raw(`  • Env variable: ${chalk.magenta(EnvVariables.merchant)}`)
-  Logger.raw(`  • Description: Your merchant ID\n`)
+  Logger.raw(`  • Your merchant ID\n`)
 
   // Optional parameters
   Logger.raw(chalk.yellow("Optional Parameters:"))
@@ -29,22 +29,28 @@ export function printSetupHelp() {
   Logger.raw(chalk.bold("Templates Environment:"))
   Logger.raw(`  • Config file: ${chalk.cyan("templatesEnv")}`)
   Logger.raw(`  • Env variable: ${chalk.magenta(EnvVariables.templatesEnv)}`)
-  Logger.raw(`  • Description: Nosto templates environment`)
+  Logger.raw(`  • Nosto templates environment`)
   Logger.raw(`  • Default: ${chalk.green("main")}\n`)
 
   Logger.raw(chalk.bold("API URL:"))
   Logger.raw(`  • Config file: ${chalk.cyan("apiUrl")}`)
   Logger.raw(`  • Env variable: ${chalk.magenta(EnvVariables.apiUrl)}`)
-  Logger.raw(`  • Description: Nosto API URL`)
+  Logger.raw(`  • Nosto API URL`)
   Logger.raw(`  • Default: ${chalk.green("https://my.nosto.com")}\n`)
 
   Logger.raw(chalk.bold("Log Level:"))
   Logger.raw(`  • Config file: ${chalk.cyan("logLevel")}`)
   Logger.raw(`  • Env variable: ${chalk.magenta(EnvVariables.logLevel)}`)
-  Logger.raw(`  • Description: Output log level`)
+  Logger.raw(`  • Output log level`)
   Logger.raw(`  • Default: ${chalk.green("info")}\n`)
 
-  Logger.raw(chalk.dim("Example configuration file:"))
+  Logger.raw(chalk.bold("Max Requests:"))
+  Logger.raw(`  • Config file: ${chalk.cyan("maxRequests")}`)
+  Logger.raw(`  • Env variable: ${chalk.magenta(EnvVariables.maxRequests)}`)
+  Logger.raw(`  • Maximum number of requests per API call`)
+  Logger.raw(`  • Default: ${chalk.green("3")}\n`)
+
+  Logger.raw(chalk.greenBright("Example configuration file:"))
   Logger.raw(chalk.dim("{"))
   Logger.raw(chalk.dim('  "apiKey": "YOUR_API_KEY",'))
   Logger.raw(chalk.dim('  "merchant": "YOUR_MERCHANT_ID",'))
@@ -53,5 +59,5 @@ export function printSetupHelp() {
   Logger.raw(chalk.dim('  "logLevel": "info"'))
   Logger.raw(chalk.dim("}"))
   Logger.raw(chalk.dim(""))
-  Logger.raw(chalk.cyan("Note: Environment variables take precedence over configuration file."))
+  Logger.raw(chalk.bold("Note: ") + "Environment variables take precedence over the configuration file.")
 }

@@ -2,9 +2,11 @@ import fs from "fs"
 import path from "path"
 import { listSourceFiles } from "../../api/listSourceFiles.ts"
 import { fetchSourceFile } from "../../api/fetchSourceFile.ts"
-import { Logger } from "../../logger/logger.ts"
+import { Logger } from "../../console/logger.ts"
 import chalk from "chalk"
 import { getCachedConfig } from "../../config/config.ts"
+import { promptForConfirmation } from "../../console/userPrompt.ts"
+import { writeFile } from "../../filesystem/filesystem.ts"
 
 const MAX_RETRIES = 3
 const INITIAL_RETRY_DELAY = 1000 // 1 second
@@ -12,11 +14,16 @@ const INITIAL_RETRY_DELAY = 1000 // 1 second
 let filesFetched = 0
 let totalFilesToFetch = 0
 
+type PullSearchTemplateOptions = {
+  paths: string[]
+  skipConfirmation: boolean
+}
+
 /**
  * Fetches the current templates to the specified target path.
  * Processes files in parallel with controlled concurrency and retry logic.
  */
-export async function pullSearchTemplate(targetPath: string, limitToPaths: string[]) {
+export async function pullSearchTemplate(targetPath: string, options: PullSearchTemplateOptions) {
   const targetFolder = path.resolve(targetPath)
   Logger.info(`Fetching templates to: ${chalk.cyan(targetFolder)}`)
   if (!fs.existsSync(targetFolder)) {
@@ -26,9 +33,36 @@ export async function pullSearchTemplate(targetPath: string, limitToPaths: strin
     throw new Error(`Target path is not a directory: ${chalk.cyan(targetFolder)}`)
   }
 
+  const { paths, skipConfirmation } = options
   const baseFiles = await listSourceFiles()
-  const files = baseFiles.filter(file => limitToPaths.length === 0 || limitToPaths.includes(file.path))
+  const files = baseFiles.filter(file => paths.length === 0 || paths.includes(file.path))
   Logger.info(`Found ${chalk.cyan(files.length)} source files to fetch.`)
+
+  // Check for existing files that will be overridden
+  const filesToOverride = files.filter(file => {
+    const targetFilePath = path.join(targetFolder, file.path)
+    return fs.existsSync(targetFilePath)
+  })
+
+  if (filesToOverride.length > 0 && !skipConfirmation) {
+    Logger.warn(`${chalk.cyan(filesToOverride.length)} files will be overridden:`)
+
+    // Show first 10 files that will be overridden
+    const previewFiles = filesToOverride.slice(0, 10)
+    previewFiles.forEach(file => {
+      Logger.warn(`${chalk.yellow("•")} ${chalk.cyan(file.path)}`)
+    })
+
+    if (filesToOverride.length > 10) {
+      Logger.warn(`${chalk.yellow("...")} and ${chalk.cyan(filesToOverride.length - 10)} more`)
+    }
+
+    const confirmed = await promptForConfirmation(`Are you sure you want to override your local data? (y/N)`)
+    if (!confirmed) {
+      Logger.info("Operation cancelled by user")
+      return
+    }
+  }
 
   const batchSize = getCachedConfig().maxRequests
   const batches = []
@@ -56,11 +90,8 @@ async function processBatch(files: { path: string }[], targetFolder: string): Pr
       )
       const pathToWrite = path.join(targetFolder, filePath)
 
-      Logger.debug(`Creating directory: ${path.dirname(pathToWrite)}`)
-      fs.mkdirSync(path.dirname(pathToWrite), { recursive: true })
+      writeFile(pathToWrite, data)
 
-      Logger.debug(`Writing to file: ${pathToWrite}`)
-      fs.writeFileSync(pathToWrite, data)
       return { success: true, filePath }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : String(error)

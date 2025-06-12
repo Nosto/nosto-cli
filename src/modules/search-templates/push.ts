@@ -1,9 +1,10 @@
 import fs from "fs"
 import path from "path"
 import { putSourceFile } from "../../api/putSourceFile.ts"
-import { Logger } from "../../logger/logger.ts"
+import { Logger } from "../../console/logger.ts"
 import chalk from "chalk"
 import { getCachedConfig } from "../../config/config.ts"
+import { promptForConfirmation } from "../../console/userPrompt.ts"
 
 const MAX_RETRIES = 3
 const INITIAL_RETRY_DELAY = 1000 // 1 second
@@ -11,11 +12,17 @@ const INITIAL_RETRY_DELAY = 1000 // 1 second
 let filesPushed = 0
 let totalFilesToPush = 0
 
+type PushSearchTemplateOptions = {
+  paths: string[]
+  skipConfirmation: boolean
+}
+
 /**
  * Deploys templates to the specified target path.
  * Processes files in parallel with controlled concurrency and retry logic.
  */
-export async function pushSearchTemplate(targetPath: string, limitToPaths: string[]) {
+export async function pushSearchTemplate(targetPath: string, options: PushSearchTemplateOptions) {
+  const { paths, skipConfirmation } = options
   const targetFolder = path.resolve(targetPath)
   Logger.info(`Deploying templates from: ${chalk.cyan(targetFolder)}`)
   if (!fs.existsSync(targetFolder)) {
@@ -44,9 +51,23 @@ export async function pushSearchTemplate(targetPath: string, limitToPaths: strin
     .map(dirent => dirent.parentPath + "/" + dirent.name)
     // To relative path
     .map(file => file.replace(targetFolder + "/", ""))
-    .filter(file => limitToPaths.length === 0 || limitToPaths.includes(file))
+    .filter(file => paths.length === 0 || paths.includes(file))
 
   Logger.info(`Found ${chalk.cyan(files.length)} files to push.`)
+  if (files.length === 0) {
+    Logger.warn("No files to push. Exiting.")
+    return
+  }
+
+  if (!skipConfirmation) {
+    const config = getCachedConfig()
+    const confirmationMessage = `Are you sure you want to push ${chalk.cyan(files.length)} files to merchant ${chalk.greenBright(config.merchant)} and env ${chalk.redBright(config.templatesEnv)}? (y/N): `
+    const confirmed = await promptForConfirmation(confirmationMessage)
+    if (!confirmed) {
+      Logger.info("Push operation cancelled by user.")
+      return
+    }
+  }
 
   const batchSize = getCachedConfig().maxRequests
   const batches = []

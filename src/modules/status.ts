@@ -1,6 +1,6 @@
 import chalk from "chalk"
 import { getCachedConfig, loadConfig } from "../config/config.ts"
-import { Logger } from "../logger/logger.ts"
+import { Logger } from "../console/logger.ts"
 
 export function printStatus(configurationPath: string) {
   loadConfig(configurationPath)
@@ -19,7 +19,9 @@ export function printStatus(configurationPath: string) {
   Logger.raw(chalk.yellow("Optional Settings:"))
   Logger.raw(`  ${chalk.bold("Templates Env:")} ${chalk.cyan(config.templatesEnv)}`)
   Logger.raw(`  ${chalk.bold("API URL:")}       ${chalk.cyan(config.apiUrl)}`)
-  Logger.raw(`  ${chalk.bold("Log Level:")}     ${chalk.cyan(config.logLevel)}\n`)
+  Logger.raw(`  ${chalk.bold("Log Level:")}     ${chalk.cyan(config.logLevel)}`)
+  Logger.raw(`  ${chalk.bold("Max Requests:")}  ${chalk.cyan(config.maxRequests)}`)
+  Logger.raw("")
 
   Logger.raw(chalk.dim("Configuration loaded successfully"))
 }

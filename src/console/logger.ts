@@ -43,7 +43,8 @@ const printToLog = (message: string, preset: (typeof Presets)[keyof typeof Prese
   }
   const timestamp = chalk.dim(formatTimestamp(new Date()))
   const merchantId = chalk.greenBright(Logger.context.merchantId)
-  preset.logger(`${timestamp} [${merchantId}] ${preset.color(message)}`)
+  const dryRun = Logger.context.isDryRun ? chalk.dim("(DRY RUN) ") : ""
+  preset.logger(`${timestamp} ${dryRun}[${merchantId}] ${preset.color(message)}`)
   if (extra) {
     preset.logger(chalk.dim(JSON.stringify(extra, null, 2)))
   }
@@ -52,7 +53,8 @@ const printToLog = (message: string, preset: (typeof Presets)[keyof typeof Prese
 export const Logger = {
   context: {
     logLevel: LogLevel[1] as (typeof LogLevel)[number],
-    merchantId: "No merchant set"
+    merchantId: "No merchant set",
+    isDryRun: false
   },
   raw: (message: string, extra?: unknown) => {
     console.log(message)

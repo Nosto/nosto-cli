@@ -1,8 +1,8 @@
-import { Logger } from "../logger/logger.ts"
-import { printSetupHelp } from "../modules/help.ts"
+import { Logger } from "../console/logger.ts"
+import { printSetupHelp } from "../modules/setup.ts"
 import { getEnvConfig } from "./envConfig.ts"
 import { parseConfigFile } from "./fileConfig.ts"
-import { type Config, ConfigSchema } from "./schema.ts"
+import { type Config, ConfigSchema, type PartialConfig } from "./schema.ts"
 import { resolve } from "path"
 
 let cachedConfig: Config | null = null
@@ -35,15 +35,25 @@ export function loadConfig(targetPath: string) {
 
   try {
     cachedConfig = ConfigSchema.parse(combinedConfig)
-    Logger.context = {
-      logLevel: cachedConfig.logLevel,
-      merchantId: cachedConfig.merchant
-    }
+    updateLoggerContext(cachedConfig)
     return cachedConfig
   } catch (error) {
     Logger.error("Failed to load configuration", error)
     throw new Error("Failed to load configuration")
   }
+}
+
+function updateLoggerContext(config: Config) {
+  Logger.context = {
+    logLevel: config.logLevel,
+    merchantId: config.merchant,
+    isDryRun: config.dryRun
+  }
+}
+
+export function updateCachedConfig(config: PartialConfig) {
+  cachedConfig = { ...cachedConfig, ...config } as Config
+  updateLoggerContext(cachedConfig)
 }
 
 export function getCachedConfig() {

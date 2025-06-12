@@ -2,13 +2,13 @@ import { program } from "commander"
 import { pullSearchTemplate } from "./modules/search-templates/pull.ts"
 import { pushSearchTemplate } from "./modules/search-templates/push.ts"
 import { printStatus } from "./modules/status.ts"
-import { loadConfig } from "./config/config.ts"
-import { printSetupHelp } from "./modules/help.ts"
+import { loadConfig, updateCachedConfig } from "./config/config.ts"
+import { printSetupHelp } from "./modules/setup.ts"
 
 program.name("nostocli").version("1.0.0")
 
 program
-  .command("help")
+  .command("setup")
   .description("Prints setup information")
   .action(() => {
     printSetupHelp()
@@ -27,21 +27,37 @@ const searchTemplates = program
   .description("Search templates management commands")
 
 searchTemplates
-  .command("pull <targetPath>")
+  .command("pull [targetPath]")
   .description("Pull the search-templates source from the Nosto VSCode Web")
   .option("-p, --paths <files...>", "specific file paths to fetch (space-separated list)")
+  .option("--dry-run", "perform a dry run without making changes")
+  .option("-y, --yes", "skip confirmation")
   .action((targetPath, options) => {
-    loadConfig(targetPath)
-    pullSearchTemplate(targetPath, options.paths || [])
+    loadConfig(targetPath ?? ".")
+    updateCachedConfig({
+      dryRun: options.dryRun ?? false
+    })
+    pullSearchTemplate(targetPath ?? ".", {
+      paths: options.paths ?? [],
+      skipConfirmation: options.yes ?? false
+    })
   })
 
 searchTemplates
-  .command("push <targetPath>")
+  .command("push [targetPath]")
   .description("Push the search-templates source to the VSCode Web")
   .option("-p, --paths <files...>", "specific file paths to deploy (space-separated list)")
+  .option("--dry-run", "perform a dry run without making changes")
+  .option("-y, --yes", "skip confirmation")
   .action((targetPath, options) => {
-    loadConfig(targetPath)
-    pushSearchTemplate(targetPath, options.paths || [])
+    loadConfig(targetPath ?? ".")
+    updateCachedConfig({
+      dryRun: options.dryRun ?? false
+    })
+    pushSearchTemplate(targetPath ?? ".", {
+      paths: options.paths ?? [],
+      skipConfirmation: options.yes ?? false
+    })
   })
 
 program.parse(process.argv)
