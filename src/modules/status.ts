@@ -1,27 +1,41 @@
 import chalk from "chalk"
 import { getCachedConfig, loadConfig } from "../config/config.ts"
 import { Logger } from "../console/logger.ts"
+import { MissingConfigurationError } from "../errors/MissingConfigurationError.ts"
 
 export function printStatus(configurationPath: string) {
-  loadConfig(configurationPath)
+  try {
+    loadConfig(configurationPath)
+  } catch (error) {
+    if (error instanceof MissingConfigurationError) {
+      Logger.error("Some required configuration is missing\n")
+    } else {
+      throw error
+    }
+  }
   const config = getCachedConfig()
 
-  Logger.raw(chalk.bold("\n=== Nosto CLI Configuration Status ===\n"))
-
-  const shorterApiKey = config.apiKey.slice(0, 6) + "[...]" + config.apiKey.slice(-4)
+  const apiKey = config.apiKey
+    ? chalk.greenBright(config.apiKey.slice(0, 6) + "[...]" + config.apiKey.slice(-4))
+    : chalk.redBright("Not set")
+  const merchantId = config.merchant ? chalk.greenBright(config.merchant) : chalk.redBright("Not set")
 
   // Required settings
-  Logger.raw(chalk.yellow("Required Settings:"))
-  Logger.raw(`  ${chalk.bold("API Key:")}         ${chalk.cyan(shorterApiKey)}`)
-  Logger.raw(`  ${chalk.bold("Merchant ID:")}     ${chalk.cyan(config.merchant)}\n`)
+  Logger.info(chalk.yellow("Required Settings:"))
+  Logger.info(`  ${chalk.bold("API Key:")}         ${apiKey}`)
+  Logger.info(`  ${chalk.bold("Merchant ID:")}     ${merchantId}\n`)
 
   // Optional settings
-  Logger.raw(chalk.yellow("Optional Settings:"))
-  Logger.raw(`  ${chalk.bold("Templates Env:")} ${chalk.cyan(config.templatesEnv)}`)
-  Logger.raw(`  ${chalk.bold("API URL:")}       ${chalk.cyan(config.apiUrl)}`)
-  Logger.raw(`  ${chalk.bold("Log Level:")}     ${chalk.cyan(config.logLevel)}`)
-  Logger.raw(`  ${chalk.bold("Max Requests:")}  ${chalk.cyan(config.maxRequests)}`)
-  Logger.raw("")
+  Logger.info(chalk.yellow("Optional Settings:"))
+  Logger.info(`  ${chalk.bold("Templates Env:")} ${chalk.cyan(config.templatesEnv)}`)
+  Logger.info(`  ${chalk.bold("API URL:")}       ${chalk.cyan(config.apiUrl)}`)
+  Logger.info(`  ${chalk.bold("Log Level:")}     ${chalk.cyan(config.logLevel)}`)
+  Logger.info(`  ${chalk.bold("Max Requests:")}  ${chalk.cyan(config.maxRequests)}`)
 
-  Logger.raw(chalk.dim("Configuration loaded successfully"))
+  Logger.info("")
+  if (config.apiKey && config.merchant) {
+    Logger.info(chalk.dim("Configuration seems to be valid"))
+  } else {
+    Logger.info(chalk.red("Configuration is not valid"))
+  }
 }

@@ -57,7 +57,7 @@ export async function pullSearchTemplate(targetPath: string, options: PullSearch
       Logger.warn(`${chalk.yellow("...")} and ${chalk.cyan(filesToOverride.length - 10)} more`)
     }
 
-    const confirmed = await promptForConfirmation(`Are you sure you want to override your local data? (y/N)`)
+    const confirmed = await promptForConfirmation(`Are you sure you want to override your local data?`, "N")
     if (!confirmed) {
       Logger.info("Operation cancelled by user")
       return

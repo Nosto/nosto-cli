@@ -61,8 +61,8 @@ export async function pushSearchTemplate(targetPath: string, options: PushSearch
 
   if (!skipConfirmation) {
     const config = getCachedConfig()
-    const confirmationMessage = `Are you sure you want to push ${chalk.cyan(files.length)} files to merchant ${chalk.greenBright(config.merchant)} and env ${chalk.redBright(config.templatesEnv)}? (y/N): `
-    const confirmed = await promptForConfirmation(confirmationMessage)
+    const confirmationMessage = `Are you sure you want to push ${chalk.cyan(files.length)} files to merchant ${chalk.greenBright(config.merchant)} and env ${chalk.redBright(config.templatesEnv)}?`
+    const confirmed = await promptForConfirmation(confirmationMessage, "N")
     if (!confirmed) {
       Logger.info("Push operation cancelled by user.")
       return
