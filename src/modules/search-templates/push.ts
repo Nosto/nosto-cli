@@ -1,13 +1,13 @@
 import fs from "fs"
 import path from "path"
-import { putSourceFile } from "../api/putSourceFile.ts"
-import { Logger } from "../logger/logger.ts"
+import { putSourceFile } from "../../api/putSourceFile.ts"
+import { Logger } from "../../logger/logger.ts"
 import chalk from "chalk"
 
 /**
  * Deploys templates to the specified target path.
  */
-export async function deployTemplates(targetPath: string, limitToPaths: string[]) {
+export async function pushSearchTemplate(targetPath: string, limitToPaths: string[]) {
   const targetFolder = path.resolve(targetPath)
   if (!fs.existsSync(targetFolder)) {
     throw new Error(`Target folder does not exist: ${targetFolder}`)

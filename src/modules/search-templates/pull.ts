@@ -1,14 +1,14 @@
 import fs from "fs"
 import path from "path"
-import { listSourceFiles } from "../api/listSourceFiles.ts"
-import { fetchSourceFile } from "../api/fetchSourceFile.ts"
-import { Logger } from "../logger/logger.ts"
+import { listSourceFiles } from "../../api/listSourceFiles.ts"
+import { fetchSourceFile } from "../../api/fetchSourceFile.ts"
+import { Logger } from "../../logger/logger.ts"
 import chalk from "chalk"
 
 /**
  * Fetches the current templates to the specified target path.
  */
-export async function fetchTemplates(targetPath: string, limitToPaths: string[]) {
+export async function pullSearchTemplate(targetPath: string, limitToPaths: string[]) {
   const targetFolder = path.resolve(targetPath)
   Logger.info(`Fetching templates to: ${chalk.cyan(targetFolder)}`)
   if (!fs.existsSync(targetFolder)) {

@@ -3,13 +3,10 @@ import { LogLevel } from "../config/schema.ts"
 
 const formatTimestamp = (date: Date): string => {
   const pad = (num: number) => num.toString().padStart(2, "0")
-  const year = date.getFullYear()
-  const month = pad(date.getMonth() + 1)
-  const day = pad(date.getDate())
   const hours = pad(date.getHours())
   const minutes = pad(date.getMinutes())
   const seconds = pad(date.getSeconds())
-  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+  return `${hours}:${minutes}:${seconds}`
 }
 
 const Presets = {
@@ -40,19 +37,23 @@ const Presets = {
 }
 
 const printToLog = (message: string, preset: (typeof Presets)[keyof typeof Presets], extra?: unknown) => {
-  const targetLogLevel = LogLevel.indexOf(Logger.logLevel)
+  const targetLogLevel = LogLevel.indexOf(Logger.context.logLevel)
   if (targetLogLevel > preset.logLevel) {
     return
   }
   const timestamp = chalk.dim(formatTimestamp(new Date()))
-  preset.logger(`[${timestamp}] ${preset.color(message)}`)
+  const merchantId = chalk.greenBright(Logger.context.merchantId)
+  preset.logger(`${timestamp} [${merchantId}] ${preset.color(message)}`)
   if (extra) {
     preset.logger(chalk.dim(JSON.stringify(extra, null, 2)))
   }
 }
 
 export const Logger = {
-  logLevel: LogLevel[1] as (typeof LogLevel)[number],
+  context: {
+    logLevel: LogLevel[1] as (typeof LogLevel)[number],
+    merchantId: "No merchant set"
+  },
   raw: (message: string, extra?: unknown) => {
     console.log(message)
     if (extra) {

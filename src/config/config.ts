@@ -14,7 +14,7 @@ export function loadConfig(targetPath: string) {
   }
 
   const fullPath = resolve(targetPath)
-  Logger.info(`Loading configuration for project: ${fullPath}`)
+  Logger.debug(`Loading configuration from folder: ${fullPath}`)
   const envConfig = getEnvConfig()
   const fileConfig = parseConfigFile(targetPath)
 
@@ -35,7 +35,10 @@ export function loadConfig(targetPath: string) {
 
   try {
     cachedConfig = ConfigSchema.parse(combinedConfig)
-    Logger.logLevel = cachedConfig.logLevel
+    Logger.context = {
+      logLevel: cachedConfig.logLevel,
+      merchantId: cachedConfig.merchant
+    }
     return cachedConfig
   } catch (error) {
     Logger.error("Failed to load configuration", error)

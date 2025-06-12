@@ -1,6 +1,6 @@
 import { program } from "commander"
-import { fetchTemplates } from "./modules/fetch-templates.ts"
-import { deployTemplates } from "./modules/deploy-templates.ts"
+import { pullSearchTemplate } from "./modules/search-templates/pull.ts"
+import { pushSearchTemplate } from "./modules/search-templates/push.ts"
 import { printStatus } from "./modules/status.ts"
 import { loadConfig } from "./config/config.ts"
 import { printSetupHelp } from "./modules/help.ts"
@@ -21,22 +21,27 @@ program
     printStatus(configurationPath)
   })
 
-program
-  .command("fetch-templates <targetPath>")
-  .description("Fetch the legacy search-templates from Nosto vscode web")
+const searchTemplates = program
+  .command("st")
+  .alias("search-templates")
+  .description("Search templates management commands")
+
+searchTemplates
+  .command("pull <targetPath>")
+  .description("Pull the search-templates source from the Nosto VSCode Web")
   .option("-p, --paths <files...>", "specific file paths to fetch (space-separated list)")
   .action((targetPath, options) => {
     loadConfig(targetPath)
-    fetchTemplates(targetPath, options.paths || [])
+    pullSearchTemplate(targetPath, options.paths || [])
   })
 
-program
-  .command("deploy-templates <targetPath>")
-  .description("Deploy the legacy search-templates to Nosto vscode web")
+searchTemplates
+  .command("push <targetPath>")
+  .description("Push the search-templates source to the VSCode Web")
   .option("-p, --paths <files...>", "specific file paths to deploy (space-separated list)")
   .action((targetPath, options) => {
     loadConfig(targetPath)
-    deployTemplates(targetPath, options.paths || [])
+    pushSearchTemplate(targetPath, options.paths || [])
   })
 
 program.parse(process.argv)
