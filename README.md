@@ -2,7 +2,7 @@
 
 A command-line interface to interact with Nosto's backend systems. Primarily aimed at developers and power-users who aim to use more powerful desktop tools for search-template development and (in the future) other features.
 
-<img width="886" alt="image" src="https://github.com/user-attachments/assets/c1d00648-311d-4716-8845-d88d85721e81" />
+<img width="814" alt="image" src="https://github.com/user-attachments/assets/ea0eb009-9efb-44bc-82b9-83f69fe74a00" />
 
 ## Usage
 
