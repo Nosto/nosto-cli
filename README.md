@@ -1,6 +1,12 @@
 # Nosto CLI Tool
 
-## Usage (in the bright future)
+A command-line interface to interact with Nosto's backend systems. Primarily aimed at developers and power-users who aim to use more powerful desktop tools for search-template development and (in the future) other features.
+
+## Usage
+
+Nosto CLI aims to be as user-friendly as CLI tools get. You should be able to get up and running by utilizing the built-in `help` and `setup` commands, but a quick-start guide is also provided here.
+
+### In the bright future
 
 - Install the CLI tool:
   - `npm i nostocli -g`
@@ -11,7 +17,7 @@
 - Alternatively, `cd` into the project directory and omit the path
   - `cd /path/to/project && nostocli status`
 
-### Usage (in the current reality)
+### In the current reality
 
 Before it's available on NPM, a few extra steps are needed
 
@@ -24,24 +30,24 @@ Before it's available on NPM, a few extra steps are needed
 - Enjoy!
   - `nostocli status /path/to/project`
 
-### Configuration
+## Configuration
 
 The recommended way to provide the configuration is via a config file in the project folder, named `.nosto.json`. Alternatively, environmental variables can be used. If both are present, environment takes precedence.
 
 At the minimum, the following options are required:
 
 - API Key:
-  - *Config file:* `apiKey`
-  - *Env variable:* `NOSTO_API_KEY`
+  - In config file: `apiKey`
+  - In env variable: `NOSTO_API_KEY`
   - Your Nosto API key
 - Merchant ID:
-  - *Config file name:* `merchant`
-  - *Env variable:* `NOSTO_MERCHANT`
+  - In config file:* `merchant`
+  - In env variable: `NOSTO_MERCHANT`
   - Your merchant ID
 
 See output of `nostocli setup` for the full list.
 
-### Supported commands
+## Supported commands
 
 You can use `nostocli help` and variations to obtain detailed and up-to-date information on the current list of commands.
 
