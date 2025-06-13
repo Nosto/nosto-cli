@@ -18,10 +18,10 @@ export function parseConfigFile(targetPath: string): PartialConfig {
     return PartialConfigSchema.parse(rawConfig)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      throw new Error(`Invalid configuration file: ${error.message}`)
+      throw new Error(`Invalid configuration file at ${configPath}: ${error.message}`)
     }
     if (error instanceof SyntaxError) {
-      throw new Error(`Invalid JSON in configuration file: ${error.message}`)
+      throw new Error(`Invalid JSON in configuration file at ${configPath}: ${error.message}`)
     }
     throw error
   }
