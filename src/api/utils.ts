@@ -6,7 +6,7 @@ export function getUrl(path: string) {
   const env = config.templatesEnv
   const baseUrl = config.apiUrl.endsWith("/") ? config.apiUrl.slice(0, -1) : config.apiUrl
   const replacedPath = path.replace("{env}", env)
-  return `${baseUrl}/api/${merchant}/search-templates/${replacedPath}`
+  return `${baseUrl}/${merchant}/search-templates/${replacedPath}`
 }
 
 export function getHeaders() {
