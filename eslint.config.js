@@ -5,16 +5,6 @@ import tseslint from "typescript-eslint"
 
 export default defineConfig([
   {
-    languageOptions: {
-      globals: {
-        process: true,
-        console: true,
-        Headers: true,
-        btoa: true
-      }
-    }
-  },
-  {
     files: ["**/*.ts"],
     plugins: {
       js,
