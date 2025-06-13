@@ -49,6 +49,13 @@ At the minimum, the following options are required:
 
 See output of `nostocli setup` for the full list.
 
+### API Url
+
+By default, the CLI will try to contact `https://api.nosto.com` as the base URL.
+
+For staging, use: `https://api.staging.nosto.com`
+For local Playcart, use: `https://my.dev.nos.to/api`
+
 ## Supported commands
 
 You can use `nostocli help` and variations to obtain detailed and up-to-date information on the current list of commands.
