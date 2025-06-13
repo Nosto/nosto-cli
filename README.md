@@ -2,6 +2,8 @@
 
 A command-line interface to interact with Nosto's backend systems. Primarily aimed at developers and power-users who aim to use more powerful desktop tools for search-template development and (in the future) other features.
 
+<img width="886" alt="image" src="https://github.com/user-attachments/assets/c1d00648-311d-4716-8845-d88d85721e81" />
+
 ## Usage
 
 Nosto CLI aims to be as user-friendly as CLI tools get. You should be able to get up and running by utilizing the built-in `help` and `setup` commands, but a quick-start guide is also provided here.
