@@ -6,7 +6,7 @@ export async function promptForConfirmation(message: string, defaultAnswer: "Y" 
     output: process.stdout
   })
 
-  const ynPrompt = defaultAnswer === "Y" ? " (Y/n)" : " (y/N)"
+  const ynPrompt = defaultAnswer === "Y" ? " (Y/n): " : " (y/N): "
 
   const answer = await rl.question(message + ynPrompt)
   rl.close()
