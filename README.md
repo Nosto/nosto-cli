@@ -11,13 +11,13 @@ Nosto CLI aims to be as user-friendly as CLI tools get. You should be able to ge
 ### In the bright future
 
 - Install the CLI tool:
-  - `npm i nostocli -g`
+  - `npm i @nosto/nosto-cli -g`
 
 - Invoke the tool on the project directory:
-  - `nostocli status /path/to/project`
+  - `nosto status /path/to/project`
 
 - Alternatively, `cd` into the project directory and omit the path
-  - `cd /path/to/project && nostocli status`
+  - `cd /path/to/project && nosto status`
 
 ### In the current reality
 
@@ -30,7 +30,7 @@ Before it's available on NPM, a few extra steps are needed
 - Link the tool into npm
   - `npm link`
 - Enjoy!
-  - `nostocli status /path/to/project`
+  - `nosto status /path/to/project`
 
 ## Configuration
 
@@ -47,7 +47,7 @@ At the minimum, the following options are required:
   - In env variable: `NOSTO_MERCHANT`
   - Your merchant ID
 
-See output of `nostocli setup` for the full list.
+See output of `nosto setup` for the full list.
 
 ### API Url
 
@@ -58,7 +58,7 @@ For local Playcart, use: `https://my.dev.nos.to/api`
 
 ## Supported commands
 
-You can use `nostocli help` and variations to obtain detailed and up-to-date information on the current list of commands.
+You can use `nosto help` and variations to obtain detailed and up-to-date information on the current list of commands.
 
 - `setup [projectPath]`
   - Prints setup information and creates a placeholder config file if needed
