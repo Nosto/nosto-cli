@@ -36,6 +36,8 @@ Before it's available on NPM, a few extra steps are needed
 
 The recommended way to provide the configuration is via a config file in the project folder, named `.nosto.json`. Alternatively, environmental variables can be used. If both are present, environment takes precedence.
 
+See output of `nosto setup` for the full list of options.
+
 ### Required configuration
 
 At the minimum, two options are required: Merchant ID and the API key. If you're targeting an environment other than production, API Url will also be required.
@@ -53,8 +55,6 @@ Your access key for the target merchant. Specifically, a Nosto API_APPS token th
 
 - Property name in the config file: `apiKey`
 - Property name in the env variable: `NOSTO_API_KEY`
-
-See output of `nosto setup` for the full list.
 
 #### API Url:
 
