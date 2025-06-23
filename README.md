@@ -45,7 +45,6 @@ At the minimum, the following options are required:
 - Merchant ID:
   - In config file: `merchant`
   - In env variable: `NOSTO_MERCHANT`
-  - Your merchant ID
 
 See output of `nosto setup` for the full list.
 
