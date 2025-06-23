@@ -1,14 +1,17 @@
 {
-  "name": "nostocli",
+  "name": "@nosto/nosto-cli",
   "version": "1.0.0",
   "main": "./src/index.ts",
-  "bin": "./src/bootstrap.sh",
+  "bin": {
+    "nosto": "./src/bootstrap.sh"
+  },
   "author": "Nosto",
   "type": "module",
   "license": "ISC",
   "description": "",
   "scripts": {
-    "lint": "eslint"
+    "lint": "eslint",
+    "prepare": "husky"
   },
   "dependencies": {
     "chalk": "^5.4.1",
@@ -17,11 +20,14 @@
     "zod": "^3.25.61"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@eslint/js": "^9.28.0",
     "@types/node": "^24.0.0",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.1",
+    "husky": "^9.1.7",
     "prettier": "^3.5.3",
     "typescript-eslint": "^8.34.0"
   }
