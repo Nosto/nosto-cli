@@ -60,7 +60,7 @@ For local Playcart, use: `https://my.dev.nos.to/api`
 
 At the moment, the CLI will push all files, excluding any that start with `.`. I.e. `.nosto.json` is excluded automatically.
 
-During the pull, the CLI will downloads all files, except for the `build/` folder.
+During the pull, CLI downloads all files, except for the `build/` folder.
 
 ## Supported commands
 
