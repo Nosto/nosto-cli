@@ -41,9 +41,9 @@ At the minimum, the following options are required:
 - API Key:
   - In config file: `apiKey`
   - In env variable: `NOSTO_API_KEY`
-  - Your Nosto API key
+  - Your Nosto API key. Specifically, an API_APPS token.
 - Merchant ID:
-  - In config file:* `merchant`
+  - In config file: `merchant`
   - In env variable: `NOSTO_MERCHANT`
   - Your merchant ID
 
@@ -55,6 +55,12 @@ By default, the CLI will try to contact `https://api.nosto.com` as the base URL.
 
 For staging, use: `https://api.staging.nosto.com`
 For local Playcart, use: `https://my.dev.nos.to/api`
+
+## Excluded files
+
+At the moment, the CLI will push all files, excluding any that start with `.`. I.e. `.nosto.json` is excluded automatically.
+
+During the pull, the CLI will downloads all files, except for the `build/` folder.
 
 ## Supported commands
 

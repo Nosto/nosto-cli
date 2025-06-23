@@ -64,7 +64,7 @@ export async function printSetupHelp(projectPath: string) {
 
   Logger.info(chalk.greenBright("Placeholder config:"))
   Logger.info(chalk.dim("{"))
-  Logger.info(chalk.dim('  "apiKey": "YOUR_API_KEY",'))
+  Logger.info(chalk.dim('  "apiKey": "YOUR_API_KEY (Nosto API_APPS token)",'))
   Logger.info(chalk.dim('  "merchant": "YOUR_MERCHANT_ID",'))
   Logger.info(chalk.dim(`  "templatesEnv": "${defaultConfig.templatesEnv}",`))
   Logger.info(chalk.dim(`  "apiUrl": "${defaultConfig.apiUrl}",`))
