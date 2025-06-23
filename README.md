@@ -44,15 +44,15 @@ At the minimum, two options are required: Merchant ID and the API key. If you're
 
 Public ID of the target merchant.
 
-Property name in the config file: `merchant`
-Property name in the env variable: `NOSTO_MERCHANT`
+- Property name in the config file: `merchant`
+- Property name in the env variable: `NOSTO_MERCHANT`
 
 #### API Key:
 
 Your access key for the target merchant. Specifically, a Nosto API_APPS token that you can find in the merchant admin settings.
 
-Property name in the config file: `apiKey`
-Property name in the env variable: `NOSTO_API_KEY`
+- Property name in the config file: `apiKey`
+- Property name in the env variable: `NOSTO_API_KEY`
 
 See output of `nosto setup` for the full list.
 
@@ -63,8 +63,8 @@ By default, the CLI will try to contact `https://api.nosto.com` as the base URL.
 For staging, use: `https://api.staging.nosto.com`
 For local Playcart, use: `https://my.dev.nos.to/api`
 
-Property name in the config file: `apiUrl`
-Property name in the env variable: `NOSTO_API_URL`
+- Property name in the config file: `apiUrl`
+- Property name in the env variable: `NOSTO_API_URL`
 
 ## Excluded files
 
