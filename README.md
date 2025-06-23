@@ -36,24 +36,35 @@ Before it's available on NPM, a few extra steps are needed
 
 The recommended way to provide the configuration is via a config file in the project folder, named `.nosto.json`. Alternatively, environmental variables can be used. If both are present, environment takes precedence.
 
-At the minimum, the following options are required:
+See output of `nosto setup` for the full list of options.
 
-- API Key:
-  - In config file: `apiKey`
-  - In env variable: `NOSTO_API_KEY`
-  - Your Nosto API key. Specifically, an API_APPS token.
-- Merchant ID:
-  - In config file: `merchant`
-  - In env variable: `NOSTO_MERCHANT`
+### Required configuration
 
-See output of `nosto setup` for the full list.
+At the minimum, two options are required: Merchant ID and the API key. If you're targeting an environment other than production, API Url will also be required.
 
-### API Url
+#### Merchant ID:
+
+Public ID of the target merchant.
+
+- Property name in the config file: `merchant`
+- Property name in the env variable: `NOSTO_MERCHANT`
+
+#### API Key:
+
+Your access key for the target merchant. Specifically, a Nosto API_APPS token that you can find in the merchant admin settings.
+
+- Property name in the config file: `apiKey`
+- Property name in the env variable: `NOSTO_API_KEY`
+
+#### API Url:
 
 By default, the CLI will try to contact `https://api.nosto.com` as the base URL.
 
 For staging, use: `https://api.staging.nosto.com`
 For local Playcart, use: `https://my.dev.nos.to/api`
+
+- Property name in the config file: `apiUrl`
+- Property name in the env variable: `NOSTO_API_URL`
 
 ## Excluded files
 
