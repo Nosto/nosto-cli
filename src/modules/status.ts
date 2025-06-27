@@ -3,9 +3,9 @@ import { getCachedConfig, loadConfig } from "../config/config.ts"
 import { Logger } from "../console/logger.ts"
 import { MissingConfigurationError } from "../errors/MissingConfigurationError.ts"
 
-export function printStatus(configurationPath: string) {
+export function printStatus(projectPath: string) {
   try {
-    loadConfig(configurationPath)
+    loadConfig({ projectPath, options: {} })
   } catch (error) {
     if (error instanceof MissingConfigurationError) {
       Logger.error("Some required configuration is missing\n")

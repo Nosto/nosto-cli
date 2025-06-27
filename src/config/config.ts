@@ -2,22 +2,32 @@ import { Logger } from "../console/logger.ts"
 import { MissingConfigurationError } from "../errors/MissingConfigurationError.ts"
 import { getEnvConfig } from "./envConfig.ts"
 import { parseConfigFile } from "./fileConfig.ts"
-import { type Config, ConfigSchema, type PartialConfig } from "./schema.ts"
+import { type Config, PersistentConfigSchema, type PersistentConfig, RuntimeConfigSchema } from "./schema.ts"
 import { resolve } from "path"
 
 let isConfigLoaded = false
-let cachedConfig: Config = getDefaultConfig()
+let cachedConfig: Config = {
+  ...getDefaultConfig(),
+  ...RuntimeConfigSchema.parse({})
+}
 
-export function loadConfig(targetPath: string) {
+type Props = {
+  projectPath: string
+  options: object
+}
+
+export function loadConfig({ projectPath, options }: Props) {
+  const { dryRun } = RuntimeConfigSchema.parse({ ...options, projectPath })
+
   if (isConfigLoaded) {
     Logger.debug(`Using cached configuration`)
     return cachedConfig
   }
 
-  const fullPath = resolve(targetPath)
+  const fullPath = resolve(projectPath)
   Logger.debug(`Loading configuration from folder: ${fullPath}`)
   const envConfig = getEnvConfig()
-  const fileConfig = parseConfigFile(targetPath)
+  const fileConfig = parseConfigFile(projectPath)
 
   const combinedConfig = {
     ...fileConfig,
@@ -31,7 +41,11 @@ export function loadConfig(targetPath: string) {
   }
 
   try {
-    cachedConfig = ConfigSchema.parse(combinedConfig)
+    cachedConfig = {
+      ...PersistentConfigSchema.parse(combinedConfig),
+      projectPath,
+      dryRun
+    }
     updateLoggerContext(cachedConfig)
     isConfigLoaded = true
     return cachedConfig
@@ -48,11 +62,6 @@ function updateLoggerContext(config: Config) {
   }
 }
 
-export function updateCachedConfig(config: PartialConfig) {
-  cachedConfig = { ...cachedConfig, ...config } as Config
-  updateLoggerContext(cachedConfig)
-}
-
 export function getCachedConfig() {
   if (!cachedConfig) {
     Logger.error("Config not loaded")
@@ -61,8 +70,8 @@ export function getCachedConfig() {
   return cachedConfig
 }
 
-export function getDefaultConfig(): Config {
-  return ConfigSchema.parse({
+export function getDefaultConfig(): PersistentConfig {
+  return PersistentConfigSchema.parse({
     apiKey: "",
     merchant: ""
   })

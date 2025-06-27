@@ -74,18 +74,7 @@ export async function printSetupHelp(projectPath: string) {
 
   const confirmed = await promptForConfirmation(`Would you like to create a placeholder configuration file?`, "Y")
   if (confirmed) {
-    writeFile(
-      configFilePath,
-      JSON.stringify(
-        {
-          ...defaultConfig,
-          apiKey: "",
-          merchant: ""
-        },
-        null,
-        2
-      ) + "\n"
-    )
+    writeFile(configFilePath, JSON.stringify(defaultConfig, null, 2) + "\n")
 
     const resolvedPath = path.resolve(configFilePath)
     Logger.info(`Created configuration file in ${chalk.cyan(resolvedPath)}`)

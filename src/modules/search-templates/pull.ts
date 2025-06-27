@@ -23,8 +23,9 @@ type PullSearchTemplateOptions = {
  * Fetches the current templates to the specified target path.
  * Processes files in parallel with controlled concurrency and retry logic.
  */
-export async function pullSearchTemplate(targetPath: string, options: PullSearchTemplateOptions) {
-  const targetFolder = path.resolve(targetPath)
+export async function pullSearchTemplate(options: PullSearchTemplateOptions) {
+  const { projectPath } = getCachedConfig()
+  const targetFolder = path.resolve(projectPath)
   Logger.info(`Fetching templates to: ${chalk.cyan(targetFolder)}`)
   if (!fs.existsSync(targetFolder)) {
     throw new Error(`Target folder does not exist: ${chalk.cyan(targetFolder)}`)

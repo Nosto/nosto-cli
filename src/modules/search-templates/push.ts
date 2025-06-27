@@ -21,9 +21,10 @@ type PushSearchTemplateOptions = {
  * Deploys templates to the specified target path.
  * Processes files in parallel with controlled concurrency and retry logic.
  */
-export async function pushSearchTemplate(targetPath: string, options: PushSearchTemplateOptions) {
+export async function pushSearchTemplate(options: PushSearchTemplateOptions) {
+  const { projectPath } = getCachedConfig()
   const { paths, skipConfirmation } = options
-  const targetFolder = path.resolve(targetPath)
+  const targetFolder = path.resolve(projectPath)
   Logger.info(`Deploying templates from: ${chalk.cyan(targetFolder)}`)
   if (!fs.existsSync(targetFolder)) {
     throw new Error(`Target folder does not exist: ${chalk.cyan(targetFolder)}`)
@@ -53,7 +54,12 @@ export async function pushSearchTemplate(targetPath: string, options: PushSearch
     .map(file => file.replace(targetFolder + "/", ""))
     .filter(file => paths.length === 0 || paths.includes(file))
 
-  Logger.info(`Found ${chalk.cyan(files.length)} files to push.`)
+  const buildFileCount = files.filter(file => file.includes("build/")).length
+  const sourceFileCount = files.length - buildFileCount
+
+  Logger.info(
+    `Found ${chalk.cyan(files.length)} files to push (${chalk.cyan(sourceFileCount)} source, ${chalk.cyan(buildFileCount)} built).`
+  )
   if (files.length === 0) {
     Logger.warn("No files to push. Exiting.")
     return
@@ -61,7 +67,7 @@ export async function pushSearchTemplate(targetPath: string, options: PushSearch
 
   if (!skipConfirmation) {
     const config = getCachedConfig()
-    const confirmationMessage = `Are you sure you want to push ${chalk.cyan(files.length)} files to merchant ${chalk.greenBright(config.merchant)} and env ${chalk.redBright(config.templatesEnv)}?`
+    const confirmationMessage = `Are you sure you want to push ${chalk.cyan(files.length)} files to merchant ${chalk.greenBright(config.merchant)}'s ${chalk.redBright(config.templatesEnv)} environment at ${chalk.blueBright(config.apiUrl)}?`
     const confirmed = await promptForConfirmation(confirmationMessage, "N")
     if (!confirmed) {
       Logger.info("Push operation cancelled by user.")
