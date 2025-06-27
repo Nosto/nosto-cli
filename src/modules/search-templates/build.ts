@@ -14,16 +14,19 @@ export async function buildSearchTemplate({ watch }: Props) {
   Logger.info(`Building templates to: ${chalk.cyan(targetPath)}`)
 
   const context = await getBuildContext()
-  if (watch) {
-    Logger.info(`Watching for changes. ${chalk.yellow("Press Ctrl+C to stop")}`)
-    await context.watch()
-    process.on("SIGINT", () => {
-      context.dispose()
-      Logger.info(`${chalk.yellow("Watch mode stopped.")}`)
-      process.exit(0)
-    })
-  } else {
+  if (!watch) {
     await context.rebuild()
     await context.dispose()
+    return
   }
+
+  Logger.info(`Watching for changes. ${chalk.yellow("Press Ctrl+C to stop")}`)
+  await context.watch()
+
+  // Set up cleanup on process exit
+  process.on("SIGINT", () => {
+    context.dispose()
+    Logger.info(`${chalk.yellow("Watch mode stopped.")}`)
+    process.exit(0)
+  })
 }

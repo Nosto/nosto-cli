@@ -26,13 +26,11 @@ export async function searchTemplateDevMode(options: BuildProps) {
     }
   }
 
-  // Initial build
   Logger.info(`Watching for changes. ${chalk.yellow("Press Ctrl+C to stop")}`)
 
   const context = await getBuildContext({ plugins: [pushOnRebuildPlugin()] })
   await context.watch()
 
-  // Set up cleanup on process exit
   process.on("SIGINT", () => {
     context.dispose()
     Logger.info(`${chalk.yellow("Watch mode stopped.")}`)
