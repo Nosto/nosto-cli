@@ -3,7 +3,7 @@ import path from "node:path"
 import chalk from "chalk"
 import { getBuildContext } from "../../filesystem/esbuild.ts"
 import { getCachedConfig } from "../../config/config.ts"
-import { loadLegacyLibrary } from "../../filesystem/loadLegacyLibrary.ts"
+import { loadLibrary } from "../../filesystem/loadLibrary.ts"
 
 type Props = {
   watch: boolean
@@ -13,7 +13,7 @@ export async function buildSearchTemplate({ watch }: Props) {
   const { projectPath } = getCachedConfig()
   const libraryPath = path.resolve(projectPath, ".nostocache/library")
   Logger.info(`Fetching library to: ${chalk.cyan(libraryPath)}`)
-  await loadLegacyLibrary()
+  await loadLibrary(libraryPath)
 
   const targetPath = path.resolve(projectPath, "build")
   Logger.info(`Building templates to: ${chalk.cyan(targetPath)}`)
