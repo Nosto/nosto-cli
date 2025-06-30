@@ -1,3 +1,4 @@
+import { cleanUrl } from "../api/utils.ts"
 import { Logger } from "../console/logger.ts"
 import { MissingConfigurationError } from "../errors/MissingConfigurationError.ts"
 import { getEnvConfig } from "./envConfig.ts"
@@ -26,8 +27,8 @@ export function loadConfig({ projectPath, options }: Props) {
 
   const fullPath = resolve(projectPath)
   Logger.debug(`Loading configuration from folder: ${fullPath}`)
-  const envConfig = getEnvConfig()
   const fileConfig = parseConfigFile(projectPath)
+  const envConfig = getEnvConfig()
 
   const combinedConfig = {
     ...fileConfig,
@@ -44,6 +45,8 @@ export function loadConfig({ projectPath, options }: Props) {
     const persistentConfig = PersistentConfigSchema.parse(combinedConfig)
     cachedConfig = {
       ...persistentConfig,
+      apiUrl: cleanUrl(persistentConfig.apiUrl),
+      libraryUrl: cleanUrl(persistentConfig.libraryUrl),
       logLevel: verbose ? "debug" : persistentConfig.logLevel,
       projectPath,
       dryRun,

@@ -28,7 +28,7 @@ export function getBuildContext(options: EsbuildContextOptions = {}) {
     outfile: path.resolve(projectPath, "build/bundle.js"),
     entryPoints: [path.resolve(projectPath, "index.js")],
     alias: {
-      "@nosto/preact": path.resolve(import.meta.dirname, "../../@nosto/preact/nosto.module.js")
+      "@nosto/preact": path.resolve(projectPath, ".nostocache/library/nosto.module.js")
     },
     plugins: [createLoaderPlugin(), notifyOnRebuildPlugin(), ...plugins]
   })

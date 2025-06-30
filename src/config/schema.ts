@@ -7,8 +7,9 @@ export const PersistentConfigSchema = z.object({
   merchant: z.string(),
   templatesEnv: z.string().default("main"),
   apiUrl: z.string().default("https://api.nosto.com"),
+  libraryUrl: z.string().default("https://d11ffvpvtnmt0d.cloudfront.net/library"),
   logLevel: z.enum(LogLevel).default("info"),
-  maxRequests: z.coerce.number().default(3)
+  maxRequests: z.coerce.number().default(15)
 })
 
 export const RuntimeConfigSchema = z.object({

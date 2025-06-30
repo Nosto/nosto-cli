@@ -1,6 +1,6 @@
 import fs from "fs"
 import path from "path"
-import { putSourceFile } from "../../api/putSourceFile.ts"
+import { putSourceFile } from "../../api/source/putSourceFile.ts"
 import { Logger } from "../../console/logger.ts"
 import chalk from "chalk"
 import { getCachedConfig } from "../../config/config.ts"
