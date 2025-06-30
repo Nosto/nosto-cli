@@ -1,3 +1,4 @@
+import chalk from "chalk"
 import { createInterface } from "readline/promises"
 
 export async function promptForConfirmation(message: string, defaultAnswer: "Y" | "N"): Promise<boolean> {
@@ -8,7 +9,7 @@ export async function promptForConfirmation(message: string, defaultAnswer: "Y" 
 
   const ynPrompt = defaultAnswer === "Y" ? " (Y/n): " : " (y/N): "
 
-  const answer = await rl.question(message + ynPrompt)
+  const answer = await rl.question("\n" + message + chalk.gray(ynPrompt))
   rl.close()
   const evaluatedAnswer = answer.length === 0 ? defaultAnswer : answer.toUpperCase()
   return evaluatedAnswer === "Y"

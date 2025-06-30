@@ -1,15 +1,13 @@
 import fs from "fs"
 import path from "path"
-import { listSourceFiles } from "../../api/listSourceFiles.ts"
-import { fetchSourceFile } from "../../api/fetchSourceFile.ts"
+import { listSourceFiles } from "../../api/source/listSourceFiles.ts"
+import { fetchSourceFile } from "../../api/source/fetchSourceFile.ts"
 import { Logger } from "../../console/logger.ts"
 import chalk from "chalk"
 import { getCachedConfig } from "../../config/config.ts"
 import { promptForConfirmation } from "../../console/userPrompt.ts"
 import { writeFile } from "../../filesystem/filesystem.ts"
-
-const MAX_RETRIES = 3
-const INITIAL_RETRY_DELAY = 1000 // 1 second
+import { fetchWithRetry } from "../../api/retry.ts"
 
 let filesFetched = 0
 let totalFilesToFetch = 0
@@ -23,8 +21,9 @@ type PullSearchTemplateOptions = {
  * Fetches the current templates to the specified target path.
  * Processes files in parallel with controlled concurrency and retry logic.
  */
-export async function pullSearchTemplate(targetPath: string, options: PullSearchTemplateOptions) {
-  const targetFolder = path.resolve(targetPath)
+export async function pullSearchTemplate(options: PullSearchTemplateOptions) {
+  const { projectPath } = getCachedConfig()
+  const targetFolder = path.resolve(projectPath)
   Logger.info(`Fetching templates to: ${chalk.cyan(targetFolder)}`)
   if (!fs.existsSync(targetFolder)) {
     throw new Error(`Target folder does not exist: ${chalk.cyan(targetFolder)}`)
@@ -82,22 +81,12 @@ async function processBatch(files: { path: string }[], targetFolder: string): Pr
   const batchPromises = files.map(async file => {
     const filePath = file.path
 
-    try {
-      const data = await fetchWithRetry(filePath)
-      filesFetched += 1
-      Logger.info(
-        `${chalk.green("✓")} [${filesFetched}/${totalFilesToFetch}] ${chalk.blue("↓")} ${chalk.cyan(filePath)}`
-      )
-      const pathToWrite = path.join(targetFolder, filePath)
+    const data = await fetchWithRetry(fetchSourceFile, filePath)
+    filesFetched += 1
+    Logger.info(`${chalk.green("✓")} [${filesFetched}/${totalFilesToFetch}] ${chalk.blue("↓")} ${chalk.cyan(filePath)}`)
+    const pathToWrite = path.join(targetFolder, filePath)
 
-      writeFile(pathToWrite, data)
-
-      return { success: true, filePath }
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      Logger.error(`${chalk.red("✗")} ${chalk.cyan(filePath)}: ${errorMessage}`)
-      return { success: false, filePath, error: errorMessage }
-    }
+    writeFile(pathToWrite, data)
   })
 
   const results = await Promise.allSettled(batchPromises)
@@ -105,22 +94,5 @@ async function processBatch(files: { path: string }[], targetFolder: string): Pr
 
   if (failures.length > 0) {
     Logger.warn(`Batch completed with ${failures.length} failures`)
-  }
-}
-
-async function fetchWithRetry(filePath: string, retryCount = 0): Promise<string> {
-  try {
-    return await fetchSourceFile(filePath)
-  } catch (error: unknown) {
-    if (retryCount >= MAX_RETRIES) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      throw new Error(`Failed to fetch ${filePath} after ${MAX_RETRIES} retries: ${errorMessage}`)
-    }
-    const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount)
-    Logger.warn(
-      `${chalk.yellow("⟳")} Failed to fetch ${chalk.cyan(filePath)}: Retrying in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`
-    )
-    await new Promise(resolve => setTimeout(resolve, delay))
-    return fetchWithRetry(filePath, retryCount + 1)
   }
 }

@@ -1,13 +1,14 @@
-import { type PartialConfig, PartialConfigSchema } from "./schema.ts"
+import { type PartialConfig, PartialConfigSchema, type PersistentConfig } from "./schema.ts"
 
 export const EnvVariables = {
   apiKey: "NOSTO_API_KEY",
   merchant: "NOSTO_MERCHANT",
   templatesEnv: "NOSTO_TEMPLATES_ENV",
   apiUrl: "NOSTO_API_URL",
+  libraryUrl: "NOSTO_LIBRARY_URL",
   logLevel: "NOSTO_LOG_LEVEL",
   maxRequests: "NOSTO_MAX_REQUESTS"
-} as const
+} satisfies Record<keyof PersistentConfig, string>
 
 export function getEnvConfig(): PartialConfig {
   const config = Object.entries(EnvVariables).reduce<Record<string, string>>((acc, [key, envVar]) => {
