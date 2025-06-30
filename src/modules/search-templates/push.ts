@@ -5,6 +5,7 @@ import { Logger } from "../../console/logger.ts"
 import chalk from "chalk"
 import { getCachedConfig } from "../../config/config.ts"
 import { promptForConfirmation } from "../../console/userPrompt.ts"
+import { isIgnored } from "../../filesystem/isIgnored.ts"
 
 const MAX_RETRIES = 3
 const INITIAL_RETRY_DELAY = 1000 // 1 second
@@ -45,10 +46,9 @@ export async function pushSearchTemplate(options: PushSearchTemplateOptions) {
   }
 
   // Recursively list all files in the directory (excluding files in gitignore)
-  const files = fs
-    .readdirSync(targetFolder, { withFileTypes: true, recursive: true })
-    .filter(dirent => dirent.isFile() && !dirent.name.startsWith("."))
-    .filter(dirent => !dirent.name.includes("node_modules"))
+  const totalFiles = fs.readdirSync(targetFolder, { withFileTypes: true, recursive: true })
+  const files = totalFiles
+    .filter(dirent => !isIgnored(dirent))
     .map(dirent => dirent.parentPath + "/" + dirent.name)
     // To relative path
     .map(file => file.replace(targetFolder + "/", ""))
@@ -57,8 +57,11 @@ export async function pushSearchTemplate(options: PushSearchTemplateOptions) {
   const buildFileCount = files.filter(file => file.includes("build/")).length
   const sourceFileCount = files.length - buildFileCount
 
+  const sourceFilesLabel = `${chalk.cyan(sourceFileCount)} source`
+  const builtFilesLabel = `${chalk.cyan(buildFileCount)} built`
+  const ignoredFilesLabel = `${chalk.cyan(totalFiles.length - files.length)} ignored`
   Logger.info(
-    `Found ${chalk.cyan(files.length)} files to push (${chalk.cyan(sourceFileCount)} source, ${chalk.cyan(buildFileCount)} built).`
+    `Found ${chalk.cyan(files.length)} files to push (${sourceFilesLabel}, ${builtFilesLabel}, ${ignoredFilesLabel}).`
   )
   if (files.length === 0) {
     Logger.warn("No files to push. Exiting.")

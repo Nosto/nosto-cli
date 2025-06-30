@@ -36,7 +36,7 @@ const Presets = {
   }
 }
 
-const printToLog = (message: string | object, preset: (typeof Presets)[keyof typeof Presets], extra?: unknown) => {
+const printToLog = (message: string, preset: (typeof Presets)[keyof typeof Presets], extra?: unknown) => {
   const targetLogLevel = LogLevel.indexOf(Logger.context.logLevel)
   if (targetLogLevel > preset.logLevel) {
     return
@@ -64,7 +64,7 @@ export const Logger = {
     }
   },
 
-  debug: (message: string | object, extra?: unknown) => {
+  debug: (message: string, extra?: unknown) => {
     printToLog(message, Presets.debug, extra)
   },
 
