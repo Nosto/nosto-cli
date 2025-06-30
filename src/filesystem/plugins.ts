@@ -12,11 +12,11 @@ export function createLoaderPlugin(): esbuild.Plugin {
     name: "create-loader",
     setup(build) {
       build.onEnd(result => {
-        if (result.errors.length) {
+        const { projectPath, dryRun } = getCachedConfig()
+        if (result.errors.length || dryRun) {
           return
         }
         Logger.debug("Generating loader script...")
-        const { projectPath } = getCachedConfig()
         const outUri = path.join(projectPath, "build")
         fs.writeFileSync(path.join(outUri, "loader.js"), getLoaderScript())
       })

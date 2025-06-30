@@ -9,11 +9,11 @@ export type EsbuildContextOptions = {
 
 export function getBuildContext(options: EsbuildContextOptions = {}) {
   const { plugins = [] } = options
-  const { projectPath } = getCachedConfig()
+  const { projectPath, dryRun } = getCachedConfig()
   return esbuild.context({
     bundle: true,
     minify: true,
-    write: true,
+    write: !dryRun,
     nodePaths: [path.resolve(import.meta.dirname, "../../node_modules")],
     sourcemap: "linked",
     treeShaking: true,
