@@ -17,7 +17,7 @@ type Props = {
 }
 
 export function loadConfig({ projectPath, options }: Props) {
-  const { dryRun } = RuntimeConfigSchema.parse({ ...options, projectPath })
+  const { dryRun, verbose } = RuntimeConfigSchema.parse({ ...options, projectPath })
 
   if (isConfigLoaded) {
     Logger.debug(`Using cached configuration`)
@@ -41,10 +41,13 @@ export function loadConfig({ projectPath, options }: Props) {
   }
 
   try {
+    const persistentConfig = PersistentConfigSchema.parse(combinedConfig)
     cachedConfig = {
-      ...PersistentConfigSchema.parse(combinedConfig),
+      ...persistentConfig,
+      logLevel: verbose ? "debug" : persistentConfig.logLevel,
       projectPath,
-      dryRun
+      dryRun,
+      verbose
     }
     updateLoggerContext(cachedConfig)
     isConfigLoaded = true

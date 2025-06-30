@@ -36,11 +36,12 @@ const Presets = {
   }
 }
 
-const printToLog = (message: string, preset: (typeof Presets)[keyof typeof Presets], extra?: unknown) => {
+const printToLog = (message: string | object, preset: (typeof Presets)[keyof typeof Presets], extra?: unknown) => {
   const targetLogLevel = LogLevel.indexOf(Logger.context.logLevel)
   if (targetLogLevel > preset.logLevel) {
     return
   }
+  message = typeof message === "string" ? message : JSON.stringify(message, null, 2)
   const timestamp = chalk.dim(formatTimestamp(new Date()))
   const merchantId = Logger.context.merchantId ? `[${chalk.greenBright(Logger.context.merchantId)}] ` : "| "
   const dryRun = Logger.context.isDryRun ? chalk.dim("(DRY RUN) ") : ""
@@ -63,7 +64,7 @@ export const Logger = {
     }
   },
 
-  debug: (message: string, extra?: unknown) => {
+  debug: (message: string | object, extra?: unknown) => {
     printToLog(message, Presets.debug, extra)
   },
 

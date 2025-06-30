@@ -33,6 +33,7 @@ searchTemplates
   .command("build [projectPath]")
   .description("Build the search-templates locally")
   .option("--dry-run", "perform a dry run without making changes")
+  .option("--verbose", "set log level to debug")
   .option("-w, --watch", "skip confirmation")
   .action((projectPath = ".", options) => {
     withErrorHandler(async () => {
@@ -46,6 +47,7 @@ searchTemplates
   .description("Pull the search-templates source from the Nosto VSCode Web")
   .option("-p, --paths <files...>", "specific file paths to fetch (space-separated list)")
   .option("--dry-run", "perform a dry run without making changes")
+  .option("--verbose", "set log level to debug")
   .option("-y, --yes", "skip confirmation")
   .action((projectPath = ".", options) => {
     withErrorHandler(async () => {
@@ -62,6 +64,7 @@ searchTemplates
   .description("Push the search-templates source to the VSCode Web")
   .option("-p, --paths <files...>", "specific file paths to deploy (space-separated list)")
   .option("--dry-run", "perform a dry run without making changes")
+  .option("--verbose", "set log level to debug")
   .option("-y, --yes", "skip confirmation")
   .action((projectPath = ".", options) => {
     withErrorHandler(async () => {
@@ -78,6 +81,7 @@ searchTemplates
   .command("dev [projectPath]")
   .description("Build the search-templates locally, watch for changes and continuously upload")
   .option("--dry-run", "perform a dry run without making changes")
+  .option("--verbose", "set log level to debug")
   .option("-y, --yes", "skip confirmation")
   .action((projectPath = ".", options) => {
     withErrorHandler(async () => {

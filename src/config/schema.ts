@@ -13,7 +13,8 @@ export const PersistentConfigSchema = z.object({
 
 export const RuntimeConfigSchema = z.object({
   projectPath: z.string().default("."),
-  dryRun: z.boolean().default(false)
+  dryRun: z.boolean().default(false),
+  verbose: z.boolean().default(false)
 })
 
 export const PartialConfigSchema = PersistentConfigSchema.partial()
