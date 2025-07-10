@@ -85,3 +85,9 @@ You can use `nosto help` and variations to obtain detailed and up-to-date inform
   - Search templates related commands
   - `st pull [projectPath]`
     - Fetch the current state of VSCode Web for the configured merchant
+
+## External dependencies
+
+With the addition of local builds, the external dependencies are something that is theoretically possible. However, due to complexities of the legacy setup, external deps **will not be officially supported in the legacy templates**. We understand that this is something modern web development needs, and we are addressing that by our upcoming open source search-templates offering. Specifically, search-templates-starter, [search-js](https://github.com/nosto/search-js) and this very CLI tool.
+
+If you would still like to try your luck with introducing dependencies into a legacy app, we recommend you stick with only build-time dependencies like TypeScript that disappear at runtime. In that case, build your app as you would, and point the CLI's build to the output folder.
