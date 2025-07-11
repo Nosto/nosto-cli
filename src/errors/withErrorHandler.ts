@@ -1,16 +1,14 @@
 import { HTTPError, TimeoutError } from "ky"
 import { Logger } from "../console/logger.ts"
-import { MissingConfigurationError } from "./MissingConfigurationError.ts"
 import chalk from "chalk"
 import { getCachedConfig } from "../config/config.ts"
+import { NostoError } from "./NostoError.ts"
 
 export async function withErrorHandler(fn: () => void | Promise<void>): Promise<void> {
   try {
     await fn()
   } catch (error) {
-    if (error instanceof MissingConfigurationError) {
-      Logger.error(error.message)
-    } else if (error instanceof HTTPError) {
+    if (error instanceof HTTPError) {
       const config = getCachedConfig()
       Logger.error(`HTTP Request failed:`)
       Logger.error(`- ${error.response.status} ${error.response.statusText}`)
@@ -29,6 +27,8 @@ export async function withErrorHandler(fn: () => void | Promise<void>): Promise<
       if (config.verbose) {
         Logger.raw(chalk.red(prettyPrintStack(error.stack)))
       }
+    } else if (error instanceof NostoError) {
+      error.handle()
     } else {
       throw error
     }

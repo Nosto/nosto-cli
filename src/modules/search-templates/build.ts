@@ -12,6 +12,7 @@ type Props = {
 export async function buildSearchTemplate({ watch }: Props) {
   const { projectPath } = getCachedConfig()
   const libraryPath = path.resolve(projectPath, ".nostocache/library")
+
   Logger.info(`Fetching library to: ${chalk.cyan(libraryPath)}`)
   await loadLibrary(libraryPath)
 

@@ -5,72 +5,58 @@ import { Logger } from "../../console/logger.ts"
 import chalk from "chalk"
 import { getCachedConfig } from "../../config/config.ts"
 import { promptForConfirmation } from "../../console/userPrompt.ts"
-import { isIgnored } from "../../filesystem/isIgnored.ts"
+import { calculateTreeHash } from "../../filesystem/calculateTreeHash.ts"
+import { fetchSourceFileIfExists } from "../../api/source/fetchSourceFile.ts"
+import { listAllFiles, readFileIfExists, writeFile } from "../../filesystem/filesystem.ts"
+import { processInBatches } from "../../filesystem/processInBatches.ts"
 
 const MAX_RETRIES = 3
 const INITIAL_RETRY_DELAY = 1000 // 1 second
 
-let filesPushed = 0
-let totalFilesToPush = 0
-
 type PushSearchTemplateOptions = {
+  // Filter to only push these files. Ignored if empty.
   paths: string[]
-  skipConfirmation: boolean
 }
 
 /**
  * Deploys templates to the specified target path.
  * Processes files in parallel with controlled concurrency and retry logic.
  */
-export async function pushSearchTemplate(options: PushSearchTemplateOptions) {
+export async function pushSearchTemplate({ paths }: PushSearchTemplateOptions) {
   const { projectPath } = getCachedConfig()
-  const { paths, skipConfirmation } = options
   const targetFolder = path.resolve(projectPath)
-  Logger.info(`Deploying templates from: ${chalk.cyan(targetFolder)}`)
-  if (!fs.existsSync(targetFolder)) {
-    throw new Error(`Target folder does not exist: ${chalk.cyan(targetFolder)}`)
-  }
-  if (!fs.statSync(targetFolder).isDirectory()) {
-    throw new Error(`Target path is not a directory: ${chalk.cyan(targetFolder)}`)
-  }
 
-  Logger.debug("Sanity checking the target directory...")
-  // Read the index.js file in the current directory and ensure it has a mention of @nosto/preact
-  const indexFilePath = path.join(targetFolder, "index.js")
-  if (!fs.existsSync(indexFilePath)) {
-    throw new Error(`Index file does not exist: ${indexFilePath}`)
-  }
-  const indexFileContent = fs.readFileSync(indexFilePath, "utf-8")
-  if (!indexFileContent.includes("@nosto/preact")) {
-    throw new Error(`Index file does not contain @nosto/preact: ${indexFilePath}`)
-  }
+  // List all files, excluding ignored and filtered by paths
+  const { allFiles, unfilteredFileCount } = listAllFiles(targetFolder)
+  const files = allFiles.filter(file => paths.length === 0 || paths.includes(file))
 
-  // Recursively list all files in the directory (excluding files in gitignore)
-  const totalFiles = fs.readdirSync(targetFolder, { withFileTypes: true, recursive: true })
-  const files = totalFiles
-    .filter(dirent => !isIgnored(dirent))
-    .map(dirent => dirent.parentPath + "/" + dirent.name)
-    // To relative path
-    .map(file => file.replace(targetFolder + "/", ""))
-    .filter(file => paths.length === 0 || paths.includes(file))
-
-  const buildFileCount = files.filter(file => file.includes("build/")).length
-  const sourceFileCount = files.length - buildFileCount
-
-  const sourceFilesLabel = `${chalk.cyan(sourceFileCount)} source`
-  const builtFilesLabel = `${chalk.cyan(buildFileCount)} built`
-  const ignoredFilesLabel = `${chalk.cyan(totalFiles.length - files.length)} ignored`
-  Logger.info(
-    `Found ${chalk.cyan(files.length)} files to push (${sourceFilesLabel}, ${builtFilesLabel}, ${ignoredFilesLabel}).`
-  )
+  // Found literally no files -> nothing to do.
   if (files.length === 0) {
     Logger.warn("No files to push. Exiting.")
     return
   }
 
-  if (!skipConfirmation) {
-    const config = getCachedConfig()
-    const confirmationMessage = `Are you sure you want to push ${chalk.cyan(files.length)} files to merchant ${chalk.greenBright(config.merchant)}'s ${chalk.redBright(config.templatesEnv)} environment at ${chalk.blueBright(config.apiUrl)}?`
+  // If the local and remote hashes match, assume the content matches as well
+  const localHash = calculateTreeHash()
+  const remoteHash = await fetchSourceFileIfExists("build/hash")
+  if (localHash === remoteHash) {
+    Logger.success("Remote template is already up to date.")
+    writeFile(path.join(targetFolder, ".nostocache/hash"), localHash)
+    return
+  }
+
+  /**
+   * If remote hash is present, we can check if there are conflicts. If not, just show the warning anyway.
+   * If remote hash doesn't match local hash, but remote hash matches last seen remote hash, then this is a clean push that shouldn't override anything.
+   * If .nostocache/hash is not present, it's a fresh checkout, but local state has changed already. Show the warning just in case.
+   * If remote hash doesn't match last seen remote hash, another user has pushed. Assume conflicts and show the warning.
+   */
+  const lastSeenRemoteHash = readFileIfExists(path.join(targetFolder, ".nostocache/hash"))
+  if (!remoteHash || !lastSeenRemoteHash || remoteHash !== lastSeenRemoteHash) {
+    let confirmationMessage = `It seems that the template has been changed since your last push. Are you sure you want to continue?`
+    if (!remoteHash || !lastSeenRemoteHash) {
+      confirmationMessage = `It seems that this is the first time you are pushing to this environment. Please make sure your local copy is up to date. Continue?`
+    }
     const confirmed = await promptForConfirmation(confirmationMessage, "N")
     if (!confirmed) {
       Logger.info("Push operation cancelled by user.")
@@ -78,41 +64,37 @@ export async function pushSearchTemplate(options: PushSearchTemplateOptions) {
     }
   }
 
-  const batchSize = getCachedConfig().maxRequests
-  const batches = []
-  filesPushed = 0
-  totalFilesToPush = files.length
-  for (let i = 0; i < files.length; i += batchSize) {
-    batches.push(files.slice(i, i + batchSize))
+  Logger.info(`Pushing template from: ${chalk.cyan(targetFolder)}`)
+
+  // Update the hash files
+  writeFile(path.join(targetFolder, "build/hash"), localHash)
+  writeFile(path.join(targetFolder, ".nostocache/hash"), localHash)
+
+  // The hash file didn't exist, but now it does
+  if (!files.includes("build/hash")) {
+    files.push("build/hash")
   }
 
-  for (let i = 0; i < batches.length; i++) {
-    const batch = batches[i]
-    await processBatch(batch, targetFolder)
-  }
-}
+  // Collect some stats
+  const buildFileCount = files.filter(file => file.includes("build/")).length
+  const sourceFileCount = files.length - buildFileCount
 
-async function processBatch(files: string[], targetFolder: string): Promise<void> {
-  const batchPromises = files.map(async file => {
-    const filePath = path.join(targetFolder, file)
-    try {
+  const sourceFilesLabel = `${chalk.cyan(sourceFileCount)} source`
+  const builtFilesLabel = `${chalk.cyan(buildFileCount)} built`
+  const ignoredFilesLabel = `${chalk.cyan(unfilteredFileCount - files.length)} ignored`
+  Logger.info(
+    `Found ${chalk.cyan(files.length)} files to push (${sourceFilesLabel}, ${builtFilesLabel}, ${ignoredFilesLabel}).`
+  )
+
+  // Push the files in batches to avoid overwhelming the API (relevant mostly for local dev)
+  processInBatches({
+    files,
+    logIcon: chalk.magenta("↑"),
+    processElement: async file => {
+      const filePath = path.join(targetFolder, file)
       await putWithRetry(file, fs.readFileSync(filePath, "utf-8"))
-      filesPushed += 1
-      Logger.info(`${chalk.green("✓")} [${filesPushed}/${totalFilesToPush}] ${chalk.magenta("↑")} ${chalk.cyan(file)}`)
-      return { success: true, filePath: file }
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      Logger.error(`${chalk.red("✗")} ${chalk.cyan(file)}: ${errorMessage}`)
-      return { success: false, filePath: file, error: errorMessage }
     }
   })
-
-  const results = await Promise.allSettled(batchPromises)
-  const failures = results.filter((result): result is PromiseRejectedResult => result.status === "rejected")
-
-  if (failures.length > 0) {
-    Logger.warn(`Batch completed with ${failures.length} failures`)
-  }
 }
 
 async function putWithRetry(filePath: string, content: string, retryCount = 0): Promise<void> {

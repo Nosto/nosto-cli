@@ -11,3 +11,11 @@ export async function fetchSourceFile(path: string) {
   const data = FetchSourceFileSchema.parse(await response.text())
   return data
 }
+
+export async function fetchSourceFileIfExists(path: string) {
+  try {
+    return await fetchSourceFile(path)
+  } catch {
+    return null
+  }
+}

@@ -7,6 +7,8 @@ import { printSetupHelp } from "./modules/setup.ts"
 import { withErrorHandler } from "./errors/withErrorHandler.ts"
 import { buildSearchTemplate } from "./modules/search-templates/build.ts"
 import { searchTemplateDevMode } from "./modules/search-templates/dev.ts"
+import { assertNostoTemplate } from "./filesystem/assertNostoTemplate.ts"
+import { assertGitRepo } from "./filesystem/assertGitRepo.ts"
 
 program.name("nostocli").version("1.0.0").description("Nosto CLI tool. Use `nostocli setup` to get started.")
 
@@ -34,10 +36,12 @@ searchTemplates
   .description("Build the search-templates locally")
   .option("--dry-run", "perform a dry run without making changes")
   .option("--verbose", "set log level to debug")
-  .option("-w, --watch", "skip confirmation")
+  .option("-w, --watch", "watch for changes and rebuild")
   .action((projectPath = ".", options) => {
     withErrorHandler(async () => {
       loadConfig({ projectPath, options })
+      assertNostoTemplate()
+      assertGitRepo()
       await buildSearchTemplate({ watch: options.watch ?? false })
     })
   })
@@ -52,6 +56,8 @@ searchTemplates
   .action((projectPath = ".", options) => {
     withErrorHandler(async () => {
       loadConfig({ projectPath, options })
+      assertNostoTemplate()
+      assertGitRepo()
       await pullSearchTemplate({
         paths: options.paths ?? [],
         skipConfirmation: options.yes ?? false
@@ -69,10 +75,11 @@ searchTemplates
   .action((projectPath = ".", options) => {
     withErrorHandler(async () => {
       loadConfig({ projectPath, options })
+      assertNostoTemplate()
+      assertGitRepo()
       await buildSearchTemplate({ watch: false })
       await pushSearchTemplate({
-        paths: options.paths ?? [],
-        skipConfirmation: options.yes ?? false
+        paths: options.paths ?? []
       })
     })
   })
@@ -82,13 +89,12 @@ searchTemplates
   .description("Build the search-templates locally, watch for changes and continuously upload")
   .option("--dry-run", "perform a dry run without making changes")
   .option("--verbose", "set log level to debug")
-  .option("-y, --yes", "skip confirmation")
   .action((projectPath = ".", options) => {
     withErrorHandler(async () => {
       loadConfig({ projectPath, options })
-      await searchTemplateDevMode({
-        skipConfirmation: options.yes ?? false
-      })
+      assertNostoTemplate()
+      assertGitRepo()
+      await searchTemplateDevMode()
     })
   })
 
