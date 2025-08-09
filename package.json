@@ -12,7 +12,6 @@
   "scripts": {
     "lint": "eslint",
     "prepare": "husky",
-    "build": "tsc --noEmit",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
