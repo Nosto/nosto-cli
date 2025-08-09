@@ -9,7 +9,17 @@
     "forceConsistentCasingInFileNames": true,
     "allowImportingTsExtensions": true,
     "rootDir": "src",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@api/*": ["src/api/*"],
+      "@config/*": ["src/config/*"],
+      "@console/*": ["src/console/*"],
+      "@errors/*": ["src/errors/*"],
+      "@filesystem/*": ["src/filesystem/*"],
+      "@modules/*": ["src/modules/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

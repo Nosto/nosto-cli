@@ -11,7 +11,9 @@
   "description": "",
   "scripts": {
     "lint": "eslint",
-    "prepare": "husky"
+    "prepare": "husky",
+    "build": "tsc --noEmit",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "chalk": "^5.4.1",
