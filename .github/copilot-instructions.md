@@ -42,9 +42,3 @@ The CLI requires `.nosto.json` config file or environment variables:
 * `npx tsx src/index.ts --help` - Run the CLI directly from source (recommended for development)
 * `nosto --help` - Run the linked CLI tool (after npm link, may require Node.js with --experimental-strip-types support)
 
-## Testing
-
-* No test suite currently exists
-* Manual testing via CLI commands: `npx tsx src/index.ts <command>`
-* Verify commands work: `npx tsx src/index.ts help`, `npx tsx src/index.ts setup`, `npx tsx src/index.ts status`
-* Test linked version: `nosto help`, `nosto setup`, `nosto status` (after npm link)
