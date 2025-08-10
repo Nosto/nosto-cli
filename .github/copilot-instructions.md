@@ -6,11 +6,14 @@ This is a TypeScript CLI tool for interacting with Nosto's backend systems. The 
 
 ## Code Style
 
-* Use TypeScript strict mode
-* Follow existing code patterns and project structure
-* Use ES modules (import/export syntax)
-* Prefer modern JavaScript/TypeScript features
-* Use meaningful variable and function names
+* Use closures over classes
+* Utilize type inference in return types, except for functions with multiple return statements
+* Use utility types to derive types from constants
+* Avoid 'any' type usage
+* Use const (and let) over var
+* Use async/await instead of Promise chaining
+* Use individual named exports over bulk exports
+* Favor named exports over default exports
 
 ## Development Workflow
 
