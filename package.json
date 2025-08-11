@@ -18,7 +18,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "chalk": "^5.4.1",
+    "chalk": "^5.5.0",
     "commander": "^14.0.0",
     "esbuild": "^0.25.8",
     "ignore": "^7.0.5",
