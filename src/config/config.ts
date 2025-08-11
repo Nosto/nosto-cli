@@ -1,5 +1,5 @@
-import { cleanUrl } from "../api/utils.ts"
-import { Logger } from "../console/logger.ts"
+import { cleanUrl } from "#api/utils.ts"
+import { Logger } from "#console/logger.ts"
 import { MissingConfigurationError } from "../errors/MissingConfigurationError.ts"
 import { getEnvConfig } from "./envConfig.ts"
 import { parseConfigFile } from "./fileConfig.ts"

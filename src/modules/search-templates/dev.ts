@@ -1,9 +1,9 @@
-import { Logger } from "../../console/logger.ts"
+import { Logger } from "#console/logger.ts"
 import chalk from "chalk"
-import { getCachedConfig } from "../../config/config.ts"
-import { promptForConfirmation } from "../../console/userPrompt.ts"
-import { getBuildContext } from "../../filesystem/esbuild.ts"
-import { pushOnRebuildPlugin } from "../../filesystem/plugins.ts"
+import { getCachedConfig } from "#config/config.ts"
+import { promptForConfirmation } from "#console/userPrompt.ts"
+import { getBuildContext } from "#filesystem/esbuild.ts"
+import { pushOnRebuildPlugin } from "#filesystem/plugins.ts"
 
 export type BuildProps = {
   skipConfirmation: boolean
