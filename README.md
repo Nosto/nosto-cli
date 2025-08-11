@@ -79,12 +79,22 @@ You can use `nosto help` and variations to obtain detailed and up-to-date inform
 - `setup [projectPath]`
   - Prints setup information and creates a placeholder config file if needed
 - `status [projectPath]`
-  - Reads the configuration and prints the general status
+  - Print the configuration status
 - `st [projectPath]`
   - Alias: `search-templates [projectPath]`
-  - Search templates related commands
+  - Search templates management commands
+  - `st build [projectPath]`
+    - Build the search-templates locally
+    - Options: `--dry-run`, `--verbose`, `-w/--watch`
   - `st pull [projectPath]`
-    - Fetch the current state of VSCode Web for the configured merchant
+    - Pull the search-templates source from the Nosto VSCode Web
+    - Options: `-p/--paths <files...>`, `--dry-run`, `--verbose`, `-y/--yes`
+  - `st push [projectPath]`
+    - Push the search-templates source to the VSCode Web
+    - Options: `-p/--paths <files...>`, `--dry-run`, `--verbose`, `-y/--yes`
+  - `st dev [projectPath]`
+    - Build the search-templates locally, watch for changes and continuously upload
+    - Options: `--dry-run`, `--verbose`, `-y/--yes`
 
 ## External dependencies
 
