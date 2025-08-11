@@ -91,3 +91,66 @@ You can use `nosto help` and variations to obtain detailed and up-to-date inform
 With the addition of local builds, the external dependencies are something that is theoretically possible. However, due to complexities of the legacy setup, external deps **will not be officially supported in the legacy templates**. We understand that this is something modern web development needs, and we are addressing that by our upcoming open source search-templates offering. Specifically, search-templates-starter, [search-js](https://github.com/nosto/search-js) and this very CLI tool.
 
 If you would still like to try your luck with introducing dependencies into a legacy app, we recommend you stick with only build-time dependencies like TypeScript that disappear at runtime. In that case, build your app as you would, and point the CLI's build to the output folder.
+
+## Development
+
+### Testing
+
+This project uses [Vitest](https://vitest.dev/) for comprehensive test coverage. Tests are organized to mirror the `src/` structure:
+
+- **Test Framework**: Vitest with Node.js built-in TypeScript support
+- **Coverage**: V8 coverage provider
+- **Mocking**: Filesystem and API operations are mocked for isolated testing
+
+#### Available Scripts
+
+```bash
+# Run tests in watch mode
+npm test
+
+# Run tests once
+npm run test:run
+
+# Run tests with UI
+npm run test:ui
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+#### Test Structure
+
+Tests are located in the `test/` directory and mirror the source structure:
+
+```
+test/
+├── api/           # API utilities and retry logic tests
+├── config/        # Configuration management tests
+├── console/       # Logger and console utilities tests
+├── errors/        # Error handling tests
+├── filesystem/    # File system operations tests
+└── modules/       # Command module tests
+```
+
+#### Coverage
+
+The test suite covers critical functionality including:
+
+- Configuration loading and validation
+- Error handling and logging
+- API utilities and retry mechanisms
+- File system operations
+- Core command modules
+
+Run `npm run test:coverage` to see detailed coverage reports.
+
+### Code Quality
+
+- **Linting**: ESLint with TypeScript support
+- **Formatting**: Prettier
+- **Commits**: Conventional commits with commitlint
+- **Hooks**: Husky for pre-commit hooks
+
+### CI/CD
+
+GitHub Actions runs tests on Node.js 18.x, 20.x, and 22.x for every push and pull request.
