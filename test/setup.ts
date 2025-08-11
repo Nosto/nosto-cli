@@ -1,8 +1,8 @@
 // Test setup file for global mocks and configurations
-import { vi } from 'vitest'
+import { vi } from "vitest"
 
 // Mock fs module
-vi.mock('fs', () => ({
+vi.mock("fs", () => ({
   default: {
     existsSync: vi.fn(),
     mkdirSync: vi.fn(),
@@ -20,9 +20,9 @@ vi.mock('fs', () => ({
 }))
 
 // Mock process.env
-vi.mock('process', () => ({
+vi.mock("process", () => ({
   env: {},
-  cwd: vi.fn(() => '/test'),
+  cwd: vi.fn(() => "/test"),
   exit: vi.fn()
 }))
 
