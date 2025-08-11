@@ -24,7 +24,7 @@
     "ignore": "^7.0.5",
     "ky": "^1.8.2",
     "preact": "^10.27.0",
-    "zod": "^3.25.61"
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
