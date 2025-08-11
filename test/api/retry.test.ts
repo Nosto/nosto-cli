@@ -2,21 +2,21 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 import { fetchWithRetry } from "../../src/api/retry.ts"
 import { Logger } from "../../src/console/logger.ts"
 
-vi.mock("../../src/console/logger.ts", () => ({
-  Logger: {
-    error: vi.fn(),
-    warn: vi.fn()
-  }
-}))
-
 describe("API Retry", () => {
+  let loggerErrorSpy: ReturnType<typeof vi.spyOn>
+  let loggerWarnSpy: ReturnType<typeof vi.spyOn>
+
   beforeEach(() => {
     vi.clearAllMocks()
     vi.useFakeTimers()
+    loggerErrorSpy = vi.spyOn(Logger, "error").mockImplementation(() => {})
+    loggerWarnSpy = vi.spyOn(Logger, "warn").mockImplementation(() => {})
   })
 
   afterEach(() => {
     vi.useRealTimers()
+    loggerErrorSpy.mockRestore()
+    loggerWarnSpy.mockRestore()
   })
 
   describe("fetchWithRetry", () => {
@@ -70,7 +70,7 @@ describe("API Retry", () => {
 
       await retryPromise
 
-      expect(Logger.warn).toHaveBeenCalledWith(
+      expect(loggerWarnSpy).toHaveBeenCalledWith(
         expect.stringContaining("Failed to fetch test-file.txt: Retrying in 1000ms (attempt 1/3)")
       )
     })
@@ -85,7 +85,7 @@ describe("API Retry", () => {
 
       await expect(retryPromise).rejects.toThrow()
 
-      expect(Logger.error).toHaveBeenCalledWith(expect.stringContaining("test-file.txt: Final error"))
+      expect(loggerErrorSpy).toHaveBeenCalledWith(expect.stringContaining("test-file.txt: Final error"))
     })
 
     it("should handle non-Error objects", async () => {

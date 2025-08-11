@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { printStatus } from "../../src/modules/status.ts"
-import { Logger } from "../../src/console/logger.ts"
 
 // Mock dependencies
 vi.mock("../../src/config/config.ts", () => ({
@@ -18,7 +17,9 @@ vi.mock("../../src/config/config.ts", () => ({
 vi.mock("../../src/console/logger.ts", () => ({
   Logger: {
     error: vi.fn(),
-    info: vi.fn()
+    info: vi.fn(),
+    warn: vi.fn(),
+    debug: vi.fn()
   }
 }))
 
@@ -28,7 +29,9 @@ describe("Status Module", () => {
   })
 
   describe("printStatus", () => {
-    it("should print configuration status", () => {
+    it("should print configuration status", async () => {
+      const { Logger } = await import("../../src/console/logger.ts")
+
       printStatus("/test/path")
 
       expect(Logger.info).toHaveBeenCalledWith(expect.stringContaining("Required Settings:"))
@@ -37,7 +40,9 @@ describe("Status Module", () => {
       expect(Logger.info).toHaveBeenCalledWith(expect.stringContaining("Optional Settings:"))
     })
 
-    it("should indicate valid configuration", () => {
+    it("should indicate valid configuration", async () => {
+      const { Logger } = await import("../../src/console/logger.ts")
+
       printStatus("/test/path")
 
       expect(Logger.info).toHaveBeenCalledWith(expect.stringContaining("Configuration seems to be valid"))

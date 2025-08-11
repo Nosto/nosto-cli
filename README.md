@@ -134,13 +134,7 @@ test/
 
 #### Coverage
 
-The test suite covers critical functionality including:
-
-- Configuration loading and validation
-- Error handling and logging
-- API utilities and retry mechanisms
-- File system operations
-- Core command modules
+Tests are running on Vitest.
 
 Run `npm run test:coverage` to see detailed coverage reports.
 
