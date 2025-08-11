@@ -23,7 +23,7 @@
     "esbuild": "^0.25.8",
     "ignore": "^7.0.5",
     "ky": "^1.8.2",
-    "preact": "^10.26.9",
+    "preact": "^10.27.0",
     "zod": "^3.25.61"
   },
   "devDependencies": {
