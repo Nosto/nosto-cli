@@ -1,11 +1,11 @@
 import fs from "fs"
 import path from "path"
-import { putSourceFile } from "../../api/source/putSourceFile.ts"
-import { Logger } from "../../console/logger.ts"
+import { putSourceFile } from "#api/source/putSourceFile.ts"
+import { Logger } from "#console/logger.ts"
 import chalk from "chalk"
-import { getCachedConfig } from "../../config/config.ts"
-import { promptForConfirmation } from "../../console/userPrompt.ts"
-import { isIgnored } from "../../filesystem/isIgnored.ts"
+import { getCachedConfig } from "#config/config.ts"
+import { promptForConfirmation } from "#console/userPrompt.ts"
+import { isIgnored } from "#filesystem/isIgnored.ts"
 
 const MAX_RETRIES = 3
 const INITIAL_RETRY_DELAY = 1000 // 1 second

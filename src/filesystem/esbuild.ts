@@ -1,7 +1,7 @@
 import path from "path"
 import * as esbuild from "esbuild"
 import { createLoaderPlugin, notifyOnRebuildPlugin } from "./plugins.ts"
-import { getCachedConfig } from "../config/config.ts"
+import { getCachedConfig } from "#config/config.ts"
 
 export type EsbuildContextOptions = {
   plugins?: esbuild.Plugin[]

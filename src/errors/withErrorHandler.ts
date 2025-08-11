@@ -1,8 +1,8 @@
 import { HTTPError, TimeoutError } from "ky"
-import { Logger } from "../console/logger.ts"
+import { Logger } from "#console/logger.ts"
 import { MissingConfigurationError } from "./MissingConfigurationError.ts"
 import chalk from "chalk"
-import { getCachedConfig } from "../config/config.ts"
+import { getCachedConfig } from "#config/config.ts"
 
 export async function withErrorHandler(fn: () => void | Promise<void>): Promise<void> {
   try {

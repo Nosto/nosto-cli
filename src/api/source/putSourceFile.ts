@@ -1,6 +1,6 @@
 import ky from "ky"
 import { getHeaders, getSourceUrl } from "../utils.ts"
-import { getCachedConfig } from "@config/config.ts"
+import { getCachedConfig } from "#config/config.ts"
 
 export async function putSourceFile(path: string, data: string) {
   if (getCachedConfig().dryRun) {

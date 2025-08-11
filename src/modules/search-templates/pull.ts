@@ -1,13 +1,13 @@
 import fs from "fs"
 import path from "path"
-import { listSourceFiles } from "@api/source/listSourceFiles.ts"
-import { fetchSourceFile } from "@api/source/fetchSourceFile.ts"
-import { Logger } from "@console/logger.ts"
+import { listSourceFiles } from "#api/source/listSourceFiles.ts"
+import { fetchSourceFile } from "#api/source/fetchSourceFile.ts"
+import { Logger } from "#console/logger.ts"
 import chalk from "chalk"
-import { getCachedConfig } from "@config/config.ts"
-import { promptForConfirmation } from "@console/userPrompt.ts"
-import { writeFile } from "@filesystem/filesystem.ts"
-import { fetchWithRetry } from "@api/retry.ts"
+import { getCachedConfig } from "#config/config.ts"
+import { promptForConfirmation } from "#console/userPrompt.ts"
+import { writeFile } from "#filesystem/filesystem.ts"
+import { fetchWithRetry } from "#api/retry.ts"
 
 let filesFetched = 0
 let totalFilesToFetch = 0

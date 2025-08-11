@@ -1,12 +1,12 @@
 import { program } from "commander"
-import { pullSearchTemplate } from "@modules/search-templates/pull.ts"
-import { pushSearchTemplate } from "@modules/search-templates/push.ts"
-import { printStatus } from "@modules/status.ts"
-import { loadConfig } from "@config/config.ts"
-import { printSetupHelp } from "@modules/setup.ts"
-import { withErrorHandler } from "@errors/withErrorHandler.ts"
-import { buildSearchTemplate } from "@modules/search-templates/build.ts"
-import { searchTemplateDevMode } from "@modules/search-templates/dev.ts"
+import { pullSearchTemplate } from "#modules/search-templates/pull.ts"
+import { pushSearchTemplate } from "#modules/search-templates/push.ts"
+import { printStatus } from "#modules/status.ts"
+import { loadConfig } from "#config/config.ts"
+import { printSetupHelp } from "#modules/setup.ts"
+import { withErrorHandler } from "#errors/withErrorHandler.ts"
+import { buildSearchTemplate } from "#modules/search-templates/build.ts"
+import { searchTemplateDevMode } from "#modules/search-templates/dev.ts"
 
 program.name("nostocli").version("1.0.0").description("Nosto CLI tool. Use `nostocli setup` to get started.")
 

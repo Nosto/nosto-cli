@@ -1,4 +1,4 @@
-import { getCachedConfig } from "../config/config.ts"
+import { getCachedConfig } from "#config/config.ts"
 
 export function getSourceUrl(path: string) {
   const config = getCachedConfig()

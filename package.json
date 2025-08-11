@@ -7,6 +7,9 @@
   },
   "author": "Nosto",
   "type": "module",
+  "imports": { 
+    "#*": "./src/*"
+  },
   "license": "ISC",
   "description": "",
   "scripts": {
