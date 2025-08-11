@@ -1,5 +1,5 @@
 import chalk from "chalk"
-import { LogLevel } from "../config/schema.ts"
+import { LogLevel } from "#config/schema.ts"
 
 const formatTimestamp = (date: Date): string => {
   const pad = (num: number) => num.toString().padStart(2, "0")

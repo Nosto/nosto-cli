@@ -7,11 +7,15 @@
   },
   "author": "Nosto",
   "type": "module",
+  "imports": { 
+    "#*": "./src/*"
+  },
   "license": "ISC",
   "description": "",
   "scripts": {
     "lint": "eslint",
-    "prepare": "husky"
+    "prepare": "husky",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "chalk": "^5.4.1",
