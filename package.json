@@ -11,6 +11,9 @@
     "#*": "./src/*"
   },
   "license": "ISC",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "description": "",
   "scripts": {
     "lint": "eslint",
