@@ -18,21 +18,22 @@ This is a TypeScript CLI tool for interacting with Nosto's backend systems. The 
 
 ### Running the CLI Tool
 
-**IMPORTANT: Node.js Compatibility Issue**
-- The `nosto` command via `src/bootstrap.sh` requires Node.js with `--experimental-strip-types` support
-- Current Node.js v20.19.4 does NOT support this flag and will fail with "bad option: --experimental-strip-types"
-- **ALWAYS use tsx as the working alternative**
+**IMPORTANT: Node.js Version Requirement**
+- The `nosto` command via `src/bootstrap.sh` requires Node.js 22+ with `--experimental-strip-types` support
+- Node.js 20 does NOT support this flag - upgrade to Node.js 22+ required
+- Alternative: use tsx for development if Node.js 22+ is not available
 
-**Working Commands:**
-- `npm install -g tsx` - Install tsx globally (required for development)
-- `tsx src/index.ts --help` - Run CLI directly from source (RECOMMENDED)
+**Recommended Commands (Node.js 22+):**
+- `nosto --help` - Run CLI via bootstrap script (RECOMMENDED with Node.js 22+)
+- `nosto setup [projectPath]` - Run setup command
+- `nosto status [projectPath]` - Check configuration status
+- `nosto st --help` - Search templates help
+
+**Alternative Commands (Development with any Node.js version):**
+- `npm install -g tsx` - Install tsx globally (if needed for development)
+- `tsx src/index.ts --help` - Run CLI directly from source
 - `tsx src/index.ts setup [projectPath]` - Run setup command
 - `tsx src/index.ts status [projectPath]` - Check configuration status
-- `tsx src/index.ts st --help` - Search templates help
-
-**Non-Working Commands (Document but DO NOT use):**
-- `nosto --help` - FAILS due to Node.js version incompatibility
-- `node --experimental-strip-types src/index.ts` - FAILS, flag not supported in Node v20.19.4
 
 ### Link the CLI Tool Globally
 
@@ -129,7 +130,7 @@ The CLI requires `.nosto.json` config file or environment variables:
 
 ### Key Files
 - `src/index.ts` - Main CLI entry point using commander.js
-- `src/bootstrap.sh` - Bootstrap script (FAILS on current Node.js version)
+- `src/bootstrap.sh` - Bootstrap script (requires Node.js 22+)
 - `tsconfig.json` - TypeScript configuration with module resolution
 - `eslint.config.js` - ESLint configuration
 - `.prettierrc` - Code formatting rules
@@ -137,7 +138,7 @@ The CLI requires `.nosto.json` config file or environment variables:
 ## CI/CD Pipeline
 
 **GitHub Actions (.github/workflows/ci.yml):**
-- Runs on Node.js 20
+- Runs on Node.js 22
 - Only includes linting and type checking (no tests)
 - Triggered on pushes/PRs to main and develop branches
 
@@ -174,7 +175,7 @@ type-check    - tsc --noEmit
 
 ### Known Issues and Workarounds
 
-1. **Bootstrap Script Fails**: `src/bootstrap.sh` uses `--experimental-strip-types` which requires Node.js v22+. Use `tsx` instead.
+1. **Node.js Version Requirement**: `src/bootstrap.sh` uses `--experimental-strip-types` which requires Node.js 22+. Use `tsx` as alternative for development with older Node.js versions.
 2. **No Tests**: Repository has no test files. Validation is limited to linting, type checking, and manual testing.
 3. **API Dependencies**: Most CLI functionality requires valid Nosto API credentials. Use `--dry-run` for testing without credentials.
 4. **Network Failures Expected**: Build commands will fail without valid API access - this is normal during development.
