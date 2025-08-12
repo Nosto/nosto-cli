@@ -50,7 +50,7 @@ After installing dependencies:
 - `npm run type-check` - Takes 2 seconds. Set timeout to 30+ seconds.
 
 ### Manual Functional Validation
-**CRITICAL: No automated tests exist. Manual validation is required.**
+**CRITICAL: Automated tests are in progress. Manual validation is required.**
 
 Create a test project and validate CLI functionality:
 ```bash
@@ -139,7 +139,7 @@ The CLI requires `.nosto.json` config file or environment variables:
 
 **GitHub Actions (.github/workflows/ci.yml):**
 - Runs on Node.js 22
-- Only includes linting and type checking (no tests)
+- Only includes linting and type checking (tests are in progress)
 - Triggered on pushes/PRs to main and develop branches
 
 **Pre-commit Hooks:**
@@ -176,7 +176,7 @@ type-check    - tsc --noEmit
 ### Known Issues and Workarounds
 
 1. **Node.js Version Requirement**: `src/bootstrap.sh` uses `--experimental-strip-types` which requires Node.js 22+. Use `tsx` as alternative for development with older Node.js versions.
-2. **No Tests**: Repository has no test files. Validation is limited to linting, type checking, and manual testing.
+2. **Tests In Progress**: Automated tests are being developed. Current validation is limited to linting, type checking, and manual testing.
 3. **API Dependencies**: Most CLI functionality requires valid Nosto API credentials. Use `--dry-run` for testing without credentials.
 4. **Network Failures Expected**: Build commands will fail without valid API access - this is normal during development.
 
