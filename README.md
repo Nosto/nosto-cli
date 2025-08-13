@@ -1,93 +1,289 @@
 # Nosto CLI Tool
 
-A command-line interface to interact with Nosto's backend systems. Primarily aimed at developers and power-users who aim to use more powerful desktop tools for search-template development and (in the future) other features.
+A command-line interface to interact with Nosto's backend systems. Primarily aimed at developers and power-users who aim to use more powerful desktop tools for search-template development and other features.
 
 <img width="862" alt="image" src="https://github.com/user-attachments/assets/d26869d2-cd03-4d04-a175-d544c45b99b1" />
 
-## Usage
+## Requirements
 
-Nosto CLI aims to be as user-friendly as CLI tools get. You should be able to get up and running by utilizing the built-in `help` and `setup` commands, but a quick-start guide is also provided here.
+- **Node.js 22+** - Required for `--experimental-strip-types` support used by the bootstrap script
+- For development with older Node.js versions, `tsx` can be used as an alternative
 
-### In the bright future
+## Installation
 
-- Install the CLI tool:
-  - `npm i @nosto/nosto-cli -g`
+### From Source (Current Method)
 
-- Invoke the tool on the project directory:
-  - `nosto status /path/to/project`
+1. Clone the repository:
+   ```bash
+   git clone git@github.com:Nosto/nosto-cli.git
+   ```
 
-- Alternatively, `cd` into the project directory and omit the path
-  - `cd /path/to/project && nosto status`
+2. Install dependencies:
+   ```bash
+   cd nosto-cli && npm ci
+   ```
 
-### In the current reality
+3. Link the tool globally:
+   ```bash
+   npm link
+   ```
 
-Before it's available on NPM, a few extra steps are needed
+4. Use the CLI:
+   ```bash
+   nosto --help
+   nosto status /path/to/project
+   ```
 
-- Checkout the repo
-  - `git clone git@github.com:Nosto/nosto-cli.git`
-- Install deps
-  - `cd nosto-cli && npm i`
-- Link the tool into npm
-  - `npm link`
-- Enjoy!
-  - `nosto status /path/to/project`
+### Alternative for Development (Any Node.js Version)
+
+If you don't have Node.js 22+, you can use `tsx` for development:
+
+1. Install tsx globally:
+   ```bash
+   npm install -g tsx
+   ```
+
+2. Run commands directly:
+   ```bash
+   tsx src/index.ts --help
+   tsx src/index.ts status /path/to/project
+   ```
+
+## Quick Start
+
+1. Navigate to your project directory or specify the path
+2. Run the setup command to get started:
+   ```bash
+   nosto setup [projectPath]
+   ```
+3. Follow the interactive prompts to create your configuration
+4. Check your configuration:
+   ```bash
+   nosto status
+   ```
 
 ## Configuration
 
-The recommended way to provide the configuration is via a config file in the project folder, named `.nosto.json`. Alternatively, environmental variables can be used. If both are present, environment takes precedence.
+The CLI can be configured using either a `.nosto.json` file in your project directory or environment variables. Environment variables take precedence over the configuration file.
 
-See output of `nosto setup` for the full list of options.
+Run `nosto setup` for an interactive configuration helper.
 
-### Required configuration
+### Required Configuration
 
-At the minimum, two options are required: Merchant ID and the API key. If you're targeting an environment other than production, API Url will also be required.
+#### API Key
+Your Nosto API_APPS token from the merchant admin settings.
+- **Config file:** `apiKey`
+- **Environment:** `NOSTO_API_KEY`
 
-#### Merchant ID:
+#### Merchant ID
+The public ID of your target merchant.
+- **Config file:** `merchant`
+- **Environment:** `NOSTO_MERCHANT`
 
-Public ID of the target merchant.
+### Optional Configuration
 
-- Property name in the config file: `merchant`
-- Property name in the env variable: `NOSTO_MERCHANT`
+#### API URL
+Base URL for the Nosto API.
+- **Config file:** `apiUrl`
+- **Environment:** `NOSTO_API_URL`
+- **Default:** `https://api.nosto.com`
+- **Staging:** `https://api.staging.nosto.com`
+- **Local:** `https://my.dev.nos.to/api`
 
-#### API Key:
+#### Templates Environment
+The templates environment to target.
+- **Config file:** `templatesEnv`
+- **Environment:** `NOSTO_TEMPLATES_ENV`
+- **Default:** `main`
 
-Your access key for the target merchant. Specifically, a Nosto API_APPS token that you can find in the merchant admin settings.
+#### Log Level
+Controls the verbosity of CLI output.
+- **Config file:** `logLevel`
+- **Environment:** `NOSTO_LOG_LEVEL`
+- **Options:** `debug`, `info`, `warn`, `error`
+- **Default:** `info`
 
-- Property name in the config file: `apiKey`
-- Property name in the env variable: `NOSTO_API_KEY`
+#### Max Requests
+Maximum number of concurrent API requests.
+- **Config file:** `maxRequests`
+- **Environment:** `NOSTO_MAX_REQUESTS`
+- **Default:** `15`
 
-#### API Url:
+### Example Configuration File
 
-By default, the CLI will try to contact `https://api.nosto.com` as the base URL.
+```json
+{
+  "apiKey": "your-api-apps-token",
+  "merchant": "your-merchant-id",
+  "templatesEnv": "main",
+  "apiUrl": "https://api.nosto.com",
+  "logLevel": "info",
+  "maxRequests": 15
+}
+```
 
-For staging, use: `https://api.staging.nosto.com`
-For local Playcart, use: `https://my.dev.nos.to/api`
+## File Handling
 
-- Property name in the config file: `apiUrl`
-- Property name in the env variable: `NOSTO_API_URL`
+### Excluded Files
+- Files starting with `.` (e.g., `.nosto.json`, `.gitignore`) are automatically excluded during push operations
+- The `build/` folder is excluded during pull operations to prevent overwriting local build artifacts
 
-## Excluded files
+### TypeScript Support
+The CLI runs TypeScript files directly using Node.js experimental features (`--experimental-strip-types`), eliminating the need for a traditional build step.
 
-At the moment, the CLI will push all files, excluding any that start with `.`. I.e. `.nosto.json` is excluded automatically.
+## Development
 
-During the pull, CLI downloads all files, except for the `build/` folder.
+### Prerequisites
+- Node.js 22+ (for the bootstrap script)
+- npm or equivalent package manager
 
-## Supported commands
+### Development Workflow
 
-You can use `nosto help` and variations to obtain detailed and up-to-date information on the current list of commands.
+1. **Setup:**
+   ```bash
+   git clone git@github.com:Nosto/nosto-cli.git
+   cd nosto-cli
+   npm ci
+   ```
 
-- `setup [projectPath]`
-  - Prints setup information and creates a placeholder config file if needed
-- `status [projectPath]`
-  - Reads the configuration and prints the general status
-- `st [projectPath]`
-  - Alias: `search-templates [projectPath]`
-  - Search templates related commands
-  - `st pull [projectPath]`
-    - Fetch the current state of VSCode Web for the configured merchant
+2. **Code Quality:**
+   ```bash
+   npm run lint        # ESLint checking
+   npm run type-check  # TypeScript type checking
+   ```
 
-## External dependencies
+3. **Testing:**
+   ```bash
+   # Manual testing (automated tests in progress)
+   npm link
+   nosto --help
+   
+   # Or with tsx for any Node.js version:
+   tsx src/index.ts --help
+   ```
 
-With the addition of local builds, the external dependencies are something that is theoretically possible. However, due to complexities of the legacy setup, external deps **will not be officially supported in the legacy templates**. We understand that this is something modern web development needs, and we are addressing that by our upcoming open source search-templates offering. Specifically, search-templates-starter, [search-js](https://github.com/nosto/search-js) and this very CLI tool.
+4. **Pre-commit Hooks:**
+   The project uses Husky for Git hooks and enforces conventional commits via commitlint.
 
-If you would still like to try your luck with introducing dependencies into a legacy app, we recommend you stick with only build-time dependencies like TypeScript that disappear at runtime. In that case, build your app as you would, and point the CLI's build to the output folder.
+### Architecture
+- **TypeScript-first:** Direct execution without build steps
+- **Modular design:** Organized into modules in `src/modules/`
+- **Configuration:** Zod-based schema validation in `src/config/`
+- **Error handling:** Centralized error handling with user-friendly messages
+- **API communication:** Built on `ky` with retry logic
+
+## Commands
+
+Use `nosto --help` or `nosto <command> --help` for detailed and up-to-date information.
+
+### Core Commands
+
+#### `setup [projectPath]`
+Interactive setup helper that prints configuration information and optionally creates a placeholder `.nosto.json` file.
+
+```bash
+nosto setup
+nosto setup /path/to/project
+```
+
+#### `status [projectPath]`
+Validates and displays the current configuration status.
+
+```bash
+nosto status
+nosto status /path/to/project
+```
+
+### Search Templates Commands
+
+All search template commands support the `st` alias or the full `search-templates` command name.
+
+#### `st build [projectPath]`
+Build search templates locally using esbuild.
+
+```bash
+nosto st build
+nosto st build --watch          # Watch for changes and rebuild
+nosto st build --dry-run        # Show what would be built without building
+nosto st build --verbose        # Enable debug logging
+```
+
+**Options:**
+- `--dry-run` - Perform a dry run without making changes
+- `--verbose` - Set log level to debug  
+- `-w, --watch` - Watch for file changes and rebuild automatically
+
+#### `st pull [projectPath]`
+Pull the current search templates source from Nosto VSCode Web.
+
+```bash
+nosto st pull
+nosto st pull --yes                           # Skip confirmation prompts
+nosto st pull --paths src/templates/main.ts  # Pull specific files only
+nosto st pull --dry-run                       # Show what would be pulled
+```
+
+**Options:**
+- `-p, --paths <files...>` - Specific file paths to fetch (space-separated)
+- `--dry-run` - Show what would be pulled without downloading
+- `--verbose` - Enable debug logging
+- `-y, --yes` - Skip confirmation prompts
+
+#### `st push [projectPath]`
+Build and push search templates to Nosto VSCode Web.
+
+```bash
+nosto st push
+nosto st push --yes                           # Skip confirmation prompts  
+nosto st push --paths src/templates/main.ts  # Push specific files only
+nosto st push --dry-run                       # Show what would be pushed
+```
+
+**Options:**
+- `-p, --paths <files...>` - Specific file paths to deploy (space-separated)
+- `--dry-run` - Show what would be pushed without uploading
+- `--verbose` - Enable debug logging
+- `-y, --yes` - Skip confirmation prompts
+
+#### `st dev [projectPath]`
+Development mode: build locally, watch for changes, and continuously upload to Nosto VSCode Web.
+
+```bash
+nosto st dev
+nosto st dev --yes      # Skip confirmation prompts
+nosto st dev --verbose  # Enable debug logging
+```
+
+**Options:**
+- `--dry-run` - Perform a dry run without making changes
+- `--verbose` - Enable debug logging
+- `-y, --yes` - Skip confirmation prompts
+
+### Global Options
+
+These options are available for most commands:
+- `--verbose` - Enable debug logging (equivalent to `--log-level debug`)
+- `--dry-run` - Show what would be done without making changes
+
+## External Dependencies
+
+### Legacy Templates
+Due to complexities in the legacy setup, external dependencies **are not officially supported in legacy templates**. If you need external dependencies, we recommend:
+
+1. Using only build-time dependencies (like TypeScript) that disappear at runtime
+2. Building your application separately and pointing the CLI to the output folder
+3. Migrating to our modern search-templates offering
+
+### Modern Search Templates
+For new projects, consider our open-source search-templates ecosystem:
+- **search-templates-starter** - Template for getting started
+- **[search-js](https://github.com/nosto/search-js)** - Modern search library
+- **This CLI tool** - For development and deployment
+
+The modern ecosystem fully supports external dependencies and modern web development practices.
+
+## Support
+
+- **Issues:** Report bugs and feature requests on [GitHub Issues](https://github.com/Nosto/nosto-cli/issues)
+- **Documentation:** Use `nosto --help` and `nosto <command> --help` for command-specific help
+- **Setup:** Use `nosto setup` for interactive configuration assistance
