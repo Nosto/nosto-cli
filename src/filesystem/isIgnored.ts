@@ -1,5 +1,5 @@
 import { Dirent } from "fs"
-import { getCachedConfig } from "../config/config.ts"
+import { getCachedConfig } from "#config/config.ts"
 import fs from "fs"
 import path from "path"
 import ignore from "ignore"

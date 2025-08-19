@@ -7,31 +7,38 @@
   },
   "author": "Nosto",
   "type": "module",
+  "imports": { 
+    "#*": "./src/*"
+  },
   "license": "ISC",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "description": "",
   "scripts": {
     "lint": "eslint",
-    "prepare": "husky"
+    "prepare": "husky",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "chalk": "^5.4.1",
+    "chalk": "^5.5.0",
     "commander": "^14.0.0",
-    "esbuild": "^0.25.5",
+    "esbuild": "^0.25.8",
     "ignore": "^7.0.5",
-    "ky": "^1.8.1",
-    "preact": "^10.26.9",
-    "zod": "^3.25.61"
+    "ky": "^1.8.2",
+    "preact": "^10.27.0",
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
-    "@eslint/js": "^9.28.0",
-    "@types/node": "^24.0.0",
-    "eslint": "^9.28.0",
-    "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-prettier": "^5.4.1",
+    "@eslint/js": "^9.33.0",
+    "@types/node": "^24.2.1",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
     "husky": "^9.1.7",
-    "prettier": "^3.5.3",
-    "typescript-eslint": "^8.34.0"
+    "prettier": "^3.6.2",
+    "typescript-eslint": "^8.39.0"
   }
 }

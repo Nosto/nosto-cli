@@ -1,7 +1,7 @@
-import { Logger } from "../../console/logger.ts"
+import { Logger } from "#console/logger.ts"
 import chalk from "chalk"
-import { getBuildContext } from "../../filesystem/esbuild.ts"
-import { pushOnRebuildPlugin } from "../../filesystem/plugins.ts"
+import { getBuildContext } from "#filesystem/esbuild.ts"
+import { pushOnRebuildPlugin } from "#filesystem/plugins.ts"
 
 export async function searchTemplateDevMode() {
   Logger.info(`Watching for changes. ${chalk.yellow("Press Ctrl+C to stop")}`)

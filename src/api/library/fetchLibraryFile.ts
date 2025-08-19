@@ -1,7 +1,7 @@
 import ky from "ky"
 import z from "zod"
 import { cleanUrl, getJsonHeaders } from "../utils.ts"
-import { getCachedConfig } from "../../config/config.ts"
+import { getCachedConfig } from "#config/config.ts"
 
 const FetchSourceFileSchema = z.string()
 

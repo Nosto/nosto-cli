@@ -9,7 +9,11 @@
     "forceConsistentCasingInFileNames": true,
     "allowImportingTsExtensions": true,
     "rootDir": "src",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "#*": ["src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
