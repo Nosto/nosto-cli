@@ -63,7 +63,7 @@ export function pushOnRebuildPlugin(): esbuild.Plugin {
         const files = fs.readdirSync(buildPath)
         const paths = files.map(file => path.relative(projectPath, path.resolve(buildPath, file)))
 
-        pushSearchTemplate({ paths })
+        pushSearchTemplate({ paths, force: false })
       })
     }
   }
