@@ -2,13 +2,11 @@ import { program } from "commander"
 import { pullSearchTemplate } from "#modules/search-templates/pull.ts"
 import { pushSearchTemplate } from "#modules/search-templates/push.ts"
 import { printStatus } from "#modules/status.ts"
-import { loadConfig } from "#config/config.ts"
 import { printSetupHelp } from "#modules/setup.ts"
 import { withErrorHandler } from "#errors/withErrorHandler.ts"
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
 import { searchTemplateDevMode } from "#modules/search-templates/dev.ts"
-import { assertGitRepo } from "#filesystem/assertGitRepo.ts"
-import { assertNostoTemplate } from "#filesystem/assertNostoTemplate.ts"
+import { withSafeEnvironment } from "#utils/withSafeEnvironment.ts"
 
 program.name("nostocli").version("1.0.0").description("Nosto CLI tool. Use `nostocli setup` to get started.")
 
@@ -38,10 +36,7 @@ searchTemplates
   .option("--verbose", "set log level to debug")
   .option("-w, --watch", "watch for changes and rebuild")
   .action((projectPath = ".", options) => {
-    withErrorHandler(async () => {
-      loadConfig({ projectPath, options })
-      assertNostoTemplate()
-      assertGitRepo()
+    withSafeEnvironment({ projectPath, options }, async () => {
       await buildSearchTemplate({ watch: options.watch ?? false })
     })
   })
@@ -54,10 +49,7 @@ searchTemplates
   .option("--verbose", "set log level to debug")
   .option("-y, --yes", "skip confirmation")
   .action((projectPath = ".", options) => {
-    withErrorHandler(async () => {
-      loadConfig({ projectPath, options })
-      assertNostoTemplate()
-      assertGitRepo()
+    withSafeEnvironment({ projectPath, options }, async () => {
       await pullSearchTemplate({
         paths: options.paths ?? [],
         skipConfirmation: options.yes ?? false
@@ -73,10 +65,7 @@ searchTemplates
   .option("--verbose", "set log level to debug")
   .option("-y, --yes", "skip confirmation")
   .action((projectPath = ".", options) => {
-    withErrorHandler(async () => {
-      loadConfig({ projectPath, options })
-      assertNostoTemplate()
-      assertGitRepo()
+    withSafeEnvironment({ projectPath, options }, async () => {
       await buildSearchTemplate({ watch: false })
       await pushSearchTemplate({
         paths: options.paths ?? []
@@ -90,10 +79,7 @@ searchTemplates
   .option("--dry-run", "perform a dry run without making changes")
   .option("--verbose", "set log level to debug")
   .action((projectPath = ".", options) => {
-    withErrorHandler(async () => {
-      loadConfig({ projectPath, options })
-      assertNostoTemplate()
-      assertGitRepo()
+    withSafeEnvironment({ projectPath, options }, async () => {
       await searchTemplateDevMode()
     })
   })

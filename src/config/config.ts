@@ -12,12 +12,12 @@ let cachedConfig: Config = {
   ...RuntimeConfigSchema.parse({})
 }
 
-type Props = {
+export type LoadConfigProps = {
   projectPath: string
   options: object
 }
 
-export function loadConfig({ projectPath, options }: Props) {
+export function loadConfig({ projectPath, options }: LoadConfigProps) {
   const { dryRun, verbose } = RuntimeConfigSchema.parse({ ...options, projectPath })
 
   if (isConfigLoaded) {
