@@ -1,4 +1,4 @@
-import fs from "fs"
+import * as fs from "fs"
 import path from "path"
 import { listSourceFiles } from "#api/source/listSourceFiles.ts"
 import { fetchSourceFile } from "#api/source/fetchSourceFile.ts"

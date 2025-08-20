@@ -8,11 +8,11 @@
     "noEmit": true,
     "forceConsistentCasingInFileNames": true,
     "allowImportingTsExtensions": true,
-    "rootDir": "src",
+    "rootDir": ".",
     "resolveJsonModule": true,
-    "baseUrl": ".",
     "paths": {
-      "#*": ["src/*"]
+      "#*": ["./src/*"],
+      "#test/*": ["./test/*"]
     }
   },
   "include": ["src/**/*", "test/**/*", "vitest.config.ts"],

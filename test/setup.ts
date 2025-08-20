@@ -1,37 +1,34 @@
-// Test setup file for global mocks and configurations
+import mockFilesystem from "mock-fs"
+import { afterAll, afterEach, beforeAll, beforeEach } from "vitest"
+import { setupServer } from "msw/node"
 import { vi } from "vitest"
+import { mockedConsoleIn, mockedConsoleOut } from "./utils/consoleMocks.ts"
 
-// Mock fs module
-vi.mock("fs", () => ({
-  default: {
-    existsSync: vi.fn(),
-    mkdirSync: vi.fn(),
-    writeFileSync: vi.fn(),
-    readFileSync: vi.fn(),
-    readdirSync: vi.fn(),
-    statSync: vi.fn()
-  },
-  existsSync: vi.fn(),
-  mkdirSync: vi.fn(),
-  writeFileSync: vi.fn(),
-  readFileSync: vi.fn(),
-  readdirSync: vi.fn(),
-  statSync: vi.fn()
-}))
+vi.mock("readline/promises", () => {
+  return {
+    createInterface: () => mockedConsoleIn.interface
+  }
+})
+vi.mock("#console/logger.ts", () => mockedConsoleOut)
 
-// Mock process.env
-vi.mock("process", () => ({
-  env: {},
-  cwd: vi.fn(() => "/test"),
-  exit: vi.fn()
-}))
+export const setupTestServer = () => {
+  const server = setupServer()
+  beforeAll(() => server.listen())
+  afterEach(() => {
+    server.resetHandlers()
+  })
+  afterAll(() => server.close())
 
-// Mock console methods to avoid noise in tests
-global.console = {
-  ...console,
-  log: vi.fn(),
-  info: vi.fn(),
-  warn: vi.fn(),
-  error: vi.fn(),
-  debug: vi.fn()
+  return server
 }
+
+beforeEach(() => {
+  mockFilesystem({
+    "/": {}
+  })
+  process.chdir("/")
+})
+
+afterAll(() => {
+  mockFilesystem.restore()
+})

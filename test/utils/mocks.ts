@@ -1,4 +1,7 @@
-import { vi } from "vitest"
+import { expect, vi } from "vitest"
+import * as fs from "fs"
+import { Config } from "#config/schema.ts"
+import * as config from "#config/config.ts"
 
 /**
  * Common mock utilities used across test files
@@ -11,7 +14,7 @@ export const createLoggerMock = () => ({
   debug: vi.fn()
 })
 
-export const createConfigMock = (overrides: Record<string, unknown> = {}) => ({
+export const createConfigMock = (overrides: Partial<Config> = {}) => ({
   apiKey: "test-api-key",
   merchant: "test-merchant",
   templatesEnv: "main",
@@ -22,15 +25,68 @@ export const createConfigMock = (overrides: Record<string, unknown> = {}) => ({
   ...overrides
 })
 
-export const createFilesystemMock = () => ({
-  existsSync: vi.fn(),
-  statSync: vi.fn(),
-  readFileSync: vi.fn(),
-  readdirSync: vi.fn(),
-  mkdirSync: vi.fn(),
-  writeFileSync: vi.fn()
-})
-
 export const createUserPromptMock = () => ({
   promptForConfirmation: vi.fn()
 })
+
+export function mockFilesystem() {
+  return {
+    workingDirectory: "/test/root",
+    createFile: (path: string, content: string) => {
+      fs.writeFileSync(path, content)
+    },
+    expectFile: (path: string) => makeFileMatcher(path)
+  }
+}
+
+export function makeFileMatcher(path: string) {
+  return {
+    toHaveContent: (expectedContent: string) => {
+      const content = fs.readFileSync(path, "utf8")
+      expect(content, `File ${path} has content ${content}`).toEqual(expectedContent)
+    },
+    toExist: () => {
+      return expect(fs.existsSync(path), `File ${path} does not exist when it was expected to`).toBe(true)
+    },
+    not: {
+      toHaveContent: (expectedContent: string) => {
+        const content = fs.readFileSync(path, "utf8")
+        expect(content, `File ${path} has content ${content}`).not.toEqual(expectedContent)
+      },
+      toExist: () => {
+        return expect(fs.existsSync(path), `File ${path} exists when it was not expected to`).toBe(false)
+      }
+    }
+  }
+}
+
+export function mockConfig(overrides: Partial<Config> = {}) {
+  vi.spyOn(config, "getCachedConfig").mockReturnValue({
+    apiKey: "test-api-key",
+    merchant: "test-merchant",
+    templatesEnv: "main",
+    apiUrl: "https://api.nosto.com",
+    logLevel: "info",
+    maxRequests: 15,
+    projectPath: ".",
+    libraryUrl: "https://library.nosto.com",
+    dryRun: false,
+    verbose: false,
+    ...overrides
+  })
+}
+
+export function resetConfigMock() {
+  vi.spyOn(config, "getCachedConfig").mockReturnValue({
+    apiKey: "test-api-key",
+    merchant: "test-merchant",
+    templatesEnv: "main",
+    apiUrl: "https://api.nosto.com",
+    logLevel: "info",
+    maxRequests: 15,
+    projectPath: "/",
+    libraryUrl: "https://library.nosto.com",
+    dryRun: false,
+    verbose: false
+  })
+}

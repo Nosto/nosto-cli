@@ -1,6 +1,12 @@
+import path from "path"
 import { defineConfig } from "vitest/config"
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "#test": path.resolve(import.meta.dirname, "test")
+    }
+  },
   test: {
     globals: true,
     environment: "node",

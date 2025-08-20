@@ -5,7 +5,6 @@ describe("Env Config", () => {
   const originalEnv = process.env
 
   beforeEach(() => {
-    vi.resetModules()
     process.env = {}
   })
 
