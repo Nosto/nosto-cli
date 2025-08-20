@@ -10,6 +10,7 @@ export type MockParams<ResponseT extends DefaultBodyType> =
   | {
       error: { status: number; message: string }
     }
+  | {}  // For void responses
 
 export const generateEndpointMock = (
   server: SetupServer,

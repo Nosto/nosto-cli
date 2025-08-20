@@ -33,6 +33,15 @@ export function mockFilesystem() {
   return {
     workingDirectory: "/test/root",
     createFile: (path: string, content: string) => {
+      // Ensure parent directory exists
+      const dir = path.substring(0, path.lastIndexOf('/'))
+      if (dir) {
+        try {
+          fs.mkdirSync(dir, { recursive: true })
+        } catch (err) {
+          // Directory might already exist
+        }
+      }
       fs.writeFileSync(path, content)
     },
     expectFile: (path: string) => makeFileMatcher(path)

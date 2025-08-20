@@ -32,6 +32,9 @@ export function mockConsole() {
     setUserResponse: (response: string) => {
       handle.userResponse = response
     },
+    clearPrompts: () => {
+      handle.recordedPrompts = []
+    },
     expect: {
       user: {
         toHaveBeenPromptedWith: (prompt: string) => {

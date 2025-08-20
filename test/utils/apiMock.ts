@@ -3,6 +3,7 @@ import { generateEndpointMock, MockParams } from "./generateEndpointMock.ts"
 import { listSourceFiles } from "#api/source/listSourceFiles.ts"
 import { getSourceUrl } from "#api/utils.ts"
 import { fetchSourceFile } from "#api/source/fetchSourceFile.ts"
+import { putSourceFile } from "#api/source/putSourceFile.ts"
 
 export function mockListSourceFiles(
   server: SetupServer,
@@ -23,5 +24,20 @@ export function mockFetchSourceFile(
     ...params,
     method: "get",
     path: getSourceUrl(`source/{env}/${params.path}`)
+  })
+}
+
+export function mockPutSourceFile(
+  server: SetupServer,
+  params: { path: string } & (
+    | {}
+    | { error: { status: number; message: string } }
+  )
+) {
+  const { path: filePath, ...mockParams } = params
+  return generateEndpointMock(server, {
+    method: "put",
+    path: getSourceUrl(`source/{env}/${filePath}`),
+    ...mockParams
   })
 }
