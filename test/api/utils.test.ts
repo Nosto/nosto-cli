@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest"
-import { cleanUrl } from "../../src/api/utils.ts"
+import { cleanUrl } from "#api/utils.ts"
 
 describe("API Utils", () => {
   describe("cleanUrl", () => {

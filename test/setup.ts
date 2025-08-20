@@ -9,7 +9,7 @@ vi.mock("readline/promises", () => {
     createInterface: () => mockedConsoleIn.interface
   }
 })
-vi.mock("#console/logger.ts", () => mockedConsoleOut)
+vi.mock("#/console/logger.ts", () => mockedConsoleOut)
 
 export const setupTestServer = () => {
   const server = setupServer()

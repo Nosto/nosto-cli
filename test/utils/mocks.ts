@@ -34,13 +34,12 @@ export function mockFilesystem() {
     workingDirectory: "/test/root",
     createFile: (path: string, content: string) => {
       // Ensure parent directory exists
-      const dir = path.substring(0, path.lastIndexOf('/'))
-      if (dir) {
-        try {
-          fs.mkdirSync(dir, { recursive: true })
-        } catch (err) {
-          // Directory might already exist
-        }
+      const dir = path.substring(0, path.lastIndexOf("/"))
+      if (dir && !fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true })
+      }
+      if (fs.existsSync(path)) {
+        fs.unlinkSync(path)
       }
       fs.writeFileSync(path, content)
     },

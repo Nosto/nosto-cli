@@ -29,10 +29,7 @@ export function mockFetchSourceFile(
 
 export function mockPutSourceFile(
   server: SetupServer,
-  params: { path: string } & (
-    | {}
-    | { error: { status: number; message: string } }
-  )
+  params: { path: string } & MockParams<Awaited<ReturnType<typeof putSourceFile>>>
 ) {
   const { path: filePath, ...mockParams } = params
   return generateEndpointMock(server, {

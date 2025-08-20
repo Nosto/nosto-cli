@@ -15,7 +15,9 @@ export const mockedConsoleIn = {
 export const mockedConsoleOut = {
   Logger: {
     context: {
-      logLevel: "debug"
+      logLevel: "info",
+      merchantId: "",
+      isDryRun: false
     },
     raw: vi.fn(),
     debug: vi.fn(),
@@ -38,7 +40,14 @@ export function mockConsole() {
     expect: {
       user: {
         toHaveBeenPromptedWith: (prompt: string) => {
-          expect(handle.recordedPrompts.map(p => p.trim())).toContain(prompt.trim())
+          expect(
+            handle.recordedPrompts.map(p => p.trim()),
+            "No matching prompt found.\nExpected:\n" +
+              prompt +
+              "\nGot: \n" +
+              handle.recordedPrompts.map(p => p.trim()).join("\n") +
+              "\n\n"
+          ).toContain(prompt.trim())
         }
       }
     }

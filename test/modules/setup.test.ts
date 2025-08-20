@@ -1,12 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { printSetupHelp } from "#modules/setup.ts"
-import { setupTestServer } from "#test/setup.ts"
 import { mockConfig, mockFilesystem } from "#test/utils/mocks.ts"
 import { mockConsole } from "#test/utils/consoleMocks.ts"
 import path from "path"
 
 const fs = mockFilesystem()
-const server = setupTestServer()
 const terminal = mockConsole()
 
 describe("Setup Module", () => {

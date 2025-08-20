@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
-import { fetchWithRetry } from "../../src/api/retry.ts"
-import { Logger } from "../../src/console/logger.ts"
+import { fetchWithRetry } from "#api/retry.ts"
+import { Logger } from "#console/logger.ts"
 
 describe("API Retry", () => {
   let loggerErrorSpy: ReturnType<typeof vi.spyOn>
@@ -54,9 +54,13 @@ describe("API Retry", () => {
       const retryPromise = fetchWithRetry(mockApiFunction, "test-file.txt")
 
       // Fast forward through all retry delays
+      const assertion = expect(retryPromise).rejects.toThrow(
+        "Failed to fetch test-file.txt after 3 retries: Persistent failure"
+      )
       await vi.runAllTimersAsync()
 
-      await expect(retryPromise).rejects.toThrow("Failed to fetch test-file.txt after 3 retries: Persistent failure")
+      await assertion
+
       expect(mockApiFunction).toHaveBeenCalledTimes(4) // Initial + 3 retries
     })
 
@@ -80,10 +84,10 @@ describe("API Retry", () => {
 
       const retryPromise = fetchWithRetry(mockApiFunction, "test-file.txt")
 
-      // Fast forward through all retry delays
+      const assertion = expect(retryPromise).rejects.toThrow()
       await vi.runAllTimersAsync()
 
-      await expect(retryPromise).rejects.toThrow()
+      await assertion
 
       expect(loggerErrorSpy).toHaveBeenCalledWith(expect.stringContaining("test-file.txt: Final error"))
     })
@@ -93,9 +97,11 @@ describe("API Retry", () => {
 
       const retryPromise = fetchWithRetry(mockApiFunction, "test-file.txt")
 
+      const assertion = expect(retryPromise).rejects.toThrow(
+        "Failed to fetch test-file.txt after 3 retries: String error"
+      )
       await vi.runAllTimersAsync()
-
-      await expect(retryPromise).rejects.toThrow("Failed to fetch test-file.txt after 3 retries: String error")
+      await assertion
     })
   })
 })

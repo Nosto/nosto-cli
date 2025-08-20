@@ -1,36 +1,26 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { searchTemplateDevMode } from "#modules/search-templates/dev.ts"
-import { setupTestServer } from "#test/setup.ts"
-import { mockConfig, mockFilesystem } from "#test/utils/mocks.ts"
+import * as esbuild from "#filesystem/esbuild.ts"
 import { mockConsole } from "#test/utils/consoleMocks.ts"
+import { mockConfig } from "#test/utils/mocks.ts"
 
-const fs = mockFilesystem()
-const server = setupTestServer()
 const terminal = mockConsole()
 
-// Mock the esbuild context
 const mockContext = {
   watch: vi.fn(),
   dispose: vi.fn()
 }
-
-vi.mock("#filesystem/esbuild.ts", () => ({
-  getBuildContext: vi.fn(() => Promise.resolve(mockContext))
-}))
-
-vi.mock("#filesystem/plugins.ts", () => ({
-  pushOnRebuildPlugin: vi.fn(() => ({ name: "push-on-rebuild" }))
-}))
 
 describe("Search Template Dev Mode", () => {
   beforeEach(() => {
     vi.restoreAllMocks()
     terminal.clearPrompts()
     mockConfig({
-      merchant: "test-merchant",
-      templatesEnv: "main",
-      apiUrl: "https://api.nosto.com"
+      merchant: "test-merchant"
     })
+    vi.spyOn(esbuild, "getBuildContext").mockReturnValue(
+      mockContext as unknown as ReturnType<typeof esbuild.getBuildContext>
+    )
   })
 
   describe("searchTemplateDevMode", () => {
@@ -39,7 +29,9 @@ describe("Search Template Dev Mode", () => {
 
       await searchTemplateDevMode({ skipConfirmation: false })
 
-      terminal.expect.user.toHaveBeenPromptedWith("Dev mode will continuously build and upload files to merchant test-merchant's main environment at https://api.nosto.com.\nContinue? (y/N):")
+      terminal.expect.user.toHaveBeenPromptedWith(
+        "Dev mode will continuously build and upload files to merchant test-merchant's main environment at https://api.nosto.com.\nContinue? (y/N):"
+      )
     })
 
     it("should cancel operation when user declines", async () => {
@@ -51,13 +43,13 @@ describe("Search Template Dev Mode", () => {
     })
 
     it("should start watching when confirmed", async () => {
-      const { getBuildContext } = await import("#filesystem/esbuild.ts")
+      const getBuildContext = vi.spyOn(esbuild, "getBuildContext")
 
       terminal.setUserResponse("Y")
 
       await searchTemplateDevMode({ skipConfirmation: false })
 
-      expect(getBuildContext).toHaveBeenCalledWith({ plugins: [{ name: "push-on-rebuild" }] })
+      expect(getBuildContext).toHaveBeenCalledWith({ plugins: [expect.objectContaining({ name: "push-on-rebuild" })] })
       expect(mockContext.watch).toHaveBeenCalled()
     })
 

@@ -3,14 +3,11 @@ import type { SetupServer } from "msw/node"
 
 type HttpMethod = keyof typeof http
 
-export type MockParams<ResponseT extends DefaultBodyType> =
-  | {
-      response: ResponseT
-    }
+export type MockParams<ResponseT extends DefaultBodyType | void> =
+  | (ResponseT extends void ? object : { response: ResponseT })
   | {
       error: { status: number; message: string }
     }
-  | {}  // For void responses
 
 export const generateEndpointMock = (
   server: SetupServer,
