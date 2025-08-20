@@ -47,12 +47,13 @@ searchTemplates
   .option("-p, --paths <files...>", "specific file paths to fetch (space-separated list)")
   .option("--dry-run", "perform a dry run without making changes")
   .option("--verbose", "set log level to debug")
+  .option("-f --force", "skip checking state, pull all files")
   .option("-y, --yes", "skip confirmation")
   .action((projectPath = ".", options) => {
     withSafeEnvironment({ projectPath, options }, async () => {
       await pullSearchTemplate({
         paths: options.paths ?? [],
-        skipConfirmation: options.yes ?? false
+        force: options.force ?? false
       })
     })
   })
@@ -63,12 +64,14 @@ searchTemplates
   .option("-p, --paths <files...>", "specific file paths to deploy (space-separated list)")
   .option("--dry-run", "perform a dry run without making changes")
   .option("--verbose", "set log level to debug")
+  .option("-f --force", "skip checking state, push all files")
   .option("-y, --yes", "skip confirmation")
   .action((projectPath = ".", options) => {
     withSafeEnvironment({ projectPath, options }, async () => {
       await buildSearchTemplate({ watch: false })
       await pushSearchTemplate({
-        paths: options.paths ?? []
+        paths: options.paths ?? [],
+        force: options.force ?? false
       })
     })
   })

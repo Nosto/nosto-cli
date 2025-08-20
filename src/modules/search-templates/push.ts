@@ -16,13 +16,15 @@ const INITIAL_RETRY_DELAY = 1000 // 1 second
 type PushSearchTemplateOptions = {
   // Filter to only push these files. Ignored if empty.
   paths: string[]
+  // Skip checking the hash and push all files.
+  force: boolean
 }
 
 /**
  * Deploys templates to the specified target path.
  * Processes files in parallel with controlled concurrency and retry logic.
  */
-export async function pushSearchTemplate({ paths }: PushSearchTemplateOptions) {
+export async function pushSearchTemplate({ paths, force }: PushSearchTemplateOptions) {
   const { projectPath } = getCachedConfig()
   const targetFolder = path.resolve(projectPath)
 
@@ -39,7 +41,7 @@ export async function pushSearchTemplate({ paths }: PushSearchTemplateOptions) {
   // If the local and remote hashes match, assume the content matches as well
   const localHash = calculateTreeHash()
   const remoteHash = await fetchSourceFileIfExists("build/hash")
-  if (localHash === remoteHash) {
+  if (localHash === remoteHash && !force) {
     Logger.success("Remote template is already up to date.")
     writeFile(path.join(targetFolder, ".nostocache/hash"), localHash)
     return

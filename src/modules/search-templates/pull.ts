@@ -14,22 +14,22 @@ import { processInBatches } from "#filesystem/processInBatches.ts"
 type PullSearchTemplateOptions = {
   // Filter to only pull these files. Ignored if empty.
   paths: string[]
-  // Skip the "files will be overridden" warning.
-  skipConfirmation: boolean
+  // Skip checking the hash and pull all files.
+  force: boolean
 }
 
 /**
  * Fetches the current templates to the specified target path.
  * Processes files in parallel with controlled concurrency and retry logic.
  */
-export async function pullSearchTemplate({ paths, skipConfirmation }: PullSearchTemplateOptions) {
+export async function pullSearchTemplate({ paths, force }: PullSearchTemplateOptions) {
   const { projectPath, dryRun } = getCachedConfig()
   const targetFolder = path.resolve(projectPath)
 
   // If the local and remote hashes match, assume the content matches as well
   const localHash = calculateTreeHash()
   const remoteHash = await fetchSourceFileIfExists("build/hash")
-  if (localHash === remoteHash) {
+  if (localHash === remoteHash && !force) {
     Logger.success("Local template is already up to date.")
     writeFile(path.join(targetFolder, ".nostocache/hash"), localHash)
     return
@@ -49,7 +49,7 @@ export async function pullSearchTemplate({ paths, skipConfirmation }: PullSearch
   })
 
   // Just for safety, show a warning if the user is about to override files.
-  if (filesToOverride.length > 0 && !skipConfirmation) {
+  if (filesToOverride.length > 0 && !force) {
     Logger.warn(`${chalk.cyan(filesToOverride.length)} files will be overridden:`)
 
     // Show first 10 files that will be overridden
