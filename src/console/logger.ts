@@ -22,6 +22,12 @@ const Presets = {
     logger: console.info,
     logLevel: 1
   },
+  success: {
+    color: chalk.green,
+    prefix: chalk.green("[SUCCESS] "),
+    logger: console.info,
+    logLevel: 1
+  },
   warn: {
     color: chalk.yellow,
     prefix: chalk.yellow("[WARN] "),
@@ -70,6 +76,10 @@ export const Logger = {
 
   info: (message: string, extra?: unknown) => {
     printToLog(message, Presets.info, extra)
+  },
+
+  success: (message: string, extra?: unknown) => {
+    printToLog(message, Presets.success, extra)
   },
 
   warn: (message: string, extra?: unknown) => {
