@@ -1,38 +1,43 @@
 import fs from "fs"
 import path from "path"
 import { listSourceFiles } from "#api/source/listSourceFiles.ts"
-import { fetchSourceFile } from "#api/source/fetchSourceFile.ts"
+import { fetchSourceFile, fetchSourceFileIfExists } from "#api/source/fetchSourceFile.ts"
 import { Logger } from "#console/logger.ts"
 import chalk from "chalk"
 import { getCachedConfig } from "#config/config.ts"
 import { promptForConfirmation } from "#console/userPrompt.ts"
 import { writeFile } from "#filesystem/filesystem.ts"
 import { fetchWithRetry } from "#api/retry.ts"
-
-let filesFetched = 0
-let totalFilesToFetch = 0
+import { calculateTreeHash } from "#filesystem/calculateTreeHash.ts"
+import { processInBatches } from "#filesystem/processInBatches.ts"
 
 type PullSearchTemplateOptions = {
+  // Filter to only pull these files. Ignored if empty.
   paths: string[]
-  skipConfirmation: boolean
+  // Skip checking the hash and pull all files.
+  force: boolean
 }
 
 /**
  * Fetches the current templates to the specified target path.
  * Processes files in parallel with controlled concurrency and retry logic.
  */
-export async function pullSearchTemplate(options: PullSearchTemplateOptions) {
-  const { projectPath } = getCachedConfig()
+export async function pullSearchTemplate({ paths, force }: PullSearchTemplateOptions) {
+  const { projectPath, dryRun } = getCachedConfig()
   const targetFolder = path.resolve(projectPath)
-  Logger.info(`Fetching templates to: ${chalk.cyan(targetFolder)}`)
-  if (!fs.existsSync(targetFolder)) {
-    throw new Error(`Target folder does not exist: ${chalk.cyan(targetFolder)}`)
-  }
-  if (!fs.statSync(targetFolder).isDirectory()) {
-    throw new Error(`Target path is not a directory: ${chalk.cyan(targetFolder)}`)
+
+  // If the local and remote hashes match, assume the content matches as well
+  const localHash = calculateTreeHash()
+  const remoteHash = await fetchSourceFileIfExists("build/hash")
+  if (localHash === remoteHash && !force) {
+    Logger.success("Local template is already up to date.")
+    writeFile(path.join(targetFolder, ".nostocache/hash"), localHash)
+    return
   }
 
-  const { paths, skipConfirmation } = options
+  Logger.info(`Fetching templates to: ${chalk.cyan(targetFolder)}`)
+
+  // Fetch the remote file list (filtered by paths if provided)
   const baseFiles = await listSourceFiles()
   const files = baseFiles.filter(file => paths.length === 0 || paths.includes(file.path))
   Logger.info(`Found ${chalk.cyan(files.length)} source files to fetch.`)
@@ -43,7 +48,8 @@ export async function pullSearchTemplate(options: PullSearchTemplateOptions) {
     return fs.existsSync(targetFilePath)
   })
 
-  if (filesToOverride.length > 0 && !skipConfirmation) {
+  // Just for safety, show a warning if the user is about to override files.
+  if (filesToOverride.length > 0 && !force) {
     Logger.warn(`${chalk.cyan(filesToOverride.length)} files will be overridden:`)
 
     // Show first 10 files that will be overridden
@@ -51,11 +57,11 @@ export async function pullSearchTemplate(options: PullSearchTemplateOptions) {
     previewFiles.forEach(file => {
       Logger.warn(`${chalk.yellow("•")} ${chalk.cyan(file.path)}`)
     })
-
     if (filesToOverride.length > 10) {
       Logger.warn(`${chalk.yellow("...")} and ${chalk.cyan(filesToOverride.length - 10)} more`)
     }
 
+    // Ask for confirmation
     const confirmed = await promptForConfirmation(`Are you sure you want to override your local data?`, "N")
     if (!confirmed) {
       Logger.info("Operation cancelled by user")
@@ -63,36 +69,19 @@ export async function pullSearchTemplate(options: PullSearchTemplateOptions) {
     }
   }
 
-  const batchSize = getCachedConfig().maxRequests
-  const batches = []
-  filesFetched = 0
-  totalFilesToFetch = files.length
-  for (let i = 0; i < files.length; i += batchSize) {
-    batches.push(files.slice(i, i + batchSize))
-  }
-
-  for (let i = 0; i < batches.length; i++) {
-    const batch = batches[i]
-    await processBatch(batch, targetFolder)
-  }
-}
-
-async function processBatch(files: { path: string }[], targetFolder: string): Promise<void> {
-  const batchPromises = files.map(async file => {
-    const filePath = file.path
-
-    const data = await fetchWithRetry(fetchSourceFile, filePath)
-    filesFetched += 1
-    Logger.info(`${chalk.green("✓")} [${filesFetched}/${totalFilesToFetch}] ${chalk.blue("↓")} ${chalk.cyan(filePath)}`)
-    const pathToWrite = path.join(targetFolder, filePath)
-
-    writeFile(pathToWrite, data)
+  // Pull the files into batches to avoid overwhelming the API (relevant mostly for local dev)
+  processInBatches({
+    files: files.map(file => file.path),
+    logIcon: chalk.blue("↓"),
+    processElement: async filePath => {
+      const data = await fetchWithRetry(fetchSourceFile, filePath)
+      const pathToWrite = path.join(targetFolder, filePath)
+      writeFile(pathToWrite, data)
+    }
   })
 
-  const results = await Promise.allSettled(batchPromises)
-  const failures = results.filter((result): result is PromiseRejectedResult => result.status === "rejected")
-
-  if (failures.length > 0) {
-    Logger.warn(`Batch completed with ${failures.length} failures`)
+  // Write the hash
+  if (!dryRun && fs.existsSync(path.join(targetFolder, "build/hash"))) {
+    fs.copyFileSync(path.join(targetFolder, "build/hash"), path.join(targetFolder, ".nostocache/hash"))
   }
 }

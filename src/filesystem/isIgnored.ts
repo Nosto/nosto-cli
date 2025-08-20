@@ -7,21 +7,27 @@ import type { Ignore } from "ignore"
 
 export function isIgnored(dirent: Dirent): boolean {
   const { projectPath } = getCachedConfig()
+  const absoluteProjectPath = path.resolve(projectPath)
+  const relativePath = dirent.parentPath
+    ? path.relative(absoluteProjectPath, path.join(dirent.parentPath, dirent.name))
+    : dirent.name
+
+  if (
+    dirent.parentPath.startsWith(path.join(projectPath, "build")) ||
+    dirent.parentPath.startsWith(path.join(absoluteProjectPath, "build"))
+  ) {
+    return false
+  }
 
   const parentPathSections = dirent.parentPath.split("/")
   if (
     !dirent.isFile() ||
     dirent.name.startsWith(".") ||
     dirent.name.includes("node_modules") ||
-    parentPathSections.some(section => section.startsWith("."))
+    parentPathSections.some(section => section !== "." && section.startsWith("."))
   ) {
     return true
   }
-
-  const absoluteProjectPath = path.resolve(projectPath)
-  const relativePath = dirent.parentPath
-    ? path.relative(absoluteProjectPath, path.join(dirent.parentPath, dirent.name))
-    : dirent.name
 
   return getIgnoreInstance().ignores(relativePath)
 }

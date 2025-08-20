@@ -11,3 +11,22 @@ export async function fetchSourceFile(path: string) {
   const data = FetchSourceFileSchema.parse(await response.text())
   return data
 }
+
+const KyErrorSchema = z.object({
+  response: z.object({
+    status: z.number(),
+    statusText: z.string()
+  })
+})
+
+export async function fetchSourceFileIfExists(path: string) {
+  try {
+    return await fetchSourceFile(path)
+  } catch (error) {
+    const parsedError = KyErrorSchema.safeParse(error)
+    if (parsedError.success && parsedError.data.response.status === 404) {
+      return null
+    }
+    throw error
+  }
+}

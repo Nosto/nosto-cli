@@ -11,6 +11,9 @@
     "#*": "./src/*"
   },
   "license": "ISC",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "description": "",
   "scripts": {
     "lint": "eslint",
@@ -22,13 +25,13 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "chalk": "^5.4.1",
+    "chalk": "^5.5.0",
     "commander": "^14.0.0",
-    "esbuild": "^0.25.5",
+    "esbuild": "^0.25.8",
     "ignore": "^7.0.5",
-    "ky": "^1.8.1",
-    "preact": "^10.26.9",
-    "zod": "^3.25.61"
+    "ky": "^1.8.2",
+    "preact": "^10.27.0",
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
