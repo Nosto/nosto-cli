@@ -1,8 +1,19 @@
-import mockFilesystem from "mock-fs"
-import { afterAll, afterEach, beforeAll, beforeEach } from "vitest"
-import { setupServer } from "msw/node"
+import { beforeEach } from "vitest"
 import { vi } from "vitest"
-import { mockedConsoleIn, mockedConsoleOut } from "./utils/consoleMocks.ts"
+import { Volume } from "memfs"
+import { mockedConsoleIn, mockedConsoleOut } from "./utils/mockConsole.ts"
+
+export const testVolume = Volume.fromJSON({}, "/")
+
+vi.mock("fs", () => {
+  return {
+    default: testVolume
+  }
+})
+beforeEach(() => {
+  testVolume.reset()
+  process.chdir("/")
+})
 
 vi.mock("readline/promises", () => {
   return {
@@ -11,24 +22,6 @@ vi.mock("readline/promises", () => {
 })
 vi.mock("#/console/logger.ts", () => mockedConsoleOut)
 
-export const setupTestServer = () => {
-  const server = setupServer()
-  beforeAll(() => server.listen())
-  afterEach(() => {
-    server.resetHandlers()
-  })
-  afterAll(() => server.close())
-
-  return server
-}
-
-beforeEach(() => {
-  mockFilesystem({
-    "/": {}
-  })
-  process.chdir("/")
-})
-
-afterAll(() => {
-  mockFilesystem.restore()
+vi.mock("node:test", () => {
+  throw new Error("You seem to have accidentally imported node:test instead of vitest.")
 })

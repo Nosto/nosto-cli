@@ -2,7 +2,7 @@ import path from "path"
 import fs from "fs"
 import { Logger } from "#console/logger.ts"
 import { getCachedConfig } from "#config/config.ts"
-import { isIgnored } from "./isIgnored.ts"
+import { isIgnored } from "#filesystem/isIgnored.ts"
 
 export function writeFile(pathToWrite: string, data: string) {
   if (getCachedConfig().dryRun) {

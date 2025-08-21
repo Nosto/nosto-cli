@@ -1,7 +1,7 @@
 import path from "path"
 import z from "zod"
 import fs from "fs"
-import { type PartialConfig, PartialConfigSchema } from "./schema.ts"
+import { type PartialConfig, PartialConfigSchema } from "#config/schema.ts"
 import { Logger } from "#console/logger.ts"
 
 export function parseConfigFile(targetPath: string): PartialConfig {

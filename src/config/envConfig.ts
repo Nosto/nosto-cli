@@ -1,4 +1,4 @@
-import { type PartialConfig, PartialConfigSchema, type PersistentConfig } from "./schema.ts"
+import { type PartialConfig, PartialConfigSchema, type PersistentConfig } from "#config/schema.ts"
 
 export const EnvVariables = {
   apiKey: "NOSTO_API_KEY",

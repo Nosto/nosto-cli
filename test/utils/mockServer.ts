@@ -1,9 +1,29 @@
-import { SetupServer } from "msw/node"
-import { generateEndpointMock, MockParams } from "./generateEndpointMock.ts"
+import { setupServer, SetupServer } from "msw/node"
+import { generateEndpointMock, MockParams } from "#test/utils/generateEndpointMock.ts"
 import { listSourceFiles } from "#api/source/listSourceFiles.ts"
 import { getSourceUrl } from "#api/utils.ts"
 import { fetchSourceFile } from "#api/source/fetchSourceFile.ts"
 import { putSourceFile } from "#api/source/putSourceFile.ts"
+import { beforeAll, afterEach, afterAll, beforeEach } from "vitest"
+
+export const setupMockServer = () => {
+  const server = setupServer()
+  beforeAll(() => {
+    server.listen()
+  })
+  beforeEach(() => {
+    mockFetchSourceFile(server, {
+      path: "build/hash",
+      error: { status: 404, message: "Not Found" }
+    })
+  })
+  afterEach(() => {
+    server.resetHandlers()
+  })
+  afterAll(() => server.close())
+
+  return server
+}
 
 export function mockListSourceFiles(
   server: SetupServer,
@@ -31,10 +51,10 @@ export function mockPutSourceFile(
   server: SetupServer,
   params: { path: string } & MockParams<Awaited<ReturnType<typeof putSourceFile>>>
 ) {
-  const { path: filePath, ...mockParams } = params
+  const { path, ...mockParams } = params
   return generateEndpointMock(server, {
     method: "put",
-    path: getSourceUrl(`source/{env}/${filePath}`),
+    path: getSourceUrl(`source/{env}/${path}`),
     ...mockParams
   })
 }

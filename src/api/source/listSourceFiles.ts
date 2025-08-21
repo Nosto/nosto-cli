@@ -1,6 +1,6 @@
 import ky from "ky"
-import { getJsonHeaders, getSourceUrl } from "../utils.ts"
-import { ListSourceFilesSchema } from "./schema.ts"
+import { getJsonHeaders, getSourceUrl } from "#api/utils.ts"
+import { ListSourceFilesSchema } from "#api/source/schema.ts"
 
 export async function listSourceFiles() {
   const response = await ky.get(getSourceUrl("source/{env}"), { headers: getJsonHeaders() })

@@ -1,5 +1,5 @@
 import chalk from "chalk"
-import { Logger } from "../console/logger.ts"
+import { Logger } from "#console/logger.ts"
 
 const MAX_RETRIES = 3
 const INITIAL_RETRY_DELAY = 1000 // 1 second

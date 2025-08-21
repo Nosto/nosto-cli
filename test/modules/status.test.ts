@@ -1,45 +1,26 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
+import { describe, it, expect } from "vitest"
 import { printStatus } from "#modules/status.ts"
-import { setupTestServer } from "#test/setup.ts"
-import { mockConfig, mockFilesystem } from "#test/utils/mocks.ts"
-import { mockConsole } from "#test/utils/consoleMocks.ts"
+import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
+import { setupMockConsole } from "#test/utils/mockConsole.ts"
 
-const fs = mockFilesystem()
-const server = setupTestServer()
-const terminal = mockConsole()
+const fs = setupMockFileSystem()
+const terminal = setupMockConsole()
 
 describe("Status Module", () => {
-  beforeEach(() => {
-    vi.restoreAllMocks()
+  it("should print configuration status by default", async () => {
+    expect(() => printStatus(".")).not.toThrow()
+    expect(terminal.getSpy("warn")).toHaveBeenCalledWith(
+      "Configuration file not found at: .nosto.json. Will try to use environment variables."
+    )
   })
 
-  describe("printStatus", () => {
-    it("should print configuration status", async () => {
-      mockConfig({
-        apiKey: "test-api-key",
-        merchant: "test-merchant",
-        templatesEnv: "main",
-        apiUrl: "https://api.nosto.com",
-        logLevel: "info",
-        maxRequests: 15
-      })
+  it("should indicate valid configuration", async () => {
+    fs.createFile(".nosto.json", '{"apiKey": "test"}')
 
-      printStatus("/test/path")
-
-      // Status should be printed (tested via no errors thrown)
-      expect(true).toBe(true)
-    })
-
-    it("should indicate valid configuration", async () => {
-      mockConfig({
-        apiKey: "test-api-key",
-        merchant: "test-merchant"
-      })
-
-      printStatus("/test/path")
-
-      // Configuration validation should pass (tested via no errors thrown)
-      expect(true).toBe(true)
-    })
+    expect(() => printStatus(".")).not.toThrow()
+    expect(terminal.getSpy("warn")).not.toHaveBeenCalledWith(
+      "Configuration file not found at: .nosto.json. Will try to use environment variables."
+    )
+    expect(terminal.getSpy("error")).toHaveBeenCalledWith("Some required configuration is missing\n")
   })
 })

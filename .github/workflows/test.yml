@@ -36,9 +36,3 @@ jobs:
       - name: Run tests with coverage
         run: npm run test:coverage
         if: matrix.node-version == '22.x'
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        if: matrix.node-version == '22.x'
-        with:
-          fail_ci_if_error: false

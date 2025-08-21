@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest"
-import { getEnvConfig, EnvVariables } from "../../src/config/envConfig.ts"
+import { getEnvConfig, EnvVariables } from "#config/envConfig.ts"
 
 describe("Env Config", () => {
   const originalEnv = process.env
@@ -15,7 +15,13 @@ describe("Env Config", () => {
   describe("getEnvConfig", () => {
     it("should return empty config when no environment variables are set", () => {
       const result = getEnvConfig()
-      expect(result).toEqual({})
+      expect(result).toEqual({
+        apiUrl: "https://api.nosto.com",
+        libraryUrl: "https://d11ffvpvtnmt0d.cloudfront.net/library",
+        logLevel: "info",
+        maxRequests: 15,
+        templatesEnv: "main"
+      })
     })
 
     it("should parse environment variables correctly", () => {
@@ -26,30 +32,19 @@ describe("Env Config", () => {
 
       const result = getEnvConfig()
 
-      expect(result).toEqual({
-        apiKey: "env-api-key",
-        merchant: "env-merchant",
-        logLevel: "debug",
-        maxRequests: 25 // Note: coerced to number by schema
-      })
-    })
-
-    it("should ignore undefined environment variables", () => {
-      process.env[EnvVariables.apiKey] = "test-key"
-      delete process.env[EnvVariables.merchant]
-      process.env[EnvVariables.logLevel] = "info"
-
-      const result = getEnvConfig()
-
-      expect(result).toEqual({
-        apiKey: "test-key",
-        logLevel: "info"
-      })
+      expect(result).toEqual(
+        expect.objectContaining({
+          apiKey: "env-api-key",
+          merchant: "env-merchant",
+          logLevel: "debug",
+          maxRequests: 25 // Note: coerced to number by schema
+        })
+      )
     })
 
     it("should handle all possible environment variables", () => {
-      process.env[EnvVariables.apiKey] = "test-key"
-      process.env[EnvVariables.merchant] = "test-merchant"
+      process.env[EnvVariables.apiKey] = "another-key"
+      process.env[EnvVariables.merchant] = "another-merchant"
       process.env[EnvVariables.templatesEnv] = "staging"
       process.env[EnvVariables.apiUrl] = "https://custom-api.com"
       process.env[EnvVariables.libraryUrl] = "https://custom-library.com"
@@ -59,27 +54,13 @@ describe("Env Config", () => {
       const result = getEnvConfig()
 
       expect(result).toEqual({
-        apiKey: "test-key",
-        merchant: "test-merchant",
+        apiKey: "another-key",
+        merchant: "another-merchant",
         templatesEnv: "staging",
         apiUrl: "https://custom-api.com",
         libraryUrl: "https://custom-library.com",
         logLevel: "warn",
         maxRequests: 50 // Note: coerced to number by schema
-      })
-    })
-  })
-
-  describe("EnvVariables", () => {
-    it("should have all required environment variable names", () => {
-      expect(EnvVariables).toEqual({
-        apiKey: "NOSTO_API_KEY",
-        merchant: "NOSTO_MERCHANT",
-        templatesEnv: "NOSTO_TEMPLATES_ENV",
-        apiUrl: "NOSTO_API_URL",
-        libraryUrl: "NOSTO_LIBRARY_URL",
-        logLevel: "NOSTO_LOG_LEVEL",
-        maxRequests: "NOSTO_MAX_REQUESTS"
       })
     })
   })

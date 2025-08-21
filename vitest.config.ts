@@ -13,6 +13,8 @@ export default defineConfig({
     include: ["test/**/*.test.ts"],
     exclude: ["node_modules", "dist"],
     setupFiles: ["test/setup.ts"],
+    restoreMocks: true,
+    reporters: ["default"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],

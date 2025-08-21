@@ -1,62 +1,48 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
+import { describe, it, expect } from "vitest"
 import { printSetupHelp } from "#modules/setup.ts"
-import { mockConfig, mockFilesystem } from "#test/utils/mocks.ts"
-import { mockConsole } from "#test/utils/consoleMocks.ts"
-import path from "path"
+import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
+import { setupMockConsole } from "#test/utils/mockConsole.ts"
 
-const fs = mockFilesystem()
-const terminal = mockConsole()
+const fs = setupMockFileSystem()
+const terminal = setupMockConsole()
 
 describe("Setup Module", () => {
-  beforeEach(() => {
-    vi.restoreAllMocks()
-    terminal.clearPrompts()
-    mockConfig({ projectPath: "/test/path" })
+  it("should print configuration help information", async () => {
+    fs.createFile(".nosto.json", '{"apiKey": "test"}')
+
+    expect(async () => await printSetupHelp(".")).not.toThrow()
+    expect(terminal.getSpy("warn")).not.toHaveBeenCalledWith("Configuration file not found in project directory.")
   })
 
-  describe("printSetupHelp", () => {
-    it("should print configuration help information", async () => {
-      fs.createFile(path.join("/test/path", ".nosto.json"), '{"apiKey": "test"}')
+  it("should show warning when config file not found", async () => {
+    terminal.setUserResponse("N")
 
-      await printSetupHelp("/test/path")
+    expect(async () => await printSetupHelp(".")).not.toThrow()
+    expect(terminal.getSpy("warn")).toHaveBeenCalledWith("Configuration file not found in project directory.")
+  })
 
-      // Configuration help should be printed (tested via no errors thrown)
-      expect(true).toBe(true)
-    })
+  it("should create config file when user confirms", async () => {
+    terminal.setUserResponse("Y")
 
-    it("should show warning when config file not found", async () => {
-      terminal.setUserResponse("N")
+    await printSetupHelp(".")
 
-      await printSetupHelp("/test/path")
+    terminal.expect.user.toHaveBeenPromptedWith("Would you like to create a placeholder configuration file? (Y/n):")
+    fs.expectFile(".nosto.json").toExist()
+  })
 
-      // Warning should be shown and config info displayed (tested via no errors thrown)
-      expect(true).toBe(true)
-    })
+  it("should not create config file when user declines", async () => {
+    terminal.setUserResponse("N")
 
-    it("should create config file when user confirms", async () => {
-      terminal.setUserResponse("Y")
+    await printSetupHelp(".")
 
-      await printSetupHelp("/test/path")
+    fs.expectFile(".nosto.json").not.toExist()
+  })
 
-      terminal.expect.user.toHaveBeenPromptedWith("Would you like to create a placeholder configuration file? (Y/n):")
-      fs.expectFile(path.join("/test/path", ".nosto.json")).toExist()
-    })
+  it("should not prompt when config file already exists", async () => {
+    fs.createFile(".nosto.json", '{"apiKey": "test"}')
 
-    it("should not create config file when user declines", async () => {
-      terminal.setUserResponse("N")
+    await printSetupHelp(".")
 
-      await printSetupHelp("/test/path")
-
-      fs.expectFile(path.join("/test/path", ".nosto.json")).not.toExist()
-    })
-
-    it("should not prompt when config file already exists", async () => {
-      fs.createFile(path.join("/test/path", ".nosto.json"), '{"apiKey": "test"}')
-
-      await printSetupHelp("/test/path")
-
-      // No prompt should occur when file exists (tested via no terminal interaction)
-      expect(terminal.handle.recordedPrompts).toHaveLength(0)
-    })
+    terminal.expect.user.not.toHaveBeenPrompted()
   })
 })

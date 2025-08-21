@@ -1,9 +1,9 @@
 import { cleanUrl } from "#api/utils.ts"
 import { Logger } from "#console/logger.ts"
-import { MissingConfigurationError } from "../errors/MissingConfigurationError.ts"
-import { getEnvConfig } from "./envConfig.ts"
-import { parseConfigFile } from "./fileConfig.ts"
-import { type Config, PersistentConfigSchema, type PersistentConfig, RuntimeConfigSchema } from "./schema.ts"
+import { MissingConfigurationError } from "#errors/MissingConfigurationError.ts"
+import { getEnvConfig } from "#config/envConfig.ts"
+import { parseConfigFile } from "#config/fileConfig.ts"
+import { type Config, PersistentConfigSchema, type PersistentConfig, RuntimeConfigSchema } from "#config/schema.ts"
 import { resolve } from "path"
 
 let isConfigLoaded = false

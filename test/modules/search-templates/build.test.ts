@@ -2,15 +2,14 @@ import { describe, it, expect, vi, beforeEach } from "vitest"
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
 import * as esbuild from "#filesystem/esbuild.ts"
 
-const mockContext = {
-  rebuild: vi.fn(),
-  dispose: vi.fn(),
-  watch: vi.fn()
-}
-
 describe("Build Search Templates", () => {
+  const mockContext = {
+    rebuild: vi.fn(),
+    dispose: vi.fn(),
+    watch: vi.fn()
+  }
+
   beforeEach(() => {
-    vi.restoreAllMocks()
     vi.spyOn(esbuild, "getBuildContext").mockReturnValue(
       mockContext as unknown as ReturnType<typeof esbuild.getBuildContext>
     )

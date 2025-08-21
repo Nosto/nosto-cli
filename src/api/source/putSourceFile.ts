@@ -1,5 +1,5 @@
 import ky from "ky"
-import { getHeaders, getSourceUrl } from "../utils.ts"
+import { getHeaders, getSourceUrl } from "#api/utils.ts"
 import { getCachedConfig } from "#config/config.ts"
 
 export async function putSourceFile(path: string, data: string) {

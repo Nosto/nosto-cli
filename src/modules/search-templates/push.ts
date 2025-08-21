@@ -89,7 +89,7 @@ export async function pushSearchTemplate({ paths, force }: PushSearchTemplateOpt
   )
 
   // Push the files in batches to avoid overwhelming the API (relevant mostly for local dev)
-  processInBatches({
+  await processInBatches({
     files,
     logIcon: chalk.magenta("↑"),
     processElement: async file => {

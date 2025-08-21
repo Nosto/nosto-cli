@@ -2,7 +2,7 @@ import { HTTPError, TimeoutError } from "ky"
 import { Logger } from "#console/logger.ts"
 import chalk from "chalk"
 import { getCachedConfig } from "#config/config.ts"
-import { NostoError } from "./NostoError.ts"
+import { NostoError } from "#errors/NostoError.ts"
 
 export async function withErrorHandler(fn: () => void | Promise<void>): Promise<void> {
   try {

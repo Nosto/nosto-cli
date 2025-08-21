@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
-import { parseConfigFile } from "../../src/config/fileConfig.ts"
-import { mockFilesystem } from "#test/utils/mocks.ts"
+import { parseConfigFile } from "#config/fileConfig.ts"
+import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
 
-const fs = mockFilesystem()
+const fs = setupMockFileSystem()
 
 describe("File Config", () => {
   beforeEach(() => {
@@ -17,8 +17,8 @@ describe("File Config", () => {
 
     it("should parse valid JSON config file", () => {
       const mockConfig = {
-        apiKey: "test-key",
-        merchant: "test-merchant",
+        apiKey: "another-key",
+        merchant: "another-merchant",
         logLevel: "debug"
       }
 
@@ -26,7 +26,15 @@ describe("File Config", () => {
 
       const result = parseConfigFile(".")
 
-      expect(result).toEqual(mockConfig)
+      expect(result).toEqual({
+        apiKey: "another-key",
+        apiUrl: "https://api.nosto.com",
+        libraryUrl: "https://d11ffvpvtnmt0d.cloudfront.net/library",
+        logLevel: "debug",
+        maxRequests: 15,
+        merchant: "another-merchant",
+        templatesEnv: "main"
+      })
     })
 
     it("should throw error for invalid JSON", () => {
