@@ -1,6 +1,6 @@
 import { fetchLibraryFile } from "#api/library/fetchLibraryFile.ts"
 import path from "path"
-import { writeFile } from "#filesystem/filesystem.ts"
+import { writeFile } from "./filesystem.ts"
 import { Logger } from "#console/logger.ts"
 import chalk from "chalk"
 import { cleanUrl } from "#api/utils.ts"

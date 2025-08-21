@@ -1,6 +1,6 @@
 import fs from "fs"
 import crypto from "crypto"
-import { isIgnored } from "#filesystem/isIgnored.ts"
+import { isIgnored } from "./isIgnored.ts"
 import { getCachedConfig } from "#config/config.ts"
 
 export function calculateTreeHash() {

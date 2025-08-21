@@ -1,5 +1,5 @@
 import { Logger } from "#console/logger.ts"
-import { NostoError } from "#errors/NostoError.ts"
+import { NostoError } from "./NostoError.ts"
 
 export class MissingConfigurationError extends NostoError {
   constructor(message: string) {
