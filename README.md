@@ -84,7 +84,13 @@ You can use `nosto help` and variations to obtain detailed and up-to-date inform
   - Alias: `search-templates [projectPath]`
   - Search templates related commands
   - `st pull [projectPath]`
-    - Fetch the current state of VSCode Web for the configured merchant
+    - Fetch the current remote state for the configured merchant
+  - `st build [projectPath]`
+    - Run a local build, mirroring the hosted VSCode Web build workflow
+  - `st push [projectPath]`
+    - Push the local state to the remote for the configured merchant
+  - `st dev [projectPath]`
+    - Watch files, build and upload automatically
 
 ## External dependencies
 
@@ -96,20 +102,16 @@ If you would still like to try your luck with introducing dependencies into a le
 
 ### Testing
 
-This project uses [Vitest](https://vitest.dev/) for comprehensive test coverage. Tests are organized to mirror the `src/` structure:
+This project uses [Vitest](https://vitest.dev/) for comprehensive test coverage. Tests are organized under the `test/` directory mirroring the `src/` structure.
 
-- **Test Framework**: Vitest with Node.js built-in TypeScript support
-- **Coverage**: V8 coverage provider
-- **Mocking**: Filesystem and API operations are mocked for isolated testing
-
-#### Available Scripts
+#### Available scripts
 
 ```bash
-# Run tests in watch mode
-npm test
-
 # Run tests once
-npm run test:run
+npm run test
+
+# Run tests in watch mode
+npm run test:watch
 
 # Run tests with UI
 npm run test:ui
@@ -117,34 +119,3 @@ npm run test:ui
 # Run tests with coverage report
 npm run test:coverage
 ```
-
-#### Test Structure
-
-Tests are located in the `test/` directory and mirror the source structure:
-
-```
-test/
-├── api/           # API utilities and retry logic tests
-├── config/        # Configuration management tests
-├── console/       # Logger and console utilities tests
-├── errors/        # Error handling tests
-├── filesystem/    # File system operations tests
-└── modules/       # Command module tests
-```
-
-#### Coverage
-
-Tests are running on Vitest.
-
-Run `npm run test:coverage` to see detailed coverage reports.
-
-### Code Quality
-
-- **Linting**: ESLint with TypeScript support
-- **Formatting**: Prettier
-- **Commits**: Conventional commits with commitlint
-- **Hooks**: Husky for pre-commit hooks
-
-### CI/CD
-
-GitHub Actions runs tests on Node.js 18.x, 20.x, and 22.x for every push and pull request.
