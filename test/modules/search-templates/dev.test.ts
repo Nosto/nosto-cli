@@ -17,31 +17,29 @@ describe("Search Template Dev Mode", () => {
     )
   })
 
-  describe("searchTemplateDevMode", () => {
-    it("should start watching when confirmed", async () => {
-      const getBuildContext = vi.spyOn(esbuild, "getBuildContext")
+  it("should start watching when confirmed", async () => {
+    const getBuildContext = vi.spyOn(esbuild, "getBuildContext")
 
-      await searchTemplateDevMode()
+    await searchTemplateDevMode()
 
-      expect(getBuildContext).toHaveBeenCalledWith({ plugins: [expect.objectContaining({ name: "push-on-rebuild" })] })
-      expect(mockContext.watch).toHaveBeenCalled()
-    })
+    expect(getBuildContext).toHaveBeenCalledWith({ plugins: [expect.objectContaining({ name: "push-on-rebuild" })] })
+    expect(mockContext.watch).toHaveBeenCalled()
+  })
 
-    it("should skip confirmation when flag is set", async () => {
-      await searchTemplateDevMode()
+  it("should skip confirmation when flag is set", async () => {
+    await searchTemplateDevMode()
 
-      mockConsole.expect.user.not.toHaveBeenPrompted()
-      expect(mockContext.watch).toHaveBeenCalled()
-    })
+    mockConsole.expect.user.not.toHaveBeenPrompted()
+    expect(mockContext.watch).toHaveBeenCalled()
+  })
 
-    it("should set up SIGINT handler", async () => {
-      const processOnSpy = vi.spyOn(process, "on").mockImplementation(() => process)
+  it("should set up SIGINT handler", async () => {
+    const processOnSpy = vi.spyOn(process, "on").mockImplementation(() => process)
 
-      await searchTemplateDevMode()
+    await searchTemplateDevMode()
 
-      expect(processOnSpy).toHaveBeenCalledWith("SIGINT", expect.any(Function))
+    expect(processOnSpy).toHaveBeenCalledWith("SIGINT", expect.any(Function))
 
-      processOnSpy.mockRestore()
-    })
+    processOnSpy.mockRestore()
   })
 })

@@ -16,6 +16,9 @@ export const setupMockServer = () => {
       path: "build/hash",
       error: { status: 404, message: "Not Found" }
     })
+    mockPutSourceFile(server, {
+      path: "build/hash"
+    })
   })
   afterEach(() => {
     server.resetHandlers()

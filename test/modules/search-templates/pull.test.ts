@@ -26,8 +26,8 @@ describe("Pull Search Template", () => {
     })
 
     await pullSearchTemplate({ paths: [], force: true })
-    fs.expectFile("index.js").toHaveContent('"index.js content"')
-    fs.expectFile("wizard.js").toHaveContent('"wizard.js content"')
+    fs.expectFile("index.js").toContain('"index.js content"')
+    fs.expectFile("wizard.js").toContain('"wizard.js content"')
   })
 
   it("should filter by specified paths", async () => {
@@ -48,12 +48,12 @@ describe("Pull Search Template", () => {
 
     await pullSearchTemplate({ paths: ["index.js"], force: true })
 
-    fs.expectFile("index.js").toHaveContent('"index.js content"')
+    fs.expectFile("index.js").toContain('"index.js content"')
     fs.expectFile("wizard.js").not.toExist()
   })
 
   it("should prompt for confirmation when files will be overridden", async () => {
-    fs.createFile("index.js", "old content")
+    fs.writeFile("index.js", "old content")
     mockListSourceFiles(server, {
       response: [{ path: "index.js", size: 10 }]
     })
@@ -68,18 +68,18 @@ describe("Pull Search Template", () => {
   })
 
   it("should cancel operation when user declines override", async () => {
-    fs.createFile("index.js", "old content")
+    fs.writeFile("index.js", "old content")
     mockListSourceFiles(server, {
       response: [{ path: "index.js", size: 10 }]
     })
 
     terminal.setUserResponse("N")
     await pullSearchTemplate({ paths: [], force: false })
-    fs.expectFile("/index.js").toHaveContent("old content")
+    fs.expectFile("/index.js").toContain("old content")
   })
 
   it("should proceed with download when user confirms override", async () => {
-    fs.createFile("index.js", "old content")
+    fs.writeFile("index.js", "old content")
     mockListSourceFiles(server, {
       response: [{ path: "index.js", size: 10 }]
     })
@@ -90,6 +90,6 @@ describe("Pull Search Template", () => {
 
     terminal.setUserResponse("Y")
     await pullSearchTemplate({ paths: [], force: false })
-    fs.expectFile("index.js").toHaveContent('"index.js content"')
+    fs.expectFile("index.js").toContain('"index.js content"')
   })
 })

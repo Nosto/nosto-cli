@@ -37,7 +37,7 @@ describe("Env Config", () => {
           apiKey: "env-api-key",
           merchant: "env-merchant",
           logLevel: "debug",
-          maxRequests: 25 // Note: coerced to number by schema
+          maxRequests: 25 // Coerced to number by schema
         })
       )
     })
@@ -60,7 +60,7 @@ describe("Env Config", () => {
         apiUrl: "https://custom-api.com",
         libraryUrl: "https://custom-library.com",
         logLevel: "warn",
-        maxRequests: 50 // Note: coerced to number by schema
+        maxRequests: 50 // Coerced to number by schema
       })
     })
   })

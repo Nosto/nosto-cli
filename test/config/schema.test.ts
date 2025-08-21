@@ -13,9 +13,9 @@ describe("Config Schema", () => {
 
       expect(result.apiKey).toBe("test-api-key")
       expect(result.merchant).toBe("test-merchant")
-      expect(result.templatesEnv).toBe("main") // default value
-      expect(result.apiUrl).toBe("https://api.nosto.com") // default value
-      expect(result.logLevel).toBe("info") // default value
+      expect(result.templatesEnv).toBe("main")
+      expect(result.apiUrl).toBe("https://api.nosto.com")
+      expect(result.logLevel).toBe("info")
     })
 
     it("should apply default values", () => {

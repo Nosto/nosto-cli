@@ -15,11 +15,7 @@ export const generateEndpointMock = (
 ) => {
   let invocations: { jsonBody: unknown }[] = []
 
-  const handler = http[method](path, async ({ request }) => {
-    invocations.push({
-      jsonBody: request.method === "POST" || request.method === "PATCH" ? await request.json() : {}
-    })
-
+  const handler = http[method](path, async () => {
     const status = (() => {
       if ("error" in params) {
         return params.error.status

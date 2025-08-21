@@ -15,7 +15,7 @@ describe("Status Module", () => {
   })
 
   it("should indicate valid configuration", async () => {
-    fs.createFile(".nosto.json", '{"apiKey": "test"}')
+    fs.writeFile(".nosto.json", '{"apiKey": "test"}')
 
     expect(() => printStatus(".")).not.toThrow()
     expect(terminal.getSpy("warn")).not.toHaveBeenCalledWith(

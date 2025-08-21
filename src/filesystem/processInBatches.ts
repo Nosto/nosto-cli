@@ -16,7 +16,6 @@ export async function processInBatches({ files, logIcon, processElement }: Props
   for (let i = 0; i < files.length; i += batchSize) {
     batches.push(files.slice(i, i + batchSize))
   }
-
   for (let i = 0; i < batches.length; i++) {
     const batch = batches[i]
     const batchPromises = batch.map(async file => {
@@ -29,10 +28,8 @@ export async function processInBatches({ files, logIcon, processElement }: Props
         Logger.error(`${chalk.red("✗")} ${chalk.cyan(file)}: ${errorMessage}`)
       }
     })
-
     const results = await Promise.allSettled(batchPromises)
     const failures = results.filter((result): result is PromiseRejectedResult => result.status === "rejected")
-
     if (failures.length > 0) {
       Logger.warn(`Batch completed with ${failures.length} failures`)
     }

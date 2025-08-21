@@ -23,7 +23,7 @@ export const mockedConsoleOut = {
     debug: vi.fn(),
     info: vi.fn(),
     warn: vi.fn(),
-    error: vi.fn().mockImplementation(console.error)
+    error: vi.fn()
   }
 }
 

@@ -8,7 +8,7 @@ const terminal = setupMockConsole()
 
 describe("Setup Module", () => {
   it("should print configuration help information", async () => {
-    fs.createFile(".nosto.json", '{"apiKey": "test"}')
+    fs.writeFile(".nosto.json", '{"apiKey": "test"}')
 
     expect(async () => await printSetupHelp(".")).not.toThrow()
     expect(terminal.getSpy("warn")).not.toHaveBeenCalledWith("Configuration file not found in project directory.")
@@ -39,7 +39,7 @@ describe("Setup Module", () => {
   })
 
   it("should not prompt when config file already exists", async () => {
-    fs.createFile(".nosto.json", '{"apiKey": "test"}')
+    fs.writeFile(".nosto.json", '{"apiKey": "test"}')
 
     await printSetupHelp(".")
 

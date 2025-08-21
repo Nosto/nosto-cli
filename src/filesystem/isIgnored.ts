@@ -5,12 +5,9 @@ import path from "path"
 import ignore from "ignore"
 import type { Ignore } from "ignore"
 
-export function isIgnored(dirent: Dirent): boolean {
+function isIgnoredImplicitly(dirent: Dirent): boolean {
   const { projectPath } = getCachedConfig()
   const absoluteProjectPath = path.resolve(projectPath)
-  const relativePath = dirent.parentPath
-    ? path.relative(absoluteProjectPath, path.join(dirent.parentPath, dirent.name))
-    : dirent.name
 
   if (
     dirent.parentPath.startsWith(path.join(projectPath, "build")) ||
@@ -29,16 +26,19 @@ export function isIgnored(dirent: Dirent): boolean {
     return true
   }
 
-  return getIgnoreInstance().ignores(relativePath)
+  return false
 }
 
-let ignoreInstance: Ignore | null = null
+export function isIgnoredExplicitly(instance: Ignore, dirent: Dirent): boolean {
+  const { projectPath } = getCachedConfig()
+  const absoluteProjectPath = path.resolve(projectPath)
+  const relativePath = dirent.parentPath
+    ? path.relative(absoluteProjectPath, path.join(dirent.parentPath, dirent.name))
+    : dirent.name
+  return instance.ignores(relativePath)
+}
 
-function getIgnoreInstance(): Ignore {
-  if (ignoreInstance) {
-    return ignoreInstance
-  }
-
+export function getIgnoreInstance() {
   const { projectPath } = getCachedConfig()
 
   const gitignorePath = path.join(projectPath, ".gitignore")
@@ -49,6 +49,8 @@ function getIgnoreInstance(): Ignore {
         .filter(line => line.trim() && !line.startsWith("#"))
     : []
 
-  ignoreInstance = ignore().add(patterns)
-  return ignoreInstance
+  const instance = ignore().add(patterns)
+  return {
+    isIgnored: (dirent: Dirent) => isIgnoredImplicitly(dirent) || isIgnoredExplicitly(instance, dirent)
+  }
 }

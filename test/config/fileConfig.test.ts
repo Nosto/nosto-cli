@@ -1,14 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
+import { describe, it, expect } from "vitest"
 import { parseConfigFile } from "#config/fileConfig.ts"
 import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
 
 const fs = setupMockFileSystem()
 
 describe("File Config", () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   describe("parseConfigFile", () => {
     it("should return empty object when config file does not exist", () => {
       const result = parseConfigFile(".")
@@ -22,7 +18,7 @@ describe("File Config", () => {
         logLevel: "debug"
       }
 
-      fs.createFile(".nosto.json", JSON.stringify(mockConfig))
+      fs.writeFile(".nosto.json", JSON.stringify(mockConfig))
 
       const result = parseConfigFile(".")
 
@@ -38,7 +34,7 @@ describe("File Config", () => {
     })
 
     it("should throw error for invalid JSON", () => {
-      fs.createFile(".nosto.json", "invalid json")
+      fs.writeFile(".nosto.json", "invalid json")
 
       expect(() => parseConfigFile(".")).toThrow("Invalid JSON in configuration file")
     })
@@ -49,7 +45,7 @@ describe("File Config", () => {
         logLevel: "invalid-level"
       }
 
-      fs.createFile(".nosto.json", JSON.stringify(invalidConfig))
+      fs.writeFile(".nosto.json", JSON.stringify(invalidConfig))
 
       expect(() => parseConfigFile(".")).toThrow("Invalid configuration file")
     })
