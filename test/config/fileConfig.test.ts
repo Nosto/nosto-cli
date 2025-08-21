@@ -15,7 +15,8 @@ describe("File Config", () => {
       const mockConfig = {
         apiKey: "another-key",
         merchant: "another-merchant",
-        logLevel: "debug"
+        logLevel: "debug",
+        apiUrl: "https://api.nosto.com"
       }
 
       fs.writeFile(".nosto.json", JSON.stringify(mockConfig))

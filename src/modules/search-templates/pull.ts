@@ -25,6 +25,7 @@ type PullSearchTemplateOptions = {
 export async function pullSearchTemplate({ paths, force }: PullSearchTemplateOptions) {
   const { projectPath, dryRun } = getCachedConfig()
   const targetFolder = path.resolve(projectPath)
+  console.log(getCachedConfig())
 
   // If the local and remote hashes match, assume the content matches as well
   const localHash = calculateTreeHash()

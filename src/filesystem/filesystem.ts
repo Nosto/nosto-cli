@@ -30,8 +30,7 @@ export function listAllFiles(folder: string) {
   const filteredFiles = allFiles
     .filter(dirent => !ignoreInstance.isIgnored(dirent))
     .map(dirent => dirent.parentPath + "/" + dirent.name)
-    // To relative path
-    .map(file => file.replace(folder + "/", "").replace(/^\//g, ""))
+    .map(file => path.relative(folder, file))
   return {
     allFiles: filteredFiles,
     unfilteredFileCount: allFiles.length

@@ -15,13 +15,7 @@ describe("Env Config", () => {
   describe("getEnvConfig", () => {
     it("should return empty config when no environment variables are set", () => {
       const result = getEnvConfig()
-      expect(result).toEqual({
-        apiUrl: "https://api.nosto.com",
-        libraryUrl: "https://d11ffvpvtnmt0d.cloudfront.net/library",
-        logLevel: "info",
-        maxRequests: 15,
-        templatesEnv: "main"
-      })
+      expect(result).toEqual({})
     })
 
     it("should parse environment variables correctly", () => {
