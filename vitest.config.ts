@@ -18,7 +18,7 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
-      exclude: ["node_modules/", "test/", "vitest.config.ts", "src/bootstrap.sh"]
+      exclude: ["node_modules/", "test/", "vitest.config.ts", "src/bootstrap.sh", "*.config.js"]
     }
   },
   esbuild: {
