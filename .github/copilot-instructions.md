@@ -48,7 +48,7 @@ After installing dependencies:
 ### Code Quality Validation
 - `npm run lint` - Takes 6 seconds. Set timeout to 30+ seconds.
 - `npm run type-check` - Takes 2 seconds. Set timeout to 30+ seconds.
-- `npm run test` - Takes 20 seconds. Set timeout to 30+ seconds. Note: Some build tests may fail due to timeouts - this is expected without valid API credentials.
+- `npm run test` - Takes 20 seconds. Set timeout to 30+ seconds.
 
 ### Manual Functional Validation
 

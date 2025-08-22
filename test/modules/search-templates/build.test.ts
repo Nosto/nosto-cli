@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
 import * as esbuild from "#filesystem/esbuild.ts"
+import { setupMockServer, mockFetchLibraryFile } from "#test/utils/mockServer.ts"
+import { setupMockConfig } from "#test/utils/mockConfig.ts"
+
+const server = setupMockServer()
 
 describe("Build Search Templates", () => {
   const mockContext = {
@@ -10,9 +14,29 @@ describe("Build Search Templates", () => {
   }
 
   beforeEach(() => {
+    setupMockConfig({
+      apiKey: "test-key",
+      merchant: "test-merchant",
+      projectPath: "/test-project"
+    })
+
     vi.spyOn(esbuild, "getBuildContext").mockReturnValue(
       mockContext as unknown as ReturnType<typeof esbuild.getBuildContext>
     )
+
+    // Mock library file fetches
+    mockFetchLibraryFile(server, {
+      path: "nosto.module.js",
+      response: "// nosto.module.js content"
+    })
+    mockFetchLibraryFile(server, {
+      path: "nosto.module.js.map",
+      response: "// nosto.module.js.map content"
+    })
+    mockFetchLibraryFile(server, {
+      path: "nosto.d.ts",
+      response: "// nosto.d.ts content"
+    })
   })
 
   describe("buildSearchTemplate", () => {
