@@ -10,7 +10,7 @@ import { beforeAll, afterEach, afterAll, beforeEach } from "vitest"
 export const setupMockServer = () => {
   const server = setupServer()
   beforeAll(() => {
-    server.listen()
+    server.listen({ onUnhandledRequest: "error" })
   })
   beforeEach(() => {
     mockFetchSourceFile(server, {

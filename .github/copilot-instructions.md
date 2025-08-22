@@ -243,6 +243,7 @@ setupMockConfig({ apiKey: "test-key", merchant: "test-merchant" })
 - **Test complete workflows** - Validate entire user journeys from CLI input to output
 - **Use proper TypeScript types** - Avoid `any` and ensure type safety in tests
 - **Mock only I/O boundaries** - File system, HTTP, console interactions
+- **Mock external boundaries, not internal code** - Mock I/O boundaries (HTTP, file system) but not internal business logic
 - **Test error scenarios** - Network failures, invalid configs, missing files
 - **Use existing test helpers** - `setupMockFileSystem`, `setupMockServer`, etc.
 - **Validate side effects** - Check file writes, API calls, console output
@@ -253,7 +254,6 @@ setupMockConfig({ apiKey: "test-key", merchant: "test-merchant" })
 - **Don't use `vi.mock` for partial mocking** - Only mock complete modules when necessary
 - **Don't use `@ts-ignore` or `any`** - Maintain type safety in test code
 - **Don't write trivial assertions** - Test meaningful behavior, not implementation details
-- **Mock external boundaries, not internal code** - Mock I/O boundaries (HTTP, file system) but not internal business logic
 - **Don't test implementation details** - Focus on public APIs and user-observable behavior
 - **Don't skip error scenarios** - Test both happy paths and failure cases
 
@@ -283,15 +283,13 @@ import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
 import { setupMockServer } from "#test/utils/mockServer.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
 
-describe("My Command", () => {
-  let fs: ReturnType<typeof setupMockFileSystem>
-  let server: ReturnType<typeof setupMockServer>
-  let terminal: ReturnType<typeof setupMockConsole>
+const fs = setupMockFileSystem()
+const server = setupMockServer()
+const terminal = setupMockConsole()
 
+describe("My Command", () => {
   beforeEach(() => {
-    fs = setupMockFileSystem()
-    server = setupMockServer()
-    terminal = setupMockConsole()
+    // Use beforeEach for test-specific mocks or setup if needed
   })
 
   it("should perform complete workflow", async () => {
