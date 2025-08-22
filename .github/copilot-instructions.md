@@ -253,7 +253,7 @@ setupMockConfig({ apiKey: "test-key", merchant: "test-merchant" })
 - **Don't use `vi.mock` for partial mocking** - Only mock complete modules when necessary
 - **Don't use `@ts-ignore` or `any`** - Maintain type safety in test code
 - **Don't write trivial assertions** - Test meaningful behavior, not implementation details
-- **Don't mock what you don't own** - Mock external dependencies, not internal code
+- **Mock external boundaries, not internal code** - Mock I/O boundaries (HTTP, file system) but not internal business logic
 - **Don't test implementation details** - Focus on public APIs and user-observable behavior
 - **Don't skip error scenarios** - Test both happy paths and failure cases
 
@@ -277,32 +277,36 @@ setupMockConfig({ apiKey: "test-key", merchant: "test-merchant" })
 
 ### Test Structure Example
 ```typescript
-import { describe, it, expect } from "vitest"
+import { describe, it, expect, beforeEach } from "vitest"
 import { myCommand } from "#modules/myCommand.ts"
 import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
 import { setupMockServer } from "#test/utils/mockServer.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
 
-// Set up test environment
-const fs = setupMockFileSystem()
-const server = setupMockServer()
-const terminal = setupMockConsole()
-
 describe("My Command", () => {
+  let fs: ReturnType<typeof setupMockFileSystem>
+  let server: ReturnType<typeof setupMockServer>
+  let terminal: ReturnType<typeof setupMockConsole>
+
+  beforeEach(() => {
+    fs = setupMockFileSystem()
+    server = setupMockServer()
+    terminal = setupMockConsole()
+  })
+
   it("should perform complete workflow", async () => {
-    // Arrange
     fs.writeFile(".nosto.json", '{"apiKey":"test"}')
     mockFetchSourceFile(server, { path: "test.js", response: "code" })
     
-    // Act
     await myCommand({ force: true })
     
-    // Assert
     fs.expectFile("output.js").toExist()
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Success!")
   })
 })
 ```
+
+**Note:** Use `beforeEach`, `beforeAll`, `afterEach`, `afterAll` for proper test setup and teardown. The example above shows typical test structure without inline comments.
 
 ### Known Issues and Workarounds
 
