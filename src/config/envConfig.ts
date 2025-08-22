@@ -1,4 +1,4 @@
-import { type PartialConfig, PartialConfigSchema, type PersistentConfig } from "./schema.ts"
+import { type EnvironmentConfig, EnvironmentConfigSchema } from "./schema.ts"
 
 export const EnvVariables = {
   apiKey: "NOSTO_API_KEY",
@@ -8,9 +8,9 @@ export const EnvVariables = {
   libraryUrl: "NOSTO_LIBRARY_URL",
   logLevel: "NOSTO_LOG_LEVEL",
   maxRequests: "NOSTO_MAX_REQUESTS"
-} satisfies Record<keyof PersistentConfig, string>
+} satisfies Record<keyof EnvironmentConfig, string>
 
-export function getEnvConfig(): PartialConfig {
+export function getEnvConfig(): EnvironmentConfig {
   const config = Object.entries(EnvVariables).reduce<Record<string, string>>((acc, [key, envVar]) => {
     const value = process.env[envVar]
     if (value) {
@@ -19,5 +19,5 @@ export function getEnvConfig(): PartialConfig {
     return acc
   }, {})
 
-  return PartialConfigSchema.parse(config)
+  return EnvironmentConfigSchema.parse(config)
 }

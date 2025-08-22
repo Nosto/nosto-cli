@@ -1,5 +1,5 @@
 import ky from "ky"
-import { getJsonHeaders, getSourceUrl } from "../utils.ts"
+import { getJsonHeaders, getSourceUrl } from "#api/utils.ts"
 import { ListSourceFilesSchema } from "./schema.ts"
 
 export async function listSourceFiles() {

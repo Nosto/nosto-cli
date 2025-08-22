@@ -84,10 +84,38 @@ You can use `nosto help` and variations to obtain detailed and up-to-date inform
   - Alias: `search-templates [projectPath]`
   - Search templates related commands
   - `st pull [projectPath]`
-    - Fetch the current state of VSCode Web for the configured merchant
+    - Fetch the current remote state for the configured merchant
+  - `st build [projectPath]`
+    - Run a local build, mirroring the hosted VSCode Web build workflow
+  - `st push [projectPath]`
+    - Push the local state to the remote for the configured merchant
+  - `st dev [projectPath]`
+    - Watch files, build and upload automatically
 
 ## External dependencies
 
 With the addition of local builds, the external dependencies are something that is theoretically possible. However, due to complexities of the legacy setup, external deps **will not be officially supported in the legacy templates**. We understand that this is something modern web development needs, and we are addressing that by our upcoming open source search-templates offering. Specifically, search-templates-starter, [search-js](https://github.com/nosto/search-js) and this very CLI tool.
 
 If you would still like to try your luck with introducing dependencies into a legacy app, we recommend you stick with only build-time dependencies like TypeScript that disappear at runtime. In that case, build your app as you would, and point the CLI's build to the output folder.
+
+## Development
+
+### Testing
+
+This project uses [Vitest](https://vitest.dev/) for comprehensive test coverage. Tests are organized under the `test/` directory mirroring the `src/` structure.
+
+#### Available scripts
+
+```bash
+# Run tests once
+npm run test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with UI
+npm run test:ui
+
+# Run tests with coverage report
+npm run test:coverage
+```

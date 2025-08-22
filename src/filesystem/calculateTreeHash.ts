@@ -1,7 +1,7 @@
 import fs from "fs"
 import crypto from "crypto"
-import { isIgnored } from "./isIgnored.ts"
-import { getCachedConfig } from "../config/config.ts"
+import { getIgnoreInstance } from "./isIgnored.ts"
+import { getCachedConfig } from "#config/config.ts"
 
 export function calculateTreeHash() {
   const hash = crypto.createHash("sha256")
@@ -15,8 +15,9 @@ export function calculateTreeHash() {
 export function listAllFilesForHashing() {
   const { projectPath } = getCachedConfig()
   const allFiles = fs.readdirSync(projectPath, { withFileTypes: true, recursive: true })
+  const ignoreInstance = getIgnoreInstance()
   const filteredFiles = allFiles
-    .filter(dirent => !isIgnored(dirent))
+    .filter(dirent => !ignoreInstance.isIgnored(dirent))
     .map(dirent => dirent.parentPath + "/" + dirent.name)
     // To relative path
     .map(file => file.replace(projectPath + "/", ""))

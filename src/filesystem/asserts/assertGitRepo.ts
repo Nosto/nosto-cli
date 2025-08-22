@@ -1,7 +1,7 @@
 import fs from "fs"
 import path from "path"
-import { Logger } from "../../console/logger.ts"
-import { getCachedConfig } from "../../config/config.ts"
+import { Logger } from "#console/logger.ts"
+import { getCachedConfig } from "#config/config.ts"
 import chalk from "chalk"
 
 export function assertGitRepo() {

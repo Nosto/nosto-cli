@@ -1,5 +1,5 @@
 import { fetchLibraryFile } from "#api/library/fetchLibraryFile.ts"
-import path from "node:path"
+import path from "path"
 import { writeFile } from "./filesystem.ts"
 import { Logger } from "#console/logger.ts"
 import chalk from "chalk"

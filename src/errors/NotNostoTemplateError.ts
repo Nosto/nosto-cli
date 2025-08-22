@@ -1,4 +1,4 @@
-import { Logger } from "../console/logger.ts"
+import { Logger } from "#console/logger.ts"
 import { NostoError } from "./NostoError.ts"
 
 export class NotNostoTemplateError extends NostoError {

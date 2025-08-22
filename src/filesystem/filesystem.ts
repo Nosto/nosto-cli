@@ -2,7 +2,7 @@ import path from "path"
 import fs from "fs"
 import { Logger } from "#console/logger.ts"
 import { getCachedConfig } from "#config/config.ts"
-import { isIgnored } from "./isIgnored.ts"
+import { getIgnoreInstance } from "./isIgnored.ts"
 
 export function writeFile(pathToWrite: string, data: string) {
   if (getCachedConfig().dryRun) {
@@ -24,12 +24,13 @@ export function readFileIfExists(pathToRead: string) {
 }
 
 export function listAllFiles(folder: string) {
-  const allFiles = fs.readdirSync(folder, { withFileTypes: true, recursive: true })
+  const allDirents = fs.readdirSync(folder, { withFileTypes: true, recursive: true })
+  const allFiles = allDirents.filter(dirent => !dirent.isDirectory())
+  const ignoreInstance = getIgnoreInstance()
   const filteredFiles = allFiles
-    .filter(dirent => !isIgnored(dirent))
+    .filter(dirent => !ignoreInstance.isIgnored(dirent))
     .map(dirent => dirent.parentPath + "/" + dirent.name)
-    // To relative path
-    .map(file => file.replace(folder + "/", ""))
+    .map(file => path.relative(folder, file))
   return {
     allFiles: filteredFiles,
     unfilteredFileCount: allFiles.length

@@ -54,7 +54,8 @@ export async function pushSearchTemplate({ paths, force }: PushSearchTemplateOpt
    * If remote hash doesn't match last seen remote hash, another user has pushed. Assume conflicts and show the warning.
    */
   const lastSeenRemoteHash = readFileIfExists(path.join(targetFolder, ".nostocache/hash"))
-  if (!remoteHash || !lastSeenRemoteHash || remoteHash !== lastSeenRemoteHash) {
+  const shouldPrompt = !remoteHash || !lastSeenRemoteHash || remoteHash !== lastSeenRemoteHash
+  if (!force && shouldPrompt) {
     let confirmationMessage = `It seems that the template has been changed since your last push. Are you sure you want to continue?`
     if (!remoteHash || !lastSeenRemoteHash) {
       confirmationMessage = `It seems that this is the first time you are pushing to this environment. Please make sure your local copy is up to date. Continue?`
@@ -89,7 +90,7 @@ export async function pushSearchTemplate({ paths, force }: PushSearchTemplateOpt
   )
 
   // Push the files in batches to avoid overwhelming the API (relevant mostly for local dev)
-  processInBatches({
+  await processInBatches({
     files,
     logIcon: chalk.magenta("↑"),
     processElement: async file => {

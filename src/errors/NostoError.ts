@@ -1,4 +1,4 @@
-import { Logger } from "../console/logger.ts"
+import { Logger } from "#console/logger.ts"
 
 export class NostoError extends Error {
   constructor(message: string) {

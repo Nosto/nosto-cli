@@ -70,7 +70,7 @@ export async function pullSearchTemplate({ paths, force }: PullSearchTemplateOpt
   }
 
   // Pull the files into batches to avoid overwhelming the API (relevant mostly for local dev)
-  processInBatches({
+  await processInBatches({
     files: files.map(file => file.path),
     logIcon: chalk.blue("↓"),
     processElement: async filePath => {
