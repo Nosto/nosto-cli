@@ -48,7 +48,7 @@ After installing dependencies:
 ### Code Quality Validation
 - `npm run lint` - Takes 6 seconds. Set timeout to 30+ seconds.
 - `npm run type-check` - Takes 2 seconds. Set timeout to 30+ seconds.
-- `npm run test` - Takes 5 seconds. Set timeout to 30+ seconds.
+- `npm run test` - Takes 20 seconds. Set timeout to 30+ seconds. Note: Some build tests may fail due to timeouts - this is expected without valid API credentials.
 
 ### Manual Functional Validation
 
@@ -170,7 +170,138 @@ tsconfig.json
 ```
 lint          - eslint
 prepare       - husky
+test          - vitest run
+test:watch    - vitest
+test:ui       - vitest --ui
+test:coverage - vitest run --coverage
 type-check    - tsc --noEmit
+```
+
+## Testing Guidelines
+
+**ALWAYS prefer integration-style tests over unit tests. Mock I/O only, avoid overmocking.**
+
+### Testing Philosophy
+
+This repository follows an **integration-first testing approach**:
+- Test real module behavior through actual API calls
+- Mock only I/O boundaries (file system, HTTP requests, console)
+- Use `vi.mock` sparingly and only for full modules when strictly necessary
+- CLI tests should flow through real code paths, not be overmocked
+- Focus on testing complete user workflows and scenarios
+
+### Test Infrastructure and Helpers
+
+The repository provides several well-designed test helpers for integration testing:
+
+#### `setupMockFileSystem()` - File System Mocking
+```typescript
+import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
+const fs = setupMockFileSystem()
+
+// Usage
+fs.writeFile("config.json", '{"apiKey": "test"}')
+fs.writeFolder("src")
+fs.expectFile("config.json").toContain('{"apiKey": "test"}')
+fs.expectFile("missing.txt").not.toExist()
+```
+
+#### `setupMockServer()` - HTTP Mocking with MSW
+```typescript
+import { setupMockServer, mockFetchSourceFile } from "#test/utils/mockServer.ts"
+const server = setupMockServer()
+
+// Usage
+mockFetchSourceFile(server, {
+  path: "index.js",
+  response: "console.log('test')"
+})
+```
+
+#### `setupMockConsole()` - User Interaction Mocking
+```typescript
+import { setupMockConsole } from "#test/utils/mockConsole.ts"
+const terminal = setupMockConsole()
+
+// Usage
+terminal.setUserResponse("y")
+terminal.expect.user.toHaveBeenPromptedWith("Continue? (y/N):")
+expect(terminal.getSpy("info")).toHaveBeenCalledWith("Success!")
+```
+
+#### `setupMockConfig()` - Configuration Mocking
+```typescript
+import { setupMockConfig } from "#test/utils/mockConfig.ts"
+setupMockConfig({ apiKey: "test-key", merchant: "test-merchant" })
+```
+
+### Testing DOs and DON'Ts
+
+#### ✅ DOs
+- **Use MSW for HTTP mocking** - Mock external API endpoints with realistic responses
+- **Use memfs for file system testing** - Test file operations without actual I/O
+- **Test complete workflows** - Validate entire user journeys from CLI input to output
+- **Use proper TypeScript types** - Avoid `any` and ensure type safety in tests
+- **Mock only I/O boundaries** - File system, HTTP, console interactions
+- **Test error scenarios** - Network failures, invalid configs, missing files
+- **Use existing test helpers** - `setupMockFileSystem`, `setupMockServer`, etc.
+- **Validate side effects** - Check file writes, API calls, console output
+- **Test CLI commands end-to-end** - Flow through real module code
+
+#### ❌ DON'Ts
+- **Don't overmock internal modules** - Avoid mocking business logic or internal functions
+- **Don't use `vi.mock` for partial mocking** - Only mock complete modules when necessary
+- **Don't use `@ts-ignore` or `any`** - Maintain type safety in test code
+- **Don't write trivial assertions** - Test meaningful behavior, not implementation details
+- **Don't mock what you don't own** - Mock external dependencies, not internal code
+- **Don't test implementation details** - Focus on public APIs and user-observable behavior
+- **Don't skip error scenarios** - Test both happy paths and failure cases
+
+### Code Review Guidelines for Tests
+
+**Flag these anti-patterns in code review:**
+- Excessive use of `vi.mock()` for internal modules
+- Mocking functions instead of I/O boundaries
+- Tests that don't validate real user workflows
+- Missing integration tests for CLI commands
+- Tests using `any` or `@ts-ignore`
+- Trivial assertions that don't test meaningful behavior
+
+### Writing Tests for This Repository
+
+1. **Start with integration tests** - Test the complete module behavior
+2. **Use provided test helpers** - Don't reinvent file/HTTP/console mocking
+3. **Mock only I/O** - File system, HTTP, console, external processes
+4. **Test CLI flows** - Validate commands work end-to-end
+5. **Cover error cases** - Network failures, invalid inputs, missing permissions
+
+### Test Structure Example
+```typescript
+import { describe, it, expect } from "vitest"
+import { myCommand } from "#modules/myCommand.ts"
+import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
+import { setupMockServer } from "#test/utils/mockServer.ts"
+import { setupMockConsole } from "#test/utils/mockConsole.ts"
+
+// Set up test environment
+const fs = setupMockFileSystem()
+const server = setupMockServer()
+const terminal = setupMockConsole()
+
+describe("My Command", () => {
+  it("should perform complete workflow", async () => {
+    // Arrange
+    fs.writeFile(".nosto.json", '{"apiKey":"test"}')
+    mockFetchSourceFile(server, { path: "test.js", response: "code" })
+    
+    // Act
+    await myCommand({ force: true })
+    
+    // Assert
+    fs.expectFile("output.js").toExist()
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith("Success!")
+  })
+})
 ```
 
 ### Known Issues and Workarounds
@@ -178,4 +309,8 @@ type-check    - tsc --noEmit
 1. **Node.js Version Requirement**: `src/bootstrap.sh` uses `--experimental-strip-types` which requires Node.js 22+. Use `tsx` as alternative for development with older Node.js versions.
 2. **API Dependencies**: Most CLI functionality requires valid Nosto API credentials. Use `--dry-run` for testing without credentials.
 3. **Network Failures Expected**: Build commands will fail without valid API access - this is normal during development.
+
+### Contributing
+
+If you find these testing guidelines unclear or incomplete, please improve them via PR. Clear, actionable testing guidance helps maintain code quality and developer productivity.
 
