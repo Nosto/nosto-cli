@@ -7,7 +7,7 @@ const mockBuildSearchTemplate = vi.fn()
 const mockSearchTemplateDevMode = vi.fn()
 const mockPrintStatus = vi.fn()
 const mockPrintSetupHelp = vi.fn()
-const mockWithErrorHandler = vi.fn((fn) => fn())
+const mockWithErrorHandler = vi.fn(fn => fn())
 const mockWithSafeEnvironment = vi.fn(async (props, fn) => await fn())
 
 vi.mock("#modules/search-templates/pull.ts", () => ({
@@ -48,6 +48,7 @@ describe("CLI Index", () => {
 
   beforeEach(() => {
     // Mock process.exit to prevent actual exit during tests
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     process.exit = vi.fn() as any
     // Set minimal process.argv to avoid parsing issues
     process.argv = ["node", "nostocli"]
@@ -72,16 +73,16 @@ describe("CLI Index", () => {
     // Import commander and the index
     const { program } = await import("commander")
     await import("#index.ts")
-    
+
     expect(program.name()).toBe("nostocli")
-    expect(program.version()).toBe("1.0.0") 
+    expect(program.version()).toBe("1.0.0")
     expect(program.description()).toBe("Nosto CLI tool. Use `nostocli setup` to get started.")
   })
 
   it("should register setup command", async () => {
     const { program } = await import("commander")
     await import("#index.ts")
-    
+
     const setupCommand = program.commands.find(cmd => cmd.name() === "setup")
     expect(setupCommand).toBeDefined()
     expect(setupCommand?.description()).toBe("Prints setup information")
@@ -90,7 +91,7 @@ describe("CLI Index", () => {
   it("should register status command", async () => {
     const { program } = await import("commander")
     await import("#index.ts")
-    
+
     const statusCommand = program.commands.find(cmd => cmd.name() === "status")
     expect(statusCommand).toBeDefined()
     expect(statusCommand?.description()).toBe("Print the configuration status")
@@ -99,7 +100,7 @@ describe("CLI Index", () => {
   it("should register st command with alias", async () => {
     const { program } = await import("commander")
     await import("#index.ts")
-    
+
     const stCommand = program.commands.find(cmd => cmd.name() === "st")
     expect(stCommand).toBeDefined()
     expect(stCommand?.description()).toBe("Search templates management commands")
@@ -109,7 +110,7 @@ describe("CLI Index", () => {
   it("should register st build subcommand", async () => {
     const { program } = await import("commander")
     await import("#index.ts")
-    
+
     const stCommand = program.commands.find(cmd => cmd.name() === "st")
     const buildCommand = stCommand?.commands.find(cmd => cmd.name() === "build")
     expect(buildCommand).toBeDefined()
@@ -119,7 +120,7 @@ describe("CLI Index", () => {
   it("should register st pull subcommand", async () => {
     const { program } = await import("commander")
     await import("#index.ts")
-    
+
     const stCommand = program.commands.find(cmd => cmd.name() === "st")
     const pullCommand = stCommand?.commands.find(cmd => cmd.name() === "pull")
     expect(pullCommand).toBeDefined()
@@ -129,7 +130,7 @@ describe("CLI Index", () => {
   it("should register st push subcommand", async () => {
     const { program } = await import("commander")
     await import("#index.ts")
-    
+
     const stCommand = program.commands.find(cmd => cmd.name() === "st")
     const pushCommand = stCommand?.commands.find(cmd => cmd.name() === "push")
     expect(pushCommand).toBeDefined()
@@ -139,20 +140,22 @@ describe("CLI Index", () => {
   it("should register st dev subcommand", async () => {
     const { program } = await import("commander")
     await import("#index.ts")
-    
+
     const stCommand = program.commands.find(cmd => cmd.name() === "st")
     const devCommand = stCommand?.commands.find(cmd => cmd.name() === "dev")
     expect(devCommand).toBeDefined()
-    expect(devCommand?.description()).toBe("Build the search-templates locally, watch for changes and continuously upload")
+    expect(devCommand?.description()).toBe(
+      "Build the search-templates locally, watch for changes and continuously upload"
+    )
   })
 
   it("should configure st build command options", async () => {
     const { program } = await import("commander")
     await import("#index.ts")
-    
+
     const stCommand = program.commands.find(cmd => cmd.name() === "st")
     const buildCommand = stCommand?.commands.find(cmd => cmd.name() === "build")
-    
+
     const options = buildCommand?.options
     expect(options?.some(opt => opt.long === "--dry-run")).toBe(true)
     expect(options?.some(opt => opt.long === "--verbose")).toBe(true)
@@ -162,10 +165,10 @@ describe("CLI Index", () => {
   it("should configure st pull command options", async () => {
     const { program } = await import("commander")
     await import("#index.ts")
-    
+
     const stCommand = program.commands.find(cmd => cmd.name() === "st")
     const pullCommand = stCommand?.commands.find(cmd => cmd.name() === "pull")
-    
+
     const options = pullCommand?.options
     expect(options?.some(opt => opt.long === "--paths")).toBe(true)
     expect(options?.some(opt => opt.long === "--dry-run")).toBe(true)
@@ -177,10 +180,10 @@ describe("CLI Index", () => {
   it("should configure st push command options", async () => {
     const { program } = await import("commander")
     await import("#index.ts")
-    
+
     const stCommand = program.commands.find(cmd => cmd.name() === "st")
     const pushCommand = stCommand?.commands.find(cmd => cmd.name() === "push")
-    
+
     const options = pushCommand?.options
     expect(options?.some(opt => opt.long === "--paths")).toBe(true)
     expect(options?.some(opt => opt.long === "--dry-run")).toBe(true)
@@ -192,10 +195,10 @@ describe("CLI Index", () => {
   it("should configure st dev command options", async () => {
     const { program } = await import("commander")
     await import("#index.ts")
-    
+
     const stCommand = program.commands.find(cmd => cmd.name() === "st")
     const devCommand = stCommand?.commands.find(cmd => cmd.name() === "dev")
-    
+
     const options = devCommand?.options
     expect(options?.some(opt => opt.long === "--dry-run")).toBe(true)
     expect(options?.some(opt => opt.long === "--verbose")).toBe(true)
@@ -205,7 +208,7 @@ describe("CLI Index", () => {
     // This test verifies that index.ts calls program.parse by checking that no error is thrown
     // and that the CLI commands are properly set up, which means parse() was executed successfully
     await import("#index.ts")
-    
+
     // If we reach this point without errors, program.parse was called successfully
     expect(true).toBe(true)
   })
