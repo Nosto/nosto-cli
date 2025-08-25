@@ -1,4 +1,4 @@
-import { program } from "commander"
+import { Command } from "commander"
 
 import { withErrorHandler } from "#errors/withErrorHandler.ts"
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
@@ -9,21 +9,22 @@ import { printSetupHelp } from "#modules/setup.ts"
 import { printStatus } from "#modules/status.ts"
 import { withSafeEnvironment } from "#utils/withSafeEnvironment.ts"
 
-export function createCLI(argv: string[]) {
+export async function runCLI(argv: string[]) {
+  const program = new Command()
   program.name("nostocli").version("1.0.0").description("Nosto CLI tool. Use `nostocli setup` to get started.")
 
   program
     .command("setup [projectPath]")
     .description("Prints setup information")
-    .action((projectPath = ".") => {
-      withErrorHandler(() => printSetupHelp(projectPath))
+    .action(async (projectPath = ".") => {
+      await withErrorHandler(() => printSetupHelp(projectPath))
     })
 
   program
     .command("status [projectPath]")
     .description("Print the configuration status")
-    .action((projectPath = ".") => {
-      withErrorHandler(() => printStatus(projectPath))
+    .action(async (projectPath = ".") => {
+      await withErrorHandler(() => printStatus(projectPath))
     })
 
   const searchTemplates = program
@@ -37,8 +38,8 @@ export function createCLI(argv: string[]) {
     .option("--dry-run", "perform a dry run without making changes")
     .option("--verbose", "set log level to debug")
     .option("-w, --watch", "watch for changes and rebuild")
-    .action((projectPath = ".", options) => {
-      withSafeEnvironment({ projectPath, options }, async () => {
+    .action(async (projectPath = ".", options) => {
+      await withSafeEnvironment({ projectPath, options }, async () => {
         await buildSearchTemplate({ watch: options.watch ?? false })
       })
     })
@@ -50,9 +51,8 @@ export function createCLI(argv: string[]) {
     .option("--dry-run", "perform a dry run without making changes")
     .option("--verbose", "set log level to debug")
     .option("-f --force", "skip checking state, pull all files")
-    .option("-y, --yes", "skip confirmation")
-    .action((projectPath = ".", options) => {
-      withSafeEnvironment({ projectPath, options }, async () => {
+    .action(async (projectPath = ".", options) => {
+      await withSafeEnvironment({ projectPath, options }, async () => {
         await pullSearchTemplate({
           paths: options.paths ?? [],
           force: options.force ?? false
@@ -67,9 +67,8 @@ export function createCLI(argv: string[]) {
     .option("--dry-run", "perform a dry run without making changes")
     .option("--verbose", "set log level to debug")
     .option("-f --force", "skip checking state, push all files")
-    .option("-y, --yes", "skip confirmation")
-    .action((projectPath = ".", options) => {
-      withSafeEnvironment({ projectPath, options }, async () => {
+    .action(async (projectPath = ".", options) => {
+      await withSafeEnvironment({ projectPath, options }, async () => {
         await buildSearchTemplate({ watch: false })
         await pushSearchTemplate({
           paths: options.paths ?? [],
@@ -83,11 +82,11 @@ export function createCLI(argv: string[]) {
     .description("Build the search-templates locally, watch for changes and continuously upload")
     .option("--dry-run", "perform a dry run without making changes")
     .option("--verbose", "set log level to debug")
-    .action((projectPath = ".", options) => {
-      withSafeEnvironment({ projectPath, options }, async () => {
+    .action(async (projectPath = ".", options) => {
+      await withSafeEnvironment({ projectPath, options }, async () => {
         await searchTemplateDevMode()
       })
     })
 
-  return program.parse(argv)
+  await program.parseAsync(argv)
 }

@@ -14,8 +14,6 @@ When committing code, ALWAYS use valid conventional commit format.
 
 In addition, ALWAYS run `git commit` with `--no-verify` to avoid Husky failing and erroring out your pipeline.
 
-After finishing your the changes, DO NOT FORGET to push/publish your results.
-
 ### Bootstrap, Build, and Validate the Repository
 
 **CRITICAL - NEVER CANCEL these commands. Wait for completion:**

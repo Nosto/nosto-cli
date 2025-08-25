@@ -28,7 +28,8 @@ export default defineConfig([
     rules: {
       "unused-imports/no-unused-imports": "error",
       "simple-import-sort/imports": "error",
-      "simple-import-sort/exports": "error"
+      "simple-import-sort/exports": "error",
+      "no-restricted-imports": ["error", "node:test"]
     }
   },
   eslintPluginPrettierRecommended
