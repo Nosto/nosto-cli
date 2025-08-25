@@ -1,4 +1,5 @@
 import chalk from "chalk"
+
 import { getCachedConfig, loadConfig } from "#config/config.ts"
 import { Logger } from "#console/logger.ts"
 import { MissingConfigurationError } from "#errors/MissingConfigurationError.ts"

@@ -1,8 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
-import { buildSearchTemplate } from "#modules/search-templates/build.ts"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+
 import * as esbuild from "#filesystem/esbuild.ts"
-import { setupMockServer, mockFetchLibraryFile } from "#test/utils/mockServer.ts"
+import { buildSearchTemplate } from "#modules/search-templates/build.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
+import { mockFetchLibraryFile, setupMockServer } from "#test/utils/mockServer.ts"
 
 const server = setupMockServer()
 

@@ -1,11 +1,12 @@
+import chalk from "chalk"
+import fs from "fs"
+import path from "path"
+
+import { getDefaultConfig } from "#config/config.ts"
 import { EnvVariables } from "#config/envConfig.ts"
 import { Logger } from "#console/logger.ts"
-import chalk from "chalk"
-import path from "path"
-import fs from "fs"
 import { promptForConfirmation } from "#console/userPrompt.ts"
 import { writeFile } from "#filesystem/filesystem.ts"
-import { getDefaultConfig } from "#config/config.ts"
 
 export async function printSetupHelp(projectPath: string) {
   const defaultConfig = getDefaultConfig()

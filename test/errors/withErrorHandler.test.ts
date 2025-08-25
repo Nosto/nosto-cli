@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from "vitest"
-import { withErrorHandler } from "#errors/withErrorHandler.ts"
+import { describe, expect, it, vi } from "vitest"
+
 import { MissingConfigurationError } from "#errors/MissingConfigurationError.ts"
+import { withErrorHandler } from "#errors/withErrorHandler.ts"
 
 describe("Error Handler", () => {
   it("should execute function without error handling if no error occurs", async () => {

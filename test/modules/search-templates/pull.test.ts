@@ -1,8 +1,9 @@
 import { describe, it } from "vitest"
+
 import { pullSearchTemplate } from "#modules/search-templates/pull.ts"
-import { mockFetchSourceFile, mockListSourceFiles, setupMockServer } from "#test/utils/mockServer.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
 import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
+import { mockFetchSourceFile, mockListSourceFiles, setupMockServer } from "#test/utils/mockServer.ts"
 
 const fs = setupMockFileSystem()
 const server = setupMockServer()

@@ -17,6 +17,7 @@
   "description": "",
   "scripts": {
     "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "prepare": "husky",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -43,6 +44,8 @@
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-unused-imports": "^4.2.0",
     "husky": "^9.1.7",
     "memfs": "^4.36.3",
     "msw": "^2.10.5",

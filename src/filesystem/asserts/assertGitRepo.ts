@@ -1,8 +1,9 @@
+import chalk from "chalk"
 import fs from "fs"
 import path from "path"
-import { Logger } from "#console/logger.ts"
+
 import { getCachedConfig } from "#config/config.ts"
-import chalk from "chalk"
+import { Logger } from "#console/logger.ts"
 
 export function assertGitRepo() {
   const { projectPath } = getCachedConfig()

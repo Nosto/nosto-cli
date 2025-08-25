@@ -1,6 +1,7 @@
-import { expect } from "vitest"
 import fs from "fs"
 import path from "path"
+import { expect } from "vitest"
+
 import { testVolume } from "#test/setup.ts"
 
 export function setupMockFileSystem() {

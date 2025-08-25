@@ -1,7 +1,9 @@
-import path from "path"
 import fs from "fs"
-import { Logger } from "#console/logger.ts"
+import path from "path"
+
 import { getCachedConfig } from "#config/config.ts"
+import { Logger } from "#console/logger.ts"
+
 import { getIgnoreInstance } from "./isIgnored.ts"
 
 export function writeFile(pathToWrite: string, data: string) {

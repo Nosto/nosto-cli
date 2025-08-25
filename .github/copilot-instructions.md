@@ -10,7 +10,11 @@ This is a TypeScript CLI tool for interacting with Nosto's backend systems. The 
 
 **CRITICAL NOTE:**
 
-When committing code, ALWAYS run `git commit` with `--no-verify` to avoid Husky failing and erroring out your pipeline.
+When committing code, ALWAYS use valid conventional commit format.
+
+In addition, ALWAYS run `git commit` with `--no-verify` to avoid Husky failing and erroring out your pipeline.
+
+After finishing your the changes, DO NOT FORGET to push/publish your results.
 
 ### Bootstrap, Build, and Validate the Repository
 
@@ -278,6 +282,8 @@ setupMockConfig({ apiKey: "test-key", merchant: "test-merchant" })
 3. **Mock only I/O** - File system, HTTP, console, external processes
 4. **Test CLI flows** - Validate commands work end-to-end
 5. **Cover error cases** - Network failures, invalid inputs, missing permissions
+6. **Ensure clean output** - Test runs should be clean without warnings or unexpected console output
+7. **Avoid side effects** - Tests must never perform real network request or write real files
 
 ### Test Structure Example
 ```typescript

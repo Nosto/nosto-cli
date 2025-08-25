@@ -1,6 +1,8 @@
-import { defineConfig } from "eslint/config"
 import js from "@eslint/js"
+import { defineConfig } from "eslint/config"
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
+import simpleImportSort from "eslint-plugin-simple-import-sort"
+import unusedImports from "eslint-plugin-unused-imports"
 import tseslint from "typescript-eslint"
 
 export default defineConfig([
@@ -16,6 +18,17 @@ export default defineConfig([
       parserOptions: {
         project: "./tsconfig.json"
       }
+    }
+  },
+  {
+    plugins: {
+      "unused-imports": unusedImports,
+      "simple-import-sort": simpleImportSort
+    },
+    rules: {
+      "unused-imports/no-unused-imports": "error",
+      "simple-import-sort/imports": "error",
+      "simple-import-sort/exports": "error"
     }
   },
   eslintPluginPrettierRecommended

@@ -1,8 +1,10 @@
-import { Logger } from "#console/logger.ts"
 import path from "node:path"
+
 import chalk from "chalk"
-import { getBuildContext } from "#filesystem/esbuild.ts"
+
 import { getCachedConfig } from "#config/config.ts"
+import { Logger } from "#console/logger.ts"
+import { getBuildContext } from "#filesystem/esbuild.ts"
 import { loadLibrary } from "#filesystem/loadLibrary.ts"
 
 type Props = {

@@ -1,9 +1,10 @@
 import { Dirent } from "fs"
-import { getCachedConfig } from "#config/config.ts"
 import fs from "fs"
-import path from "path"
-import ignore from "ignore"
 import type { Ignore } from "ignore"
+import ignore from "ignore"
+import path from "path"
+
+import { getCachedConfig } from "#config/config.ts"
 
 function isIgnoredImplicitly(dirent: Dirent): boolean {
   const { projectPath } = getCachedConfig()

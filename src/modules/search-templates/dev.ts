@@ -1,5 +1,6 @@
-import { Logger } from "#console/logger.ts"
 import chalk from "chalk"
+
+import { Logger } from "#console/logger.ts"
 import { getBuildContext } from "#filesystem/esbuild.ts"
 import { pushOnRebuildPlugin } from "#filesystem/plugins.ts"
 
