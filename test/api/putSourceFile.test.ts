@@ -12,8 +12,9 @@ describe("putSourceFile", () => {
 
     await putSourceFile("test.txt", "file content")
 
-    endpoint.expect.toHaveBeenCalled()
-    endpoint.expect.toHaveBeenCalledWith("file content")
+    const invocations = endpoint.invocations
+    expect(endpoint.invocations.length).toBeGreaterThan(0)
+    expect(invocations.some(invocation => invocation === "file content")).toBe(true)
   })
 
   it("throws an error for status code 404", async () => {
@@ -28,6 +29,6 @@ describe("putSourceFile", () => {
 
     await putSourceFile("test.txt", "file content")
 
-    endpoint.expect.not.toHaveBeenCalled()
+    expect(endpoint.invocations.length).toBe(0)
   })
 })

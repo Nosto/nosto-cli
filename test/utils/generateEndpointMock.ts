@@ -1,6 +1,5 @@
 import { type DefaultBodyType, http, HttpResponse, StrictRequest } from "msw"
 import type { SetupServer } from "msw/node"
-import { expect } from "vitest"
 
 type HttpMethod = keyof typeof http
 
@@ -44,22 +43,6 @@ export const generateEndpointMock = (
 
   return {
     invocations,
-    expect: {
-      toHaveBeenCalled: () => {
-        expect(invocations.length, "The endpoint has not been called").toBeGreaterThan(0)
-      },
-      toHaveBeenCalledWith: (jsonBody: unknown) => {
-        expect(
-          invocations.some(invocation => JSON.stringify(invocation) === JSON.stringify(jsonBody)),
-          "No invocation parameter matched the pattern"
-        ).toBe(true)
-      },
-      not: {
-        toHaveBeenCalled: () => {
-          expect(invocations.length, "The endpoint has been called").toBe(0)
-        }
-      }
-    },
     clearInvocations: () => {
       invocations = []
     }
