@@ -11,50 +11,50 @@ const formatTimestamp = (date: Date): string => {
 }
 
 const Presets = {
-  debug: {
+  debug: () => ({
     color: chalk.gray,
     prefix: chalk.gray("[DEBUG]"),
     logger: console.debug,
     logLevel: 0
-  },
-  info: {
+  }),
+  info: () => ({
     color: chalk.white,
     prefix: chalk.white("[INFO] "),
     logger: console.info,
     logLevel: 1
-  },
-  success: {
+  }),
+  success: () => ({
     color: chalk.green,
     prefix: chalk.green("[SUCCESS] "),
     logger: console.info,
     logLevel: 1
-  },
-  warn: {
+  }),
+  warn: () => ({
     color: chalk.yellow,
     prefix: chalk.yellow("[WARN] "),
     logger: console.warn,
     logLevel: 2
-  },
-  error: {
+  }),
+  error: () => ({
     color: chalk.red,
     prefix: chalk.red("[ERROR]"),
     logger: console.error,
     logLevel: 3
-  }
+  })
 }
 
-const printToLog = (message: string, preset: (typeof Presets)[keyof typeof Presets], extra?: unknown) => {
+const printToLog = (message: string, presetFunc: (typeof Presets)[keyof typeof Presets], extra?: unknown) => {
   const targetLogLevel = LogLevel.indexOf(Logger.context.logLevel)
+  const preset = presetFunc()
   if (targetLogLevel > preset.logLevel) {
     return
   }
-  message = typeof message === "string" ? message : JSON.stringify(message, null, 2)
   const timestamp = chalk.dim(formatTimestamp(new Date()))
   const merchantId = Logger.context.merchantId ? `[${chalk.greenBright(Logger.context.merchantId)}] ` : "| "
   const dryRun = Logger.context.isDryRun ? chalk.dim("(DRY RUN) ") : ""
   preset.logger(`${timestamp} ${dryRun}${merchantId}${preset.color(message)}`)
   if (extra) {
-    preset.logger(chalk.dim(JSON.stringify(extra, null, 2)))
+    preset.logger(chalk.dim(extra, null, 2))
   }
 }
 
@@ -67,7 +67,7 @@ export const Logger = {
   raw: (message: string, extra?: unknown) => {
     console.log(message)
     if (extra) {
-      console.log(JSON.stringify(extra, null, 2))
+      console.log(extra)
     }
   },
 
