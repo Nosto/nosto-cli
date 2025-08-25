@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest"
-import { getEnvConfig, EnvVariables } from "#config/envConfig.ts"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
+
+import { EnvVariables, getEnvConfig } from "#config/envConfig.ts"
 
 describe("Env Config", () => {
   const originalEnv = process.env

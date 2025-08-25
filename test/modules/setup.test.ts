@@ -1,7 +1,8 @@
-import { describe, it, expect } from "vitest"
+import { describe, expect, it } from "vitest"
+
 import { printSetupHelp } from "#modules/setup.ts"
-import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
+import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
 
 const fs = setupMockFileSystem()
 const terminal = setupMockConsole()

@@ -1,10 +1,12 @@
-import { fetchLibraryFile } from "#api/library/fetchLibraryFile.ts"
-import path from "path"
-import { writeFile } from "./filesystem.ts"
-import { Logger } from "#console/logger.ts"
 import chalk from "chalk"
-import { cleanUrl } from "#api/utils.ts"
+import path from "path"
+
+import { fetchLibraryFile } from "#api/library/fetchLibraryFile.ts"
 import { fetchWithRetry } from "#api/retry.ts"
+import { cleanUrl } from "#api/utils.ts"
+import { Logger } from "#console/logger.ts"
+
+import { writeFile } from "./filesystem.ts"
 
 export async function loadLibrary(libraryPath: string) {
   const filesToLoad = ["/nosto.module.js", "/nosto.module.js.map", "/nosto.d.ts"]

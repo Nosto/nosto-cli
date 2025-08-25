@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest"
-import { PersistentConfigSchema, RuntimeConfigSchema, LogLevel } from "#config/schema.ts"
+import { describe, expect, it } from "vitest"
+
+import { LogLevel, PersistentConfigSchema, RuntimeConfigSchema } from "#config/schema.ts"
 
 describe("Config Schema", () => {
   describe("PersistentConfigSchema", () => {

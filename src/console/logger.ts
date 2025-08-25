@@ -1,4 +1,5 @@
 import chalk from "chalk"
+
 import { LogLevel } from "#config/schema.ts"
 
 const formatTimestamp = (date: Date): string => {

@@ -1,10 +1,12 @@
+import { resolve } from "path"
+
 import { cleanUrl } from "#api/utils.ts"
 import { Logger } from "#console/logger.ts"
 import { MissingConfigurationError } from "#errors/MissingConfigurationError.ts"
+
 import { getEnvConfig } from "./envConfig.ts"
 import { parseConfigFile } from "./fileConfig.ts"
-import { type Config, PersistentConfigSchema, type PersistentConfig, RuntimeConfigSchema } from "./schema.ts"
-import { resolve } from "path"
+import { type Config, type PersistentConfig, PersistentConfigSchema, RuntimeConfigSchema } from "./schema.ts"
 
 let isConfigLoaded = false
 let cachedConfig: Config = {

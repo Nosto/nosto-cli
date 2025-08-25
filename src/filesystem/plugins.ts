@@ -1,10 +1,12 @@
-import * as esbuild from "esbuild"
 import path from "node:path"
-import fs from "fs"
-import { getLoaderScript } from "#filesystem/utils/getLoaderScript.ts"
-import { Logger } from "#console/logger.ts"
-import { getCachedConfig } from "#config/config.ts"
+
 import chalk from "chalk"
+import * as esbuild from "esbuild"
+import fs from "fs"
+
+import { getCachedConfig } from "#config/config.ts"
+import { Logger } from "#console/logger.ts"
+import { getLoaderScript } from "#filesystem/utils/getLoaderScript.ts"
 import { pushSearchTemplate } from "#modules/search-templates/push.ts"
 
 export function createLoaderPlugin(): esbuild.Plugin {

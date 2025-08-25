@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest"
+
 import { listAllFiles, writeFile } from "#filesystem/filesystem.ts"
-import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
+import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
 
 const mockFileSystem = setupMockFileSystem()
 

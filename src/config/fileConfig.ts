@@ -1,8 +1,10 @@
+import fs from "fs"
 import path from "path"
 import z from "zod"
-import fs from "fs"
-import { type PartialConfig, PartialConfigSchema } from "./schema.ts"
+
 import { Logger } from "#console/logger.ts"
+
+import { type PartialConfig, PartialConfigSchema } from "./schema.ts"
 
 export function parseConfigFile(targetPath: string): PartialConfig {
   const configPath = path.join(targetPath, ".nosto.json")

@@ -1,6 +1,7 @@
+import { Volume } from "memfs"
 import { beforeEach } from "vitest"
 import { vi } from "vitest"
-import { Volume } from "memfs"
+
 import { mockedConsoleIn, mockedConsoleOut } from "./utils/mockConsole.ts"
 
 export const testVolume = Volume.fromJSON({}, "/")

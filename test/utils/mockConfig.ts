@@ -1,6 +1,7 @@
 import { beforeEach, vi } from "vitest"
-import { type Config } from "#config/schema.ts"
+
 import * as config from "#config/config.ts"
+import { type Config } from "#config/schema.ts"
 
 export function setupMockConfig(overrides: Partial<Config> = {}) {
   const mockConfig: Config = {

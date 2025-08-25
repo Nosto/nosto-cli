@@ -1,7 +1,9 @@
-import fs from "fs"
 import crypto from "crypto"
-import { getIgnoreInstance } from "./isIgnored.ts"
+import fs from "fs"
+
 import { getCachedConfig } from "#config/config.ts"
+
+import { getIgnoreInstance } from "./isIgnored.ts"
 
 export function calculateTreeHash() {
   const hash = crypto.createHash("sha256")

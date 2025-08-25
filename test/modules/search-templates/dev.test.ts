@@ -1,6 +1,7 @@
-import { describe, it, vi, beforeEach, expect } from "vitest"
-import { searchTemplateDevMode } from "#modules/search-templates/dev.ts"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+
 import * as esbuild from "#filesystem/esbuild.ts"
+import { searchTemplateDevMode } from "#modules/search-templates/dev.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
 
 const mockConsole = setupMockConsole()

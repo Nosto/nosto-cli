@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest"
+import { describe, expect, it } from "vitest"
+
 import { pushSearchTemplate } from "#modules/search-templates/push.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
-import { mockPutSourceFile, setupMockServer } from "#test/utils/mockServer.ts"
-import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
+import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
+import { mockPutSourceFile, setupMockServer } from "#test/utils/mockServer.ts"
 
 const fs = setupMockFileSystem()
 const server = setupMockServer()

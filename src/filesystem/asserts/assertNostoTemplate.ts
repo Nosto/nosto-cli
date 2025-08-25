@@ -1,9 +1,10 @@
+import chalk from "chalk"
 import fs from "fs"
 import path from "path"
+
+import { getCachedConfig } from "#config/config.ts"
 import { Logger } from "#console/logger.ts"
 import { NotNostoTemplateError } from "#errors/NotNostoTemplateError.ts"
-import { getCachedConfig } from "#config/config.ts"
-import chalk from "chalk"
 
 export function assertNostoTemplate() {
   const { projectPath } = getCachedConfig()
