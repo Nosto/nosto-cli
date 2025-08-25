@@ -1,8 +1,8 @@
-import { describe, expect } from "vitest"
+import { describe, expect, it } from "vitest"
 
 import { putSourceFile } from "#api/source/putSourceFile.js"
-import { mockFetchSourceFile, mockPutSourceFile, setupMockServer } from "#test/utils/mockServer.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
+import { mockFetchSourceFile, mockPutSourceFile, setupMockServer } from "#test/utils/mockServer.ts"
 
 const server = setupMockServer()
 

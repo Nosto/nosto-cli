@@ -1,4 +1,4 @@
-import { describe, expect } from "vitest"
+import { describe, expect, it } from "vitest"
 
 import { fetchSourceFileIfExists } from "#api/source/fetchSourceFile.js"
 import { mockFetchSourceFile, setupMockServer } from "#test/utils/mockServer.ts"
