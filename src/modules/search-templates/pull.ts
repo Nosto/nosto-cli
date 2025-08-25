@@ -64,7 +64,7 @@ export async function pullSearchTemplate({ paths, force }: PullSearchTemplateOpt
 
     // Ask for confirmation
     const confirmed = await promptForConfirmation(`Are you sure you want to override your local data?`, "N")
-    if (!confirmed) {
+    if (!confirmed && !force) {
       Logger.info("Operation cancelled by user")
       return
     }

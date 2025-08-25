@@ -62,7 +62,7 @@ export async function pushSearchTemplate({ paths, force }: PushSearchTemplateOpt
       confirmationMessage = `It seems that this is the first time you are pushing to this environment. Please make sure your local copy is up to date. Continue?`
     }
     const confirmed = await promptForConfirmation(confirmationMessage, "N")
-    if (!confirmed) {
+    if (!confirmed && !force) {
       Logger.info("Push operation cancelled by user.")
       return
     }

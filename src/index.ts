@@ -1,3 +1,3 @@
-import { createCLI } from "#commander.ts"
+import { runCLI } from "#commander.ts"
 
-createCLI(process.argv)
+runCLI(process.argv)
