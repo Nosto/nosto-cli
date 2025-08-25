@@ -20,9 +20,3 @@ export function setupMockCommander() {
     }
   }
 }
-
-type AnyFn = (...args: never[]) => unknown
-
-export type SpyableKeys<T> = keyof {
-  [P in keyof Required<T> as Required<T>[P] extends AnyFn ? P : never]: Required<T>[P]
-}
