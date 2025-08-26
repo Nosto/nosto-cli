@@ -1,4 +1,4 @@
-import { type DefaultBodyType, http, HttpResponse } from "msw"
+import { type DefaultBodyType, http, HttpResponse, StrictRequest } from "msw"
 import type { SetupServer } from "msw/node"
 
 type HttpMethod = keyof typeof http
@@ -13,9 +13,9 @@ export const generateEndpointMock = (
   server: SetupServer,
   { method, path, ...params }: { method: HttpMethod; path: string } & MockParams<DefaultBodyType>
 ) => {
-  let invocations: { jsonBody: unknown }[] = []
+  let invocations: unknown[] = []
 
-  const handler = http[method](path, async () => {
+  const handler = http[method](path, async ({ request }) => {
     const status = (() => {
       if ("error" in params) {
         return params.error.status
@@ -34,13 +34,27 @@ export const generateEndpointMock = (
       return undefined
     })()
 
+    const requestsWithBody = ["POST", "PUT", "PATCH"]
+    invocations.push(requestsWithBody.includes(request.method) ? await toBody(request) : {})
+
     return HttpResponse.json(returnedResponse, { status })
   })
   server.use(handler)
 
   return {
     invocations,
-    hasBeenCalled: () => invocations.length > 0,
-    clearInvocations: () => (invocations = [])
+    clearInvocations: () => {
+      invocations = []
+    }
   }
+}
+
+async function toBody(request: StrictRequest<DefaultBodyType>) {
+  const text = await request.text()
+  try {
+    return JSON.parse(text)
+  } catch {
+    // Throwing here would trigger actual API request in test
+  }
+  return text
 }

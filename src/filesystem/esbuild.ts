@@ -1,4 +1,4 @@
-import * as esbuild from "esbuild"
+import { context, type Plugin } from "esbuild"
 import path from "path"
 
 import { getCachedConfig } from "#config/config.ts"
@@ -6,13 +6,13 @@ import { getCachedConfig } from "#config/config.ts"
 import { createLoaderPlugin, notifyOnRebuildPlugin } from "./plugins.ts"
 
 export type EsbuildContextOptions = {
-  plugins?: esbuild.Plugin[]
+  plugins?: Plugin[]
 }
 
 export function getBuildContext(options: EsbuildContextOptions = {}) {
   const { plugins = [] } = options
   const { projectPath } = getCachedConfig()
-  return esbuild.context({
+  return context({
     bundle: true,
     minify: true,
     write: true,

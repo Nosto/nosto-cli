@@ -1,17 +1,23 @@
+import * as esbuild from "esbuild"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import * as esbuild from "#filesystem/esbuild.ts"
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { mockFetchLibraryFile, setupMockServer } from "#test/utils/mockServer.ts"
 
 const server = setupMockServer()
 
+vi.mock("esbuild", () => ({
+  context: vi.fn()
+}))
+
 describe("Build Search Templates", () => {
   const mockContext = {
     rebuild: vi.fn(),
     dispose: vi.fn(),
-    watch: vi.fn()
+    watch: vi.fn(),
+    serve: vi.fn(),
+    cancel: vi.fn()
   }
 
   beforeEach(() => {
@@ -21,9 +27,7 @@ describe("Build Search Templates", () => {
       projectPath: "/test-project"
     })
 
-    vi.spyOn(esbuild, "getBuildContext").mockReturnValue(
-      mockContext as unknown as ReturnType<typeof esbuild.getBuildContext>
-    )
+    vi.mocked(esbuild.context).mockResolvedValue(mockContext)
 
     // Mock library file fetches
     mockFetchLibraryFile(server, {

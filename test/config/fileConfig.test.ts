@@ -51,5 +51,11 @@ describe("File Config", () => {
 
       expect(() => parseConfigFile(".")).toThrow("Invalid configuration file")
     })
+
+    it("should rethrow other errors", () => {
+      fs.writeFolder(".nosto.json")
+
+      expect(() => parseConfigFile(".")).toThrow("EISDIR: illegal operation on a directory, open '/.nosto.json'")
+    })
   })
 })
