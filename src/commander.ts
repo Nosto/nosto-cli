@@ -3,6 +3,7 @@ import { Command } from "commander"
 import { loadConfig } from "#config/config.ts"
 import { withErrorHandler } from "#errors/withErrorHandler.ts"
 import { loginToPlaycart } from "#modules/login.ts"
+import { removeLoginCredentials } from "#modules/logout.ts"
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
 import { searchTemplateDevMode } from "#modules/search-templates/dev.ts"
 import { pullSearchTemplate } from "#modules/search-templates/pull.ts"
@@ -22,6 +23,14 @@ export async function runCLI(argv: string[]) {
     .action(async options => {
       loadConfig({ options, allowIncomplete: true, projectPath: "." })
       await loginToPlaycart()
+    })
+
+  program
+    .command("logout")
+    .description("Delete stored login credentials")
+    .option("--verbose", "set log level to debug")
+    .action(() => {
+      removeLoginCredentials()
     })
 
   program
