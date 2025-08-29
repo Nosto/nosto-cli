@@ -4,9 +4,10 @@ import { cleanUrl } from "#api/utils.ts"
 import { Logger } from "#console/logger.ts"
 import { MissingConfigurationError } from "#errors/MissingConfigurationError.ts"
 
+import { authFileExists, getAuthFileMissingError, parseAuthFile } from "./authConfig.ts"
 import { getEnvConfig } from "./envConfig.ts"
 import { parseConfigFile } from "./fileConfig.ts"
-import { type Config, type PersistentConfig, PersistentConfigSchema, RuntimeConfigSchema } from "./schema.ts"
+import { AuthConfigSchema, type Config, PersistentConfigSchema, RuntimeConfigSchema } from "./schema.ts"
 
 let isConfigLoaded = false
 let cachedConfig: Config = {
@@ -17,9 +18,10 @@ let cachedConfig: Config = {
 export type LoadConfigProps = {
   projectPath: string
   options: object
+  allowIncomplete?: boolean
 }
 
-export function loadConfig({ projectPath, options }: LoadConfigProps) {
+export function loadConfig({ projectPath, options, allowIncomplete }: LoadConfigProps) {
   const { dryRun, verbose } = RuntimeConfigSchema.parse({ ...options, projectPath })
 
   if (isConfigLoaded) {
@@ -29,23 +31,28 @@ export function loadConfig({ projectPath, options }: LoadConfigProps) {
 
   const fullPath = resolve(projectPath)
   Logger.debug(`Loading configuration from folder: ${fullPath}`)
-  const fileConfig = parseConfigFile(projectPath)
+  if (!allowIncomplete && !authFileExists()) {
+    throw getAuthFileMissingError()
+  }
+  const authConfig = parseAuthFile(allowIncomplete ?? false)
+  const fileConfig = parseConfigFile(projectPath, allowIncomplete ?? false)
   const envConfig = getEnvConfig()
 
+  const baseConfig = allowIncomplete ? getDefaultConfig() : {}
+
   const combinedConfig = {
+    ...baseConfig,
     ...fileConfig,
     ...envConfig
   }
-  if (!combinedConfig.apiKey) {
-    throw new MissingConfigurationError("Missing API key")
-  }
-  if (!combinedConfig.merchant) {
+  if (!combinedConfig.merchant && !allowIncomplete) {
     throw new MissingConfigurationError("Missing merchant ID")
   }
 
   try {
     const persistentConfig = PersistentConfigSchema.parse(combinedConfig)
     cachedConfig = {
+      ...authConfig,
       ...persistentConfig,
       apiUrl: cleanUrl(persistentConfig.apiUrl),
       libraryUrl: cleanUrl(persistentConfig.libraryUrl),
@@ -71,16 +78,19 @@ function updateLoggerContext(config: Config) {
 }
 
 export function getCachedConfig() {
-  if (!cachedConfig) {
-    Logger.error("Config not loaded")
-    throw new Error("Config not loaded")
-  }
   return cachedConfig
 }
 
-export function getDefaultConfig(): PersistentConfig {
-  return PersistentConfigSchema.parse({
-    apiKey: "",
-    merchant: ""
-  })
+export function getDefaultConfig() {
+  return {
+    ...PersistentConfigSchema.parse({
+      apiKey: "",
+      merchant: ""
+    }),
+    ...AuthConfigSchema.parse({
+      user: "",
+      authToken: "",
+      authExpiresAt: new Date(0)
+    })
+  }
 }

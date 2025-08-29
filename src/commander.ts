@@ -1,6 +1,8 @@
 import { Command } from "commander"
 
+import { loadConfig } from "#config/config.ts"
 import { withErrorHandler } from "#errors/withErrorHandler.ts"
+import { loginToPlaycart } from "#modules/login.ts"
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
 import { searchTemplateDevMode } from "#modules/search-templates/dev.ts"
 import { pullSearchTemplate } from "#modules/search-templates/pull.ts"
@@ -12,6 +14,15 @@ import { withSafeEnvironment } from "#utils/withSafeEnvironment.ts"
 export async function runCLI(argv: string[]) {
   const program = new Command()
   program.name("nostocli").version("1.0.0").description("Nosto CLI tool. Use `nostocli setup` to get started.")
+
+  program
+    .command("login")
+    .description("Login to Nosto")
+    .option("--verbose", "set log level to debug")
+    .action(async options => {
+      loadConfig({ options, allowIncomplete: true, projectPath: "." })
+      await loginToPlaycart()
+    })
 
   program
     .command("setup [projectPath]")

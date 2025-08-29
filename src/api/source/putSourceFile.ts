@@ -7,8 +7,14 @@ export async function putSourceFile(path: string, data: string) {
   if (getCachedConfig().dryRun) {
     return
   }
+  const config = getCachedConfig()
   await ky.put(getSourceUrl(`source/{env}/${path}`), {
     headers: getHeaders(),
-    body: data
+    body: data,
+    searchParams: {
+      user: config.user,
+      devToken: config.authToken,
+      m: config.merchant
+    }
   })
 }

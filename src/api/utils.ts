@@ -9,18 +9,14 @@ export function getSourceUrl(path: string) {
 }
 
 export function getHeaders() {
-  const config = getCachedConfig()
   return new Headers({
-    "Content-Type": "application/octet-stream",
-    Authorization: "Basic " + btoa(":" + config.apiKey)
+    "Content-Type": "application/octet-stream"
   })
 }
 
 export function getJsonHeaders() {
-  const config = getCachedConfig()
   return new Headers({
-    "Content-Type": "application/json",
-    Authorization: "Basic " + btoa(":" + config.apiKey)
+    "Content-Type": "application/json"
   })
 }
 
