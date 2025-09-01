@@ -4,6 +4,7 @@ import { HTTPError, TimeoutError } from "ky"
 import { getCachedConfig } from "#config/config.ts"
 import { Logger } from "#console/logger.ts"
 
+import { InvalidLoginResponseError } from "./InvalidLoginResponseError.ts"
 import { NostoError } from "./NostoError.ts"
 
 export async function withErrorHandler(fn: () => void | Promise<void>): Promise<void> {
@@ -29,6 +30,9 @@ export async function withErrorHandler(fn: () => void | Promise<void>): Promise<
       if (config.verbose) {
         Logger.raw(chalk.red(prettyPrintStack(error.stack)))
       }
+    } else if (error instanceof InvalidLoginResponseError) {
+      Logger.error(`Received malformed login response from server. This is probably a bug on our side.`, error)
+      // Logger.error(`- ${error.message}`)
     } else if (error instanceof NostoError) {
       error.handle()
     } else {

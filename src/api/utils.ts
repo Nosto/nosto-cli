@@ -9,14 +9,20 @@ export function getSourceUrl(path: string) {
 }
 
 export function getHeaders() {
+  const config = getCachedConfig()
   return new Headers({
-    "Content-Type": "application/octet-stream"
+    "Content-Type": "application/octet-stream",
+    "X-Nosto-User": config.auth.user,
+    "X-Nosto-Token": config.auth.token
   })
 }
 
 export function getJsonHeaders() {
+  const config = getCachedConfig()
   return new Headers({
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "X-Nosto-User": config.auth.user,
+    "X-Nosto-Token": config.auth.token
   })
 }
 

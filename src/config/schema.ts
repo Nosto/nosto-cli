@@ -22,8 +22,8 @@ export const RuntimeConfigSchema = z.object({
 // Authentication config (~/nosto/.auth.json file)
 export const AuthConfigSchema = z.object({
   user: z.string(),
-  authToken: z.string(),
-  authExpiresAt: z.coerce.date()
+  token: z.string(),
+  expiresAt: z.coerce.date()
 })
 
 // Environmental variables, alternative to persistent config
@@ -38,7 +38,7 @@ export const EnvironmentConfigSchema = z.object({
 
 export const PartialPersistentConfigSchema = PersistentConfigSchema.partial()
 
-export type Config = PersistentConfig & RuntimeConfig & AuthConfig
+export type Config = PersistentConfig & RuntimeConfig & { auth: AuthConfig }
 export type PersistentConfig = z.infer<typeof PersistentConfigSchema>
 export type EnvironmentConfig = z.infer<typeof EnvironmentConfigSchema>
 export type RuntimeConfig = z.infer<typeof RuntimeConfigSchema>

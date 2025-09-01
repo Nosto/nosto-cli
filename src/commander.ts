@@ -1,6 +1,7 @@
 import { Command } from "commander"
 
 import { loadConfig } from "#config/config.ts"
+import { Logger } from "#console/logger.ts"
 import { withErrorHandler } from "#errors/withErrorHandler.ts"
 import { loginToPlaycart } from "#modules/login.ts"
 import { removeLoginCredentials } from "#modules/logout.ts"
@@ -22,7 +23,10 @@ export async function runCLI(argv: string[]) {
     .option("--verbose", "set log level to debug")
     .action(async options => {
       loadConfig({ options, allowIncomplete: true, projectPath: "." })
-      await loginToPlaycart()
+      await withErrorHandler(async () => {
+        await loginToPlaycart()
+      })
+      Logger.info("Login successful")
     })
 
   program

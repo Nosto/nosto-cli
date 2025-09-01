@@ -12,8 +12,6 @@ export async function putSourceFile(path: string, data: string) {
     headers: getHeaders(),
     body: data,
     searchParams: {
-      user: config.user,
-      devToken: config.authToken,
       m: config.merchant
     }
   })

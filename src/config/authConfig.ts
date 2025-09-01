@@ -23,7 +23,7 @@ export function parseAuthFile(allowIncomplete: boolean): AuthConfig {
   if (!allowIncomplete && !authFileExists()) {
     throw getAuthFileMissingError()
   } else if (!authFileExists()) {
-    return { user: "", authToken: "", authExpiresAt: new Date(0) }
+    return { user: "", token: "", expiresAt: new Date(0) }
   }
 
   try {

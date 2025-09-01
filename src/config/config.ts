@@ -52,8 +52,8 @@ export function loadConfig({ projectPath, options, allowIncomplete }: LoadConfig
   try {
     const persistentConfig = PersistentConfigSchema.parse(combinedConfig)
     cachedConfig = {
-      ...authConfig,
       ...persistentConfig,
+      auth: authConfig,
       apiUrl: cleanUrl(persistentConfig.apiUrl),
       libraryUrl: cleanUrl(persistentConfig.libraryUrl),
       logLevel: verbose ? "debug" : persistentConfig.logLevel,
@@ -87,10 +87,10 @@ export function getDefaultConfig() {
       apiKey: "",
       merchant: ""
     }),
-    ...AuthConfigSchema.parse({
+    auth: AuthConfigSchema.parse({
       user: "",
-      authToken: "",
-      authExpiresAt: new Date(0)
+      token: "",
+      expiresAt: new Date(0)
     })
   }
 }

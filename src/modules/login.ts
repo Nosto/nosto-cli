@@ -1,10 +1,13 @@
 import http from "node:http"
 
 import open from "open"
+import z from "zod"
 
 import { AuthConfigFilePath } from "#config/authConfig.ts"
-import { type AuthConfig } from "#config/schema.ts"
+import { AuthConfigSchema } from "#config/schema.ts"
 import { Logger } from "#console/logger.ts"
+import { InvalidLoginResponseError } from "#errors/InvalidLoginResponseError.ts"
+import { withErrorHandler } from "#errors/withErrorHandler.ts"
 import { writeFile } from "#filesystem/filesystem.ts"
 
 export async function loginToPlaycart() {
@@ -12,58 +15,52 @@ export async function loginToPlaycart() {
   const server = await createAuthServer()
   const redirectUri = `http://localhost:${server.port}`
   Logger.debug(`Login server started on port ${server.port}, redirect URI: ${redirectUri}`)
-  const loginUrl = `https://my.dev.nos.to/admin/dev/redirect?target=${encodeURIComponent(redirectUri)}`
+
+  const loginUrl = `https://my.dev.nos.to/admin/cli/redirect?target=${encodeURIComponent(redirectUri)}`
   Logger.debug(`Opening browser to ${loginUrl}`)
   await open(loginUrl)
-  Logger.info("Awaiting response from the browser...")
-  const response = await server.getResponseData()
-  const tokenData = {
-    user: response.user,
-    authToken: response.token,
-    authExpiresAt: new Date(Date.now() + 8 * 60 * 60 * 1000) // 8 hours
-  } satisfies AuthConfig
-  writeFile(AuthConfigFilePath, JSON.stringify(tokenData, null, 2))
-  Logger.success(`Login successful! Auth file saved at ${AuthConfigFilePath}`)
-}
 
-type PlaycartResponse = {
-  user: string
-  token: string
+  Logger.info("Awaiting response from the browser...")
+  const response = await server.responseData
+  writeFile(AuthConfigFilePath, JSON.stringify(response, null, 2) + "\n")
+
+  Logger.success(`Login successful! Auth file saved at ${AuthConfigFilePath}`)
 }
 
 type AuthServer = {
   port: number
-  getResponseData: () => Promise<PlaycartResponse>
+  responseData: Promise<PlaycartResponse>
 }
+
+type PlaycartResponse = z.infer<typeof AuthConfigSchema>
 
 async function createAuthServer(): Promise<AuthServer> {
   const { promise: tokenPromise, resolve: resolveTokenPromise } = Promise.withResolvers<PlaycartResponse>()
-  const server = http.createServer((req, res) => {
+
+  function handleRequest(res: http.ServerResponse, req: http.IncomingMessage) {
     res.writeHead(200, { "content-type": "text/plain", connection: "close" })
     res.end("You can now close this page and return to the CLI.\n")
-    server.close()
-    if (!req.url) {
-      Logger.error("No URL provided in callback")
-      throw new Error("No URL provided in callback")
-    }
-    const params = req.url.split("?")[1].split("&")
-    const user = params.find(p => p.includes("user="))?.split("user=")[1]
-    const token = params.find(p => p.includes("token="))?.split("token=")[1]
-    if (!user) {
-      Logger.error("No user provided in callback URL: " + req.url)
-      throw new Error("No user provided in callback URL")
-    }
-    if (!token) {
-      Logger.error("No token provided in callback URL: " + req.url)
-      throw new Error("No token provided in callback URL")
-    }
-    resolveTokenPromise({
-      user: decodeURIComponent(user),
-      token: decodeURIComponent(token)
+    const url = new URL(req.url ?? "", `http://localhost`)
+    const parsed = AuthConfigSchema.safeParse({
+      user: url.searchParams.get("user"),
+      token: url.searchParams.get("token"),
+      expiresAt: url.searchParams.get("expiresAt")
     })
+    if (!parsed.success) {
+      throw new InvalidLoginResponseError(`Failed to parse playcart response: ${parsed.error.message}`)
+    }
+    resolveTokenPromise(parsed.data)
+  }
+
+  const server = http.createServer((req, res) => {
+    withErrorHandler(() => {
+      handleRequest(res, req)
+    })
+    // Server exists for one request only
+    server.close()
   })
-  server.maxConnections = 1
-  server.keepAliveTimeout = 1
+  // server.maxConnections = 1
+  // server.keepAliveTimeout = 1
   const startupPromise = new Promise<number>(resolve => {
     server.listen(0, "localhost", () => {
       const addr = server.address()
@@ -76,8 +73,6 @@ async function createAuthServer(): Promise<AuthServer> {
   const port = await startupPromise
   return {
     port,
-    getResponseData: () => {
-      return tokenPromise
-    }
+    responseData: tokenPromise
   }
 }

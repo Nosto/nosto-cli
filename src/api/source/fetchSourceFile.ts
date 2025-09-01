@@ -11,8 +11,6 @@ export async function fetchSourceFile(path: string) {
   const response = await ky.get(getSourceUrl(`source/{env}/${path}`), {
     headers: getJsonHeaders(),
     searchParams: {
-      user: config.user,
-      devToken: config.authToken,
       m: config.merchant
     }
   })
