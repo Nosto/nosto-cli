@@ -40,7 +40,7 @@ async function createAuthServer(): Promise<AuthServer> {
   function handleRequest(res: http.ServerResponse, req: http.IncomingMessage) {
     res.writeHead(200, { "content-type": "text/plain", connection: "close" })
     res.end("You can now close this page and return to the CLI.\n")
-    const url = new URL(req.url ?? "", `http://localhost`)
+    const url = new URL(req.url ?? "", "http://localhost")
     const parsed = AuthConfigSchema.safeParse({
       user: url.searchParams.get("user"),
       token: url.searchParams.get("token"),
@@ -59,9 +59,7 @@ async function createAuthServer(): Promise<AuthServer> {
     // Server exists for one request only
     server.close()
   })
-  // server.maxConnections = 1
-  // server.keepAliveTimeout = 1
-  const startupPromise = new Promise<number>(resolve => {
+  const port = await new Promise<number>(resolve => {
     server.listen(0, "localhost", () => {
       const addr = server.address()
       if (!addr || typeof addr !== "object") {
@@ -70,7 +68,6 @@ async function createAuthServer(): Promise<AuthServer> {
       resolve(addr.port)
     })
   })
-  const port = await startupPromise
   return {
     port,
     responseData: tokenPromise

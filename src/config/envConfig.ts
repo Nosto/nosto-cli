@@ -1,6 +1,7 @@
 import { type EnvironmentConfig, EnvironmentConfigSchema } from "./schema.ts"
 
 export const EnvVariables = {
+  apiKey: "NOSTO_API_KEY",
   merchant: "NOSTO_MERCHANT",
   templatesEnv: "NOSTO_TEMPLATES_ENV",
   apiUrl: "NOSTO_API_URL",

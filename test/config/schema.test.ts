@@ -2,17 +2,15 @@ import { describe, expect, it } from "vitest"
 
 import { LogLevel, PersistentConfigSchema, RuntimeConfigSchema } from "#config/schema.ts"
 
-describe("Config Schema", () => {
+describe("Schema", () => {
   describe("PersistentConfigSchema", () => {
     it("should validate valid configuration", () => {
       const validConfig = {
-        apiKey: "test-api-key",
         merchant: "test-merchant"
       }
 
       const result = PersistentConfigSchema.parse(validConfig)
 
-      expect(result.apiKey).toBe("test-api-key")
       expect(result.merchant).toBe("test-merchant")
       expect(result.templatesEnv).toBe("main")
       expect(result.apiUrl).toBe("https://api.nosto.com")
@@ -21,7 +19,6 @@ describe("Config Schema", () => {
 
     it("should apply default values", () => {
       const minimalConfig = {
-        apiKey: "test-key",
         merchant: "test-merchant"
       }
 
@@ -32,12 +29,12 @@ describe("Config Schema", () => {
       expect(result.libraryUrl).toBe("https://d11ffvpvtnmt0d.cloudfront.net/library")
       expect(result.logLevel).toBe("info")
       expect(result.maxRequests).toBe(15)
+      expect(result.apiKey).toBeUndefined()
     })
 
     it("should validate log level enum", () => {
       LogLevel.forEach(level => {
         const config = {
-          apiKey: "test-key",
           merchant: "test-merchant",
           logLevel: level
         }
@@ -49,7 +46,6 @@ describe("Config Schema", () => {
 
     it("should coerce maxRequests to number", () => {
       const config = {
-        apiKey: "test-key",
         merchant: "test-merchant",
         maxRequests: "20" as unknown
       }
@@ -61,7 +57,6 @@ describe("Config Schema", () => {
 
     it("should throw on invalid log level", () => {
       const invalidConfig = {
-        apiKey: "test-key",
         merchant: "test-merchant",
         logLevel: "invalid-level"
       }
@@ -69,10 +64,9 @@ describe("Config Schema", () => {
       expect(() => PersistentConfigSchema.parse(invalidConfig)).toThrow()
     })
 
-    it("should require apiKey and merchant", () => {
+    it("should require merchant", () => {
       expect(() => PersistentConfigSchema.parse({})).toThrow()
       expect(() => PersistentConfigSchema.parse({ apiKey: "test" })).toThrow()
-      expect(() => PersistentConfigSchema.parse({ merchant: "test" })).toThrow()
     })
   })
 

@@ -2,17 +2,12 @@ import ky from "ky"
 import z from "zod"
 
 import { getJsonHeaders, getSourceUrl } from "#api/utils.ts"
-import { getCachedConfig } from "#config/config.ts"
 
 const FetchSourceFileSchema = z.string()
 
 export async function fetchSourceFile(path: string) {
-  const config = getCachedConfig()
   const response = await ky.get(getSourceUrl(`source/{env}/${path}`), {
-    headers: getJsonHeaders(),
-    searchParams: {
-      m: config.merchant
-    }
+    headers: getJsonHeaders()
   })
   const data = FetchSourceFileSchema.parse(await response.text())
   return data

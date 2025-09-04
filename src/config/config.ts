@@ -12,6 +12,11 @@ import { AuthConfigSchema, type Config, PersistentConfigSchema, RuntimeConfigSch
 let isConfigLoaded = false
 let cachedConfig: Config = {
   ...getDefaultConfig(),
+  auth: AuthConfigSchema.parse({
+    user: "",
+    token: "",
+    expiresAt: new Date(0)
+  }),
   ...RuntimeConfigSchema.parse({})
 }
 
@@ -46,7 +51,7 @@ export function loadConfig({ projectPath, options, allowIncomplete }: LoadConfig
     ...envConfig
   }
   if (!combinedConfig.merchant && !allowIncomplete) {
-    throw new MissingConfigurationError("Missing merchant ID")
+    throw new MissingConfigurationError("Invalid configuration: Missing merchant ID")
   }
 
   try {
@@ -82,15 +87,7 @@ export function getCachedConfig() {
 }
 
 export function getDefaultConfig() {
-  return {
-    ...PersistentConfigSchema.parse({
-      apiKey: "",
-      merchant: ""
-    }),
-    auth: AuthConfigSchema.parse({
-      user: "",
-      token: "",
-      expiresAt: new Date(0)
-    })
-  }
+  return PersistentConfigSchema.parse({
+    merchant: ""
+  })
 }

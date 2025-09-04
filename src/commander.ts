@@ -19,7 +19,7 @@ export async function runCLI(argv: string[]) {
 
   program
     .command("login")
-    .description("Login to Nosto")
+    .description("Login with your Nosto account")
     .option("--verbose", "set log level to debug")
     .action(async options => {
       loadConfig({ options, allowIncomplete: true, projectPath: "." })
@@ -40,14 +40,16 @@ export async function runCLI(argv: string[]) {
   program
     .command("setup [projectPath]")
     .description("Prints setup information")
-    .action(async (projectPath = ".") => {
+    .action(async (projectPath = ".", options) => {
+      loadConfig({ options, allowIncomplete: true, projectPath: "." })
       await withErrorHandler(() => printSetupHelp(projectPath))
     })
 
   program
     .command("status [projectPath]")
     .description("Print the configuration status")
-    .action(async (projectPath = ".") => {
+    .action(async (projectPath = ".", options) => {
+      loadConfig({ options, allowIncomplete: true, projectPath: "." })
       await withErrorHandler(() => printStatus(projectPath))
     })
 

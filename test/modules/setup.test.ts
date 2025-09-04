@@ -27,7 +27,7 @@ describe("Setup Module", () => {
 
     await printSetupHelp(".")
 
-    terminal.expect.user.toHaveBeenPromptedWith("Would you like to create a placeholder configuration file? (Y/n):")
+    terminal.expect.user.toHaveBeenPromptedWith("Would you like to create a configuration file? (Y/n):")
     fs.expectFile(".nosto.json").toExist()
   })
 

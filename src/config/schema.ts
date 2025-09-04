@@ -5,6 +5,7 @@ export const LogLevel = ["debug", "info", "warn", "error"] as const
 // Persistent per-repo config (.nosto.json file)
 export const PersistentConfigSchema = z.object({
   merchant: z.string(),
+  apiKey: z.string().optional(),
   templatesEnv: z.string().default("main"),
   apiUrl: z.string().default("https://api.nosto.com"),
   libraryUrl: z.string().default("https://d11ffvpvtnmt0d.cloudfront.net/library"),
@@ -29,6 +30,7 @@ export const AuthConfigSchema = z.object({
 // Environmental variables, alternative to persistent config
 export const EnvironmentConfigSchema = z.object({
   merchant: z.string().optional(),
+  apiKey: z.string().optional(),
   templatesEnv: z.string().optional(),
   apiUrl: z.string().optional(),
   libraryUrl: z.string().optional(),
