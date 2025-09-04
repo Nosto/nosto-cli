@@ -32,7 +32,6 @@ export async function withErrorHandler(fn: () => void | Promise<void>): Promise<
       }
     } else if (error instanceof InvalidLoginResponseError) {
       Logger.error(`Received malformed login response from server. This is probably a bug on our side.`, error)
-      // Logger.error(`- ${error.message}`)
     } else if (error instanceof NostoError) {
       error.handle()
     } else {

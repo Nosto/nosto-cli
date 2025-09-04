@@ -10,14 +10,18 @@ import { InvalidLoginResponseError } from "#errors/InvalidLoginResponseError.ts"
 import { withErrorHandler } from "#errors/withErrorHandler.ts"
 import { writeFile } from "#filesystem/filesystem.ts"
 
+/**
+ * Playcart authentication flow works roughly as follows:
+ * - Internal web server is created by the CLI, listening on an ephemeral port
+ * - Browser page is opened to the Nosto login page with a redirect URI to localhost
+ * - After successful login (with 2FA), the redirect will hit the internal server
+ * - The response parameters are parsed from the query parameters
+ */
 export async function loginToPlaycart() {
-  Logger.debug(`Starting login server`)
   const server = await createAuthServer()
   const redirectUri = `http://localhost:${server.port}`
-  Logger.debug(`Login server started on port ${server.port}, redirect URI: ${redirectUri}`)
-
   const loginUrl = `https://my.dev.nos.to/admin/cli/redirect?target=${encodeURIComponent(redirectUri)}`
-  Logger.debug(`Opening browser to ${loginUrl}`)
+
   await open(loginUrl)
 
   Logger.info("Awaiting response from the browser...")
@@ -34,12 +38,16 @@ type AuthServer = {
 
 type PlaycartResponse = z.infer<typeof AuthConfigSchema>
 
+/**
+ * The authentication server is created to handle a single redirect from the browser.
+ */
 async function createAuthServer(): Promise<AuthServer> {
   const { promise: tokenPromise, resolve: resolveTokenPromise } = Promise.withResolvers<PlaycartResponse>()
 
   function handleRequest(res: http.ServerResponse, req: http.IncomingMessage) {
     res.writeHead(200, { "content-type": "text/plain", connection: "close" })
     res.end("You can now close this page and return to the CLI.\n")
+
     const url = new URL(req.url ?? "", "http://localhost")
     const parsed = AuthConfigSchema.safeParse({
       user: url.searchParams.get("user"),
@@ -56,9 +64,9 @@ async function createAuthServer(): Promise<AuthServer> {
     withErrorHandler(() => {
       handleRequest(res, req)
     })
-    // Server exists for one request only
     server.close()
   })
+
   const port = await new Promise<number>(resolve => {
     server.listen(0, "localhost", () => {
       const addr = server.address()
@@ -68,6 +76,7 @@ async function createAuthServer(): Promise<AuthServer> {
       resolve(addr.port)
     })
   })
+
   return {
     port,
     responseData: tokenPromise
