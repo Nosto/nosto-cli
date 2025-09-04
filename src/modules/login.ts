@@ -4,6 +4,7 @@ import open from "open"
 import z from "zod"
 
 import { AuthConfigFilePath } from "#config/authConfig.ts"
+import { getCachedConfig } from "#config/config.ts"
 import { AuthConfigSchema } from "#config/schema.ts"
 import { Logger } from "#console/logger.ts"
 import { InvalidLoginResponseError } from "#errors/InvalidLoginResponseError.ts"
@@ -19,8 +20,9 @@ import { writeFile } from "#filesystem/filesystem.ts"
  */
 export async function loginToPlaycart() {
   const server = await createAuthServer()
+  const config = getCachedConfig()
   const redirectUri = `http://localhost:${server.port}`
-  const loginUrl = `https://my.dev.nos.to/admin/cli/redirect?target=${encodeURIComponent(redirectUri)}`
+  const loginUrl = `${config.apiUrl}/admin/cli/redirect?target=${encodeURIComponent(redirectUri)}`
 
   await open(loginUrl)
 
