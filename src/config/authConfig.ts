@@ -19,7 +19,7 @@ export function getAuthFileMissingError() {
   )
 }
 
-export function parseAuthFile(allowIncomplete: boolean): AuthConfig {
+export function parseAuthFile({ allowIncomplete }: { allowIncomplete?: boolean }): AuthConfig {
   if (!allowIncomplete && !authFileExists()) {
     throw getAuthFileMissingError()
   } else if (!authFileExists()) {

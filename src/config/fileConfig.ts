@@ -6,8 +6,14 @@ import { Logger } from "#console/logger.ts"
 
 import { type PartialPersistentConfig, PartialPersistentConfigSchema } from "./schema.ts"
 
-export function parseConfigFile(targetPath: string, allowIncomplete: boolean = false): PartialPersistentConfig {
-  const configPath = path.join(targetPath, ".nosto.json")
+export function parseConfigFile({
+  projectPath,
+  allowIncomplete
+}: {
+  projectPath: string
+  allowIncomplete?: boolean
+}): PartialPersistentConfig {
+  const configPath = path.join(projectPath, ".nosto.json")
 
   const configFileMissing = !fs.existsSync(configPath)
   if (allowIncomplete && configFileMissing) {

@@ -39,8 +39,8 @@ export function loadConfig({ projectPath, options, allowIncomplete }: LoadConfig
   if (!allowIncomplete && !authFileExists()) {
     throw getAuthFileMissingError()
   }
-  const authConfig = parseAuthFile(allowIncomplete ?? false)
-  const fileConfig = parseConfigFile(projectPath, allowIncomplete ?? false)
+  const authConfig = parseAuthFile({ allowIncomplete })
+  const fileConfig = parseConfigFile({ projectPath, allowIncomplete })
   const envConfig = getEnvConfig()
 
   const baseConfig = allowIncomplete ? getDefaultConfig() : {}

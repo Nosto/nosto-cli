@@ -8,7 +8,7 @@ const fs = setupMockFileSystem()
 describe("File Config", () => {
   describe("parseConfigFile", () => {
     it("should return empty object when config file does not exist", () => {
-      const result = parseConfigFile(".")
+      const result = parseConfigFile({ projectPath: "." })
       expect(result).toEqual({})
     })
 
@@ -22,7 +22,7 @@ describe("File Config", () => {
 
       fs.writeFile(".nosto.json", JSON.stringify(mockConfig))
 
-      const result = parseConfigFile(".")
+      const result = parseConfigFile({ projectPath: "." })
 
       expect(result).toEqual({
         apiKey: "another-key",
@@ -38,7 +38,7 @@ describe("File Config", () => {
     it("should throw error for invalid JSON", () => {
       fs.writeFile(".nosto.json", "invalid json")
 
-      expect(() => parseConfigFile(".")).toThrow("Invalid JSON in configuration file")
+      expect(() => parseConfigFile({ projectPath: "." })).toThrow("Invalid JSON in configuration file")
     })
 
     it("should throw error for invalid config schema", () => {
@@ -49,13 +49,15 @@ describe("File Config", () => {
 
       fs.writeFile(".nosto.json", JSON.stringify(invalidConfig))
 
-      expect(() => parseConfigFile(".")).toThrow("Invalid configuration file")
+      expect(() => parseConfigFile({ projectPath: "." })).toThrow("Invalid configuration file")
     })
 
     it("should rethrow other errors", () => {
       fs.writeFolder(".nosto.json")
 
-      expect(() => parseConfigFile(".")).toThrow("EISDIR: illegal operation on a directory, open '/.nosto.json'")
+      expect(() => parseConfigFile({ projectPath: "." })).toThrow(
+        "EISDIR: illegal operation on a directory, open '/.nosto.json'"
+      )
     })
   })
 })
