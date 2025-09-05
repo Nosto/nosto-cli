@@ -19,7 +19,7 @@ export function printStatus(projectPath: string) {
 
   const notSet = chalk.redBright("Not set")
   const formattedApiKey = apiKey ? chalk.greenBright(apiKey.slice(0, 6) + "[...]" + apiKey.slice(-4)) : notSet
-  const authToken = chalk.greenBright(auth.token.slice(0, 6) + "[...]" + auth.token.slice(-4))
+  const authToken = token ? chalk.greenBright(token.slice(0, 6) + "[...]" + token.slice(-4)) : notSet
   const merchantId = merchant ? chalk.greenBright(merchant) : notSet
 
   // Authentication

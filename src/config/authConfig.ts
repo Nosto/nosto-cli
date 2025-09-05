@@ -9,7 +9,7 @@ import { type AuthConfig, AuthConfigSchema } from "./schema.ts"
 
 export const AuthConfigFilePath = path.join(os.homedir(), ".nosto", ".auth.json")
 
-export function authFileExists(): boolean {
+export function authFileExists() {
   return fs.existsSync(AuthConfigFilePath)
 }
 
