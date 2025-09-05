@@ -8,7 +8,11 @@ import { Logger } from "#console/logger.ts"
 import { promptForConfirmation } from "#console/userPrompt.ts"
 import { writeFile } from "#filesystem/filesystem.ts"
 
-export async function printSetupHelp(projectPath: string) {
+type Options = {
+  merchant?: string
+}
+
+export async function printSetupHelp(projectPath: string, options: Options) {
   const defaultConfig = getDefaultConfig()
 
   Logger.info(chalk.cyan(chalk.bold("Configuration Methods:")))
@@ -57,10 +61,9 @@ export async function printSetupHelp(projectPath: string) {
 
   const configFilePath = path.join(projectPath, ".nosto.json")
   if (fs.existsSync(configFilePath)) {
+    Logger.info(`Configuration file already exists at ${chalk.cyan(configFilePath)}`)
     return
   }
-
-  Logger.warn("Configuration file not found in project directory.")
 
   const envConfig = getEnvConfig()
   const configToCreate = defaultConfig
@@ -70,14 +73,20 @@ export async function printSetupHelp(projectPath: string) {
     }
   })
 
-  Logger.info(chalk.greenBright("Preview:"))
-  Logger.info(chalk.dim("{"))
-  Object.entries(configToCreate).forEach(([key, value]) => {
-    Logger.info(chalk.dim(`  "${key}": "${value}",`))
-  })
-  Logger.info(chalk.dim("}"))
+  const { merchant } = options
+  if (merchant) {
+    configToCreate.merchant = merchant
+  } else {
+    Logger.warn("Configuration file not found in project directory.")
+    Logger.info(chalk.greenBright("Preview:"))
+    Logger.info(chalk.dim("{"))
+    Object.entries(configToCreate).forEach(([key, value]) => {
+      Logger.info(chalk.dim(`  "${key}": "${value}",`))
+    })
+    Logger.info(chalk.dim("}"))
+  }
 
-  const confirmed = await promptForConfirmation(`Would you like to create a configuration file?`, "Y")
+  const confirmed = merchant || (await promptForConfirmation(`Would you like to create a configuration file?`, "Y"))
   if (confirmed) {
     writeFile(configFilePath, JSON.stringify(configToCreate, null, 2) + "\n")
 

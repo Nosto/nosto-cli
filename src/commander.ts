@@ -39,10 +39,11 @@ export async function runCLI(argv: string[]) {
 
   program
     .command("setup [projectPath]")
-    .description("Prints setup information")
+    .description("Prints setup information and creates a configuration file")
+    .option("-m, --merchant <merchant>", "merchant to create config for")
     .action(async (projectPath = ".", options) => {
       loadConfig({ options, allowIncomplete: true, projectPath: "." })
-      await withErrorHandler(() => printSetupHelp(projectPath))
+      await withErrorHandler(() => printSetupHelp(projectPath, options))
     })
 
   program
