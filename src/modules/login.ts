@@ -22,7 +22,8 @@ export async function loginToPlaycart() {
   const server = await createAuthServer()
   const config = getCachedConfig()
   const redirectUri = `http://localhost:${server.port}`
-  const loginUrl = `${config.apiUrl}/admin/cli/redirect?target=${encodeURIComponent(redirectUri)}`
+  const adminUrl = config.apiUrl.replace("://api.", "://my.").replace("/api", "")
+  const loginUrl = `${adminUrl}/admin/cli/redirect?target=${encodeURIComponent(redirectUri)}`
 
   await open(loginUrl)
 
