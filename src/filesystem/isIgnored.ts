@@ -6,17 +6,20 @@ import path from "path"
 
 import { getCachedConfig } from "#config/config.ts"
 
-function isIgnoredImplicitly(dirent: Dirent): boolean {
+/**
+ * The build directory is never ignored even if it's in the .gitignore file
+ */
+function isNeverIgnored(dirent: Dirent): boolean {
   const { projectPath } = getCachedConfig()
   const absoluteProjectPath = path.resolve(projectPath)
 
-  if (
+  return (
     dirent.parentPath.startsWith(path.join(projectPath, "build")) ||
     dirent.parentPath.startsWith(path.join(absoluteProjectPath, "build"))
-  ) {
-    return false
-  }
+  )
+}
 
+function isIgnoredImplicitly(dirent: Dirent): boolean {
   const parentPathSections = dirent.parentPath.split("/")
   if (
     !dirent.isFile() ||
@@ -52,6 +55,11 @@ export function getIgnoreInstance() {
 
   const instance = ignore().add(patterns)
   return {
-    isIgnored: (dirent: Dirent) => isIgnoredImplicitly(dirent) || isIgnoredExplicitly(instance, dirent)
+    isIgnored: (dirent: Dirent) => {
+      if (isNeverIgnored(dirent)) {
+        return false
+      }
+      return isIgnoredImplicitly(dirent) || isIgnoredExplicitly(instance, dirent)
+    }
   }
 }

@@ -56,6 +56,20 @@ describe("Push Search Template", () => {
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Found 4 files to push (3 source, 1 built, 1 ignored).")
   })
 
+  it("should not ignore build directory", async () => {
+    fs.writeFile(".gitignore", "build/")
+    fs.writeFile("index.js", "content with @nosto/preact")
+    fs.writeFile("build/index.js", "build content")
+
+    mockPutSourceFile(server, { path: "index.js" })
+    mockPutSourceFile(server, { path: "build/index.js" })
+
+    await pushSearchTemplate({ paths: [], force: true })
+
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith("Pushing template from: /")
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith("Found 3 files to push (1 source, 2 built, 0 ignored).")
+  })
+
   it("should cancel operation when user declines", async () => {
     fs.writeFile("index.js", "content with @nosto/preact")
     fs.writeFile("file1.js", "file1 content")
