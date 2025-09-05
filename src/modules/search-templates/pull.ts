@@ -83,6 +83,7 @@ export async function pullSearchTemplate({ paths, force }: PullSearchTemplateOpt
 
   // Write the hash
   if (!dryRun && fs.existsSync(path.join(targetFolder, "build/hash"))) {
+    fs.mkdirSync(path.join(targetFolder, ".nostocache"), { recursive: true })
     fs.copyFileSync(path.join(targetFolder, "build/hash"), path.join(targetFolder, ".nostocache/hash"))
   }
 }
