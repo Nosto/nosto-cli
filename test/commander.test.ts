@@ -106,7 +106,7 @@ describe("commander", () => {
     })
   })
 
-  describe("nosto st build", () => {
+  describe("nosto search-templates build", () => {
     it("should fail sanity check", async () => {
       await commander.run("nosto st build")
       expect(buildSpy).not.toHaveBeenCalled()
@@ -143,9 +143,9 @@ describe("commander", () => {
   })
 
   describe("nosto search-templates pull", () => {
-    it("should fail sanity check", async () => {
+    it("should pull even without files present", async () => {
       await commander.run("nosto st pull")
-      expect(pullSpy).not.toHaveBeenCalled()
+      expect(pullSpy).toHaveBeenCalled()
     })
 
     describe("with valid environment", () => {

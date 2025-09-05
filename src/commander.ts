@@ -52,7 +52,7 @@ export async function runCLI(argv: string[]) {
     .option("--verbose", "set log level to debug")
     .option("-f --force", "skip checking state, pull all files")
     .action(async (projectPath = ".", options) => {
-      await withSafeEnvironment({ projectPath, options }, async () => {
+      await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
         await pullSearchTemplate({
           paths: options.paths ?? [],
           force: options.force ?? false
