@@ -1,6 +1,10 @@
 import { Command } from "commander"
 
+import { loadConfig } from "#config/config.ts"
+import { Logger } from "#console/logger.ts"
 import { withErrorHandler } from "#errors/withErrorHandler.ts"
+import { loginToPlaycart } from "#modules/login.ts"
+import { removeLoginCredentials } from "#modules/logout.ts"
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
 import { searchTemplateDevMode } from "#modules/search-templates/dev.ts"
 import { pullSearchTemplate } from "#modules/search-templates/pull.ts"
@@ -14,16 +18,39 @@ export async function runCLI(argv: string[]) {
   program.name("nostocli").version("1.0.0").description("Nosto CLI tool. Use `nostocli setup` to get started.")
 
   program
+    .command("login")
+    .description("Login with your Nosto account")
+    .option("--verbose", "set log level to debug")
+    .action(async options => {
+      loadConfig({ options, allowIncomplete: true, projectPath: "." })
+      await withErrorHandler(async () => {
+        await loginToPlaycart()
+      })
+      Logger.info("Login successful")
+    })
+
+  program
+    .command("logout")
+    .description("Delete stored login credentials")
+    .option("--verbose", "set log level to debug")
+    .action(() => {
+      removeLoginCredentials()
+    })
+
+  program
     .command("setup [projectPath]")
-    .description("Prints setup information")
-    .action(async (projectPath = ".") => {
-      await withErrorHandler(() => printSetupHelp(projectPath))
+    .description("Prints setup information and creates a configuration file")
+    .option("-m, --merchant <merchant>", "merchant to create config for")
+    .action(async (projectPath = ".", options) => {
+      loadConfig({ options, allowIncomplete: true, projectPath: "." })
+      await withErrorHandler(() => printSetupHelp(projectPath, options))
     })
 
   program
     .command("status [projectPath]")
     .description("Print the configuration status")
-    .action(async (projectPath = ".") => {
+    .action(async (projectPath = ".", options) => {
+      loadConfig({ options, allowIncomplete: true, projectPath: "." })
       await withErrorHandler(() => printStatus(projectPath))
     })
 

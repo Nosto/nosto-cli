@@ -35,12 +35,12 @@ describe("commander", () => {
   describe("nosto setup", () => {
     it("should call the function", async () => {
       await commander.run("nosto setup")
-      expect(setupSpy).toHaveBeenCalledWith(".")
+      expect(setupSpy).toHaveBeenCalledWith(".", {})
     })
 
     it("should call the function with project path", async () => {
       await commander.run("nosto setup /path/to/project")
-      expect(setupSpy).toHaveBeenCalledWith("/path/to/project")
+      expect(setupSpy).toHaveBeenCalledWith("/path/to/project", {})
     })
 
     it("should handle MissingConfigurationError", async () => {

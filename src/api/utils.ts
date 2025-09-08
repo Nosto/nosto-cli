@@ -9,19 +9,41 @@ export function getSourceUrl(path: string) {
 }
 
 export function getHeaders() {
-  const config = getCachedConfig()
   return new Headers({
     "Content-Type": "application/octet-stream",
-    Authorization: "Basic " + btoa(":" + config.apiKey)
+    ...getAuthHeaders()
   })
 }
 
 export function getJsonHeaders() {
-  const config = getCachedConfig()
   return new Headers({
     "Content-Type": "application/json",
-    Authorization: "Basic " + btoa(":" + config.apiKey)
+    ...getAuthHeaders()
   })
+}
+
+type AuthHeaders =
+  | {
+      Authorization: string
+    }
+  | {
+      "X-Nosto-User": string
+      "X-Nosto-Token": string
+      "X-Nosto-Merchant": string
+    }
+
+function getAuthHeaders(): AuthHeaders {
+  const config = getCachedConfig()
+  if (config.apiKey) {
+    return {
+      Authorization: "Basic " + btoa(":" + config.apiKey)
+    }
+  }
+  return {
+    "X-Nosto-User": config.auth.user,
+    "X-Nosto-Token": config.auth.token,
+    "X-Nosto-Merchant": config.merchant
+  }
 }
 
 // Remove trailing and leading slashes

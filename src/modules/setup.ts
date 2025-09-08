@@ -3,12 +3,16 @@ import fs from "fs"
 import path from "path"
 
 import { getDefaultConfig } from "#config/config.ts"
-import { EnvVariables } from "#config/envConfig.ts"
+import { EnvVariables, getEnvConfig } from "#config/envConfig.ts"
 import { Logger } from "#console/logger.ts"
 import { promptForConfirmation } from "#console/userPrompt.ts"
 import { writeFile } from "#filesystem/filesystem.ts"
 
-export async function printSetupHelp(projectPath: string) {
+type Options = {
+  merchant?: string
+}
+
+export async function printSetupHelp(projectPath: string, options: Options) {
   const defaultConfig = getDefaultConfig()
 
   Logger.info(chalk.cyan(chalk.bold("Configuration Methods:")))
@@ -18,12 +22,6 @@ export async function printSetupHelp(projectPath: string) {
   Logger.info(chalk.bold("Note: ") + "Environment variables take precedence over the configuration file.\n")
 
   // Required parameters
-  Logger.info(chalk.yellow(chalk.bold("Required Parameters:")))
-  Logger.info(chalk.bold("API Key:"))
-  Logger.info(`  • Config file: ${chalk.cyan("apiKey")}`)
-  Logger.info(`  • Env variable: ${chalk.magenta(EnvVariables.apiKey)}`)
-  Logger.info(`  • Your Nosto API key\n`)
-
   Logger.info(chalk.bold("Merchant ID:"))
   Logger.info(`  • Config file: ${chalk.cyan("merchant")}`)
   Logger.info(`  • Env variable: ${chalk.magenta(EnvVariables.merchant)}`)
@@ -31,6 +29,11 @@ export async function printSetupHelp(projectPath: string) {
 
   // Optional parameters
   Logger.info(chalk.yellow(chalk.bold("Optional Parameters:")))
+
+  Logger.info(chalk.bold("API Key:"))
+  Logger.info(`  • Config file: ${chalk.cyan("apiKey")}`)
+  Logger.info(`  • Env variable: ${chalk.magenta(EnvVariables.apiKey)}`)
+  Logger.info(`  • Your Nosto API key if needed. Used for CI or automation.\n`)
 
   Logger.info(chalk.bold("Templates Environment:"))
   Logger.info(`  • Config file: ${chalk.cyan("templatesEnv")}`)
@@ -58,24 +61,34 @@ export async function printSetupHelp(projectPath: string) {
 
   const configFilePath = path.join(projectPath, ".nosto.json")
   if (fs.existsSync(configFilePath)) {
+    Logger.info(`Configuration file already exists at ${chalk.cyan(configFilePath)}`)
     return
   }
 
-  Logger.warn("Configuration file not found in project directory.")
+  const envConfig = getEnvConfig()
+  const configToCreate = defaultConfig
+  Object.entries(envConfig).forEach(([key, value]) => {
+    if (key in configToCreate) {
+      Object.assign(configToCreate, { [key]: value })
+    }
+  })
 
-  Logger.info(chalk.greenBright("Placeholder config:"))
-  Logger.info(chalk.dim("{"))
-  Logger.info(chalk.dim('  "apiKey": "YOUR_API_KEY (Nosto API_APPS token)",'))
-  Logger.info(chalk.dim('  "merchant": "YOUR_MERCHANT_ID",'))
-  Logger.info(chalk.dim(`  "templatesEnv": "${defaultConfig.templatesEnv}",`))
-  Logger.info(chalk.dim(`  "apiUrl": "${defaultConfig.apiUrl}",`))
-  Logger.info(chalk.dim(`  "logLevel": "${defaultConfig.logLevel}",`))
-  Logger.info(chalk.dim(`  "maxRequests": ${defaultConfig.maxRequests}`))
-  Logger.info(chalk.dim("}"))
+  const { merchant } = options
+  if (merchant) {
+    configToCreate.merchant = merchant
+  } else {
+    Logger.warn("Configuration file not found in project directory.")
+    Logger.info(chalk.greenBright("Preview:"))
+    Logger.info(chalk.dim("{"))
+    Object.entries(configToCreate).forEach(([key, value]) => {
+      Logger.info(chalk.dim(`  "${key}": "${value}",`))
+    })
+    Logger.info(chalk.dim("}"))
+  }
 
-  const confirmed = await promptForConfirmation(`Would you like to create a placeholder configuration file?`, "Y")
+  const confirmed = merchant || (await promptForConfirmation(`Would you like to create a configuration file?`, "Y"))
   if (confirmed) {
-    writeFile(configFilePath, JSON.stringify(defaultConfig, null, 2) + "\n")
+    writeFile(configFilePath, JSON.stringify(configToCreate, null, 2) + "\n")
 
     const resolvedPath = path.resolve(configFilePath)
     Logger.info(`Created configuration file in ${chalk.cyan(resolvedPath)}`)

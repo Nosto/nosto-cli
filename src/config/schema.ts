@@ -2,9 +2,10 @@ import z from "zod"
 
 export const LogLevel = ["debug", "info", "warn", "error"] as const
 
+// Persistent per-repo config (.nosto.json file)
 export const PersistentConfigSchema = z.object({
-  apiKey: z.string(),
   merchant: z.string(),
+  apiKey: z.string().optional(),
   templatesEnv: z.string().default("main"),
   apiUrl: z.string().default("https://api.nosto.com"),
   libraryUrl: z.string().default("https://d11ffvpvtnmt0d.cloudfront.net/library"),
@@ -12,15 +13,24 @@ export const PersistentConfigSchema = z.object({
   maxRequests: z.coerce.number().default(15)
 })
 
+// Config provided on runtime (CLI options)
 export const RuntimeConfigSchema = z.object({
   projectPath: z.string().default("."),
   dryRun: z.boolean().default(false),
   verbose: z.boolean().default(false)
 })
 
+// Authentication config (~/nosto/.auth.json file)
+export const AuthConfigSchema = z.object({
+  user: z.string(),
+  token: z.string(),
+  expiresAt: z.coerce.date()
+})
+
+// Environmental variables, alternative to persistent config
 export const EnvironmentConfigSchema = z.object({
-  apiKey: z.string().optional(),
   merchant: z.string().optional(),
+  apiKey: z.string().optional(),
   templatesEnv: z.string().optional(),
   apiUrl: z.string().optional(),
   libraryUrl: z.string().optional(),
@@ -28,10 +38,11 @@ export const EnvironmentConfigSchema = z.object({
   maxRequests: z.coerce.number().optional()
 })
 
-export const PartialConfigSchema = PersistentConfigSchema.partial()
+export const PartialPersistentConfigSchema = PersistentConfigSchema.partial()
 
-export type Config = PersistentConfig & RuntimeConfig
+export type Config = PersistentConfig & RuntimeConfig & { auth: AuthConfig }
 export type PersistentConfig = z.infer<typeof PersistentConfigSchema>
 export type EnvironmentConfig = z.infer<typeof EnvironmentConfigSchema>
-export type PartialConfig = z.infer<typeof PartialConfigSchema>
 export type RuntimeConfig = z.infer<typeof RuntimeConfigSchema>
+export type AuthConfig = z.infer<typeof AuthConfigSchema>
+export type PartialPersistentConfig = z.infer<typeof PartialPersistentConfigSchema>

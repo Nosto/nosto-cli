@@ -4,12 +4,21 @@ import z from "zod"
 
 import { Logger } from "#console/logger.ts"
 
-import { type PartialConfig, PartialConfigSchema } from "./schema.ts"
+import { type PartialPersistentConfig, PartialPersistentConfigSchema } from "./schema.ts"
 
-export function parseConfigFile(targetPath: string): PartialConfig {
-  const configPath = path.join(targetPath, ".nosto.json")
+export function parseConfigFile({
+  projectPath,
+  allowIncomplete
+}: {
+  projectPath: string
+  allowIncomplete?: boolean
+}): PartialPersistentConfig {
+  const configPath = path.join(projectPath, ".nosto.json")
 
-  if (!fs.existsSync(configPath)) {
+  const configFileMissing = !fs.existsSync(configPath)
+  if (allowIncomplete && configFileMissing) {
+    return {}
+  } else if (configFileMissing) {
     Logger.warn(`Configuration file not found at: ${configPath}. Will try to use environment variables.`)
     return {}
   }
@@ -17,7 +26,7 @@ export function parseConfigFile(targetPath: string): PartialConfig {
   try {
     const configContent = fs.readFileSync(configPath, "utf-8")
     const rawConfig = JSON.parse(configContent)
-    return PartialConfigSchema.parse(rawConfig)
+    return PartialPersistentConfigSchema.parse(rawConfig)
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw new Error(`Invalid configuration file at ${configPath}: ${error.message}`)
