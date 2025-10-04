@@ -33,7 +33,7 @@
     "open": "^10.2.0",
     "ky": "^1.10.0",
     "preact": "^10.27.1",
-    "zod": "^4.1.5"
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
