@@ -8,14 +8,14 @@ const terminal = setupMockConsole()
 
 describe("Status Module", () => {
   it("should print configuration status by default", async () => {
-    expect(() => printStatus(".")).not.toThrow()
+    await expect(printStatus(".")).resolves.not.toThrow()
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Configuration is not valid:")
   })
 
   it("should indicate valid configuration", async () => {
     setupMockConfig({ merchant: "test-merchant" })
 
-    expect(() => printStatus(".")).not.toThrow()
+    await expect(printStatus(".")).resolves.not.toThrow()
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Configuration seems to be valid:")
     expect(terminal.getSpy("error")).toHaveBeenCalledWith("Some required configuration is missing\n")
   })

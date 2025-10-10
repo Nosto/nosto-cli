@@ -5,6 +5,6 @@ import { getCachedConfig } from "#config/config.ts"
 
 export function isModernTemplateProject() {
   const { projectPath } = getCachedConfig()
-  const deployConfigPath = path.resolve(projectPath, "nosto.config.ts")
-  return fs.existsSync(deployConfigPath)
+  const deployManifest = path.resolve(projectPath, "nosto.config.ts")
+  return fs.existsSync(deployManifest)
 }

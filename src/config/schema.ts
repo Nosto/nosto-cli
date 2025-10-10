@@ -42,12 +42,16 @@ export const EnvironmentConfigSchema = z.object({
 export const SearchTemplatesConfigSchema = z.object({
   onBuild: z
     .custom<() => Promise<void>>((val): val is () => Promise<void> => typeof val === "function")
-    .default(() => async () => {}),
+    .default(() => async () => {
+      throw new Error("onBuild function not implemented")
+    }),
   onBuildWatch: z
-    .custom<
-      (props: OnStartDevProps) => Promise<void>
-    >((val): val is (props: OnStartDevProps) => Promise<void> => typeof val === "function")
-    .default(() => async () => {})
+    .custom<(props: OnStartDevProps) => Promise<void>>(
+      (val): val is (props: OnStartDevProps) => Promise<void> => typeof val === "function"
+    )
+    .default(() => async () => {
+      throw new Error("onBuildWatch function not implemented")
+    })
 })
 type OnStartDevProps = {
   onAfterBuild: () => Promise<void>

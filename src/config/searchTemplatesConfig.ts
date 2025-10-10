@@ -22,7 +22,7 @@ export async function parseSearchTemplatesConfigFile({
   }
 
   const defaultExport = await import(configPath).then(module => module.default)
-  const parsedScriptObject = SearchTemplatesConfigSchema.safeParse(defaultExport)
+  const parsedScriptObject = SearchTemplatesConfigSchema.strict().safeParse(defaultExport)
   if (!parsedScriptObject.success) {
     throw new NostoError("Invalid nosto.config.ts file: " + z.treeifyError(parsedScriptObject.error))
   }
