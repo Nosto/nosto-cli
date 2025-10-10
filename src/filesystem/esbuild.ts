@@ -3,7 +3,7 @@ import path from "path"
 
 import { getCachedConfig } from "#config/config.ts"
 
-import { createLoaderPlugin, notifyOnRebuildPlugin } from "./plugins.ts"
+import { createLoaderPlugin, notifyOnRebuildPlugin } from "./esbuildPlugins.ts"
 
 export type EsbuildContextOptions = {
   plugins?: Plugin[]

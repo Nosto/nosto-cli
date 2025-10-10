@@ -7,7 +7,14 @@ import { MissingConfigurationError } from "#errors/MissingConfigurationError.ts"
 import { authFileExists, getAuthFileMissingError, parseAuthFile } from "./authConfig.ts"
 import { getEnvConfig } from "./envConfig.ts"
 import { parseConfigFile } from "./fileConfig.ts"
-import { AuthConfigSchema, type Config, PersistentConfigSchema, RuntimeConfigSchema } from "./schema.ts"
+import {
+  AuthConfigSchema,
+  type Config,
+  PersistentConfigSchema,
+  RuntimeConfigSchema,
+  SearchTemplatesConfigSchema
+} from "./schema.ts"
+import { parseSearchTemplatesConfigFile } from "./searchTemplatesConfig.ts"
 
 let isConfigLoaded = false
 let cachedConfig: Config = {
@@ -17,6 +24,10 @@ let cachedConfig: Config = {
     token: "",
     expiresAt: new Date(0)
   }),
+  searchTemplates: {
+    mode: "unknown",
+    data: SearchTemplatesConfigSchema.parse({})
+  },
   ...RuntimeConfigSchema.parse({})
 }
 
@@ -26,7 +37,7 @@ export type LoadConfigProps = {
   allowIncomplete?: boolean
 }
 
-export function loadConfig({ projectPath, options, allowIncomplete }: LoadConfigProps) {
+export async function loadConfig({ projectPath, options, allowIncomplete }: LoadConfigProps) {
   const { dryRun, verbose } = RuntimeConfigSchema.parse({ ...options, projectPath })
 
   if (isConfigLoaded) {
@@ -40,6 +51,7 @@ export function loadConfig({ projectPath, options, allowIncomplete }: LoadConfig
     throw getAuthFileMissingError()
   }
   const authConfig = parseAuthFile({ allowIncomplete })
+  const searchTemplatesConfig = await parseSearchTemplatesConfigFile({ projectPath })
   const fileConfig = parseConfigFile({ projectPath, allowIncomplete })
   const envConfig = getEnvConfig()
 
@@ -59,6 +71,7 @@ export function loadConfig({ projectPath, options, allowIncomplete }: LoadConfig
     cachedConfig = {
       ...persistentConfig,
       auth: authConfig,
+      searchTemplates: searchTemplatesConfig,
       apiUrl: cleanUrl(persistentConfig.apiUrl),
       libraryUrl: cleanUrl(persistentConfig.libraryUrl),
       logLevel: verbose ? "debug" : persistentConfig.logLevel,
@@ -84,6 +97,9 @@ function updateLoggerContext(config: Config) {
 
 export function getCachedConfig() {
   return cachedConfig
+}
+export function getCachedSearchTemplatesConfig() {
+  return cachedConfig.searchTemplates.data
 }
 
 export function getDefaultConfig() {

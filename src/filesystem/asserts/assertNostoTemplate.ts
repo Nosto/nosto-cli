@@ -5,6 +5,7 @@ import path from "path"
 import { getCachedConfig } from "#config/config.ts"
 import { Logger } from "#console/logger.ts"
 import { NotNostoTemplateError } from "#errors/NotNostoTemplateError.ts"
+import { isModernTemplateProject } from "#filesystem/legacyUtils.ts"
 
 export function assertNostoTemplate() {
   const { projectPath } = getCachedConfig()
@@ -16,6 +17,10 @@ export function assertNostoTemplate() {
   }
   if (!fs.statSync(targetFolder).isDirectory()) {
     throw new Error(`Target path is not a directory: ${chalk.cyan(targetFolder)}`)
+  }
+
+  if (isModernTemplateProject()) {
+    return
   }
 
   const indexFilePath = path.join(projectPath, "index.js")

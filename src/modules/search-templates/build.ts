@@ -2,9 +2,10 @@ import path from "node:path"
 
 import chalk from "chalk"
 
-import { getCachedConfig } from "#config/config.ts"
+import { getCachedConfig, getCachedSearchTemplatesConfig } from "#config/config.ts"
 import { Logger } from "#console/logger.ts"
 import { getBuildContext } from "#filesystem/esbuild.ts"
+import { isModernTemplateProject } from "#filesystem/legacyUtils.ts"
 import { loadLibrary } from "#filesystem/loadLibrary.ts"
 
 type Props = {
@@ -12,6 +13,26 @@ type Props = {
 }
 
 export async function buildSearchTemplate({ watch }: Props) {
+  if (isModernTemplateProject()) {
+    await buildModernSearchTemplate({ watch })
+  } else {
+    await buildLegacySearchTemplate({ watch })
+  }
+}
+
+async function buildModernSearchTemplate({ watch }: Props) {
+  const { onBuild, onBuildWatch } = getCachedSearchTemplatesConfig()
+
+  if (watch) {
+    await onBuildWatch({
+      onAfterBuild: async () => {}
+    })
+  } else {
+    await onBuild()
+  }
+}
+
+async function buildLegacySearchTemplate({ watch }: Props) {
   const { projectPath } = getCachedConfig()
   const libraryPath = path.resolve(projectPath, ".nostocache/library")
 

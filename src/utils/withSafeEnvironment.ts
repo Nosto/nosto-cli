@@ -12,7 +12,7 @@ export async function withSafeEnvironment(
   fn: () => void | Promise<void>
 ): Promise<void> {
   await withErrorHandler(async () => {
-    loadConfig(props)
+    await loadConfig(props)
     if (!skipSanityCheck) {
       assertNostoTemplate()
     }

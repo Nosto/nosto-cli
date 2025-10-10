@@ -31,7 +31,9 @@ export async function pushSearchTemplate({ paths, force }: PushSearchTemplateOpt
 
   // List all files, excluding ignored and filtered by paths
   const { allFiles, unfilteredFileCount } = listAllFiles(targetFolder)
-  const files = allFiles.filter(file => paths.length === 0 || paths.includes(file))
+  const files = allFiles.filter(
+    file => paths.length === 0 || paths.includes(file) || paths.find(p => file.startsWith(p + "/"))
+  )
 
   // Found literally no files -> nothing to do.
   if (files.length === 0) {
