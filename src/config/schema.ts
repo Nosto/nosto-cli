@@ -53,7 +53,7 @@ export const SearchTemplatesConfigSchema = z.object({
       throw new Error("onBuildWatch function not implemented")
     })
 })
-type OnStartDevProps = {
+export type OnStartDevProps = {
   onAfterBuild: () => Promise<void>
 }
 
