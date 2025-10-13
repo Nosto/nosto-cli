@@ -33,7 +33,7 @@ cd /path/to/project && nosto status
 
 ## Configuration
 
-The recommended way to provide the configuration is via a config file in the project folder, named `.nosto.json`. Alternatively, environmental variables can be used. If both are present, the environment takes precedence.
+The recommended way to provide the configuration is a configuration file in the project folder, named `.nosto.json`. Alternatively, environmental variables can be used. If both are present, the environment takes precedence.
 
 See output of `nosto setup` for the full list of options.
 
