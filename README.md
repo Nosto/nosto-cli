@@ -2,6 +2,10 @@
 
 A command-line interface to interact with Nosto's backend systems. Primarily aimed at developers and power-users who aim to use more powerful desktop tools for search-template development and (in the future) other features.
 
+If you are unfamiliar with Nosto as a company, you are welcome to visit out homepage at [Nosto.com](https://www.nosto.com/).
+
+If you wish to know more about our technology stack, we publish extensive documentation known as the [Techdocs](https://docs.nosto.com/techdocs).
+
 <img width="862" alt="image" src="https://github.com/user-attachments/assets/d26869d2-cd03-4d04-a175-d544c45b99b1" />
 
 ## Usage
