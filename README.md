@@ -8,39 +8,36 @@ A command-line interface to interact with Nosto's backend systems. Primarily aim
 
 Nosto CLI aims to be as user-friendly as CLI tools get. You should be able to get up and running by utilizing the built-in `help` and `setup` commands, but a quick-start guide is also provided here.
 
-### In the bright future
+```bash
+# Install the CLI tool:
+npm i @nosto/nosto-cli -g
 
-- Install the CLI tool:
-  - `npm i @nosto/nosto-cli -g`
+# Login to Nosto
+# You will see the browser window open with further instructions.
+nosto login
 
-- Invoke the tool on the project directory:
-  - `nosto status /path/to/project`
+# Invoke the tool on the project directory:
+nosto status /path/to/project
 
-- Alternatively, `cd` into the project directory and omit the path
-  - `cd /path/to/project && nosto status`
-
-### In the current reality
-
-Before it's available on NPM, a few extra steps are needed
-
-- Checkout the repo
-  - `git clone git@github.com:Nosto/nosto-cli.git`
-- Install deps
-  - `cd nosto-cli && npm i`
-- Link the tool into npm
-  - `npm link`
-- Enjoy!
-  - `nosto status /path/to/project`
+# Alternatively, `cd` into the project directory and omit the path
+cd /path/to/project && nosto status
+```
 
 ## Configuration
 
-The recommended way to provide the configuration is via a config file in the project folder, named `.nosto.json`. Alternatively, environmental variables can be used. If both are present, environment takes precedence.
+The recommended way to provide the configuration is via a config file in the project folder, named `.nosto.json`. Alternatively, environmental variables can be used. If both are present, the environment takes precedence.
 
 See output of `nosto setup` for the full list of options.
+
+> You should never push the content of your `.nosto.json` to your git repository as it may contain sensitive data.
 
 ### Required configuration
 
 At the minimum, two options are required: Merchant ID and the API key. If you're targeting an environment other than production, API Url will also be required.
+
+To quickly create a minimal configuration file, you may use the following command:
+
+- `NOSTO_MERCHANT=merchant-id nosto setup`
 
 #### Merchant ID:
 
@@ -49,33 +46,48 @@ Public ID of the target merchant.
 - Property name in the config file: `merchant`
 - Property name in the env variable: `NOSTO_MERCHANT`
 
-#### API Key:
+#### API Key (Optional):
 
-Your access key for the target merchant. Specifically, a Nosto API_APPS token that you can find in the merchant admin settings.
+By default, the CLI will use your user credentials created by `nosto login`. If the API token is provided for a given project, it will be used instead.
+
+Your access key for the target merchant. Specifically, a private Nosto API_APPS token that you can find in the merchant admin settings.
 
 - Property name in the config file: `apiKey`
 - Property name in the env variable: `NOSTO_API_KEY`
 
-#### API Url:
+#### API Url (Optional):
 
 By default, the CLI will try to contact `https://api.nosto.com` as the base URL.
 
 For staging, use: `https://api.staging.nosto.com`
-For local Playcart, use: `https://my.dev.nos.to/api`
+For local backend development, use, for example: `https://my.dev.nos.to/api`
 
 - Property name in the config file: `apiUrl`
 - Property name in the env variable: `NOSTO_API_URL`
 
 ## Excluded files
 
-At the moment, the CLI will push all files, excluding any that start with `.`. I.e. `.nosto.json` is excluded automatically.
+Nosto CLI takes the contents of your `.gitignore` file into account when pushing files to the remote. It will skip all patterns ignored by git, except that it will always include the `build/` folder while pushing to the remote. In addition, the CLI implicitly ignores any files or folders that start with `.`. I.e. `.nosto.json` is excluded automatically.
 
-During the pull, CLI downloads all files, except for the `build/` folder.
+During the pull, CLI downloads all files from the remote, excluding the `build/` folder.
+
+### Recommended .gitignore
+
+```bash
+.nosto.json
+.nostocache
+build
+```
 
 ## Supported commands
 
 You can use `nosto help` and variations to obtain detailed and up-to-date information on the current list of commands.
 
+- `login`
+  - Opens the browser window to start the login flow.
+  - Stores the credentials (email and temporary access token) in `~/.nosto/.auth.json`
+- `logout`
+  - Wipes the stored login credentials
 - `setup [projectPath]`
   - Prints setup information and creates a placeholder config file if needed
 - `status [projectPath]`
@@ -84,15 +96,18 @@ You can use `nosto help` and variations to obtain detailed and up-to-date inform
   - Alias: `search-templates [projectPath]`
   - Search templates related commands
   - `st pull [projectPath]`
-    - Fetch the current remote state for the configured merchant
-  - `st build [projectPath]`
-    - Run a local build, mirroring the hosted VSCode Web build workflow
+    - Fetches the current remote state for the configured merchant
   - `st push [projectPath]`
-    - Push the local state to the remote for the configured merchant
+    - Pushes the local state to the remote for the configured merchant
+  - `st build [projectPath]`
+    - For a modern search-template project, it invokes the `onBuild` script in `nosto.config.ts`
+    - For a legacy search-template project, it mirrors the hosted VSCode Web build workflow
   - `st dev [projectPath]`
-    - Watch files, build and upload automatically
+    - Watches files, build and upload automatically
+    - For a modern search-template project, it invokes the `onBuildWatch` script in `nosto.config.ts`
+    - For a legacy search-template project, it uses esbuild to watch files, build and upload automatically. Only uploads build artifacts, not the sources.
 
-## External dependencies
+## External dependencies in legacy search-templates
 
 With the addition of local builds, the external dependencies are something that is theoretically possible. However, due to complexities of the legacy setup, external deps **will not be officially supported in the legacy templates**. We understand that this is something modern web development needs, and we are addressing that by our upcoming open source search-templates offering. Specifically, search-templates-starter, [search-js](https://github.com/nosto/search-js) and this very CLI tool.
 
@@ -102,7 +117,7 @@ If you would still like to try your luck with introducing dependencies into a le
 
 ### Testing
 
-This project uses [Vitest](https://vitest.dev/) for comprehensive test coverage. Tests are organized under the `test/` directory mirroring the `src/` structure.
+This project uses [Vitest](https://vitest.dev/) as the test runner. Tests are organized under the `test/` directory mirroring the structure of `src/`.
 
 #### Available scripts
 
@@ -119,3 +134,11 @@ npm run test:ui
 # Run tests with coverage report
 npm run test:coverage
 ```
+
+## Known issues
+
+### Search templates push reports no files changed
+
+Running `nosto st push` after `nosto st dev` without changing any files will stop early with the "No files to push" message due to the hashing mechanism not taking the pushed paths into account properly.
+
+**Workaround**: Use `nosto st push -f` or change any of the files to update the hash.
