@@ -50,21 +50,21 @@ At the minimum, one option is required: Merchant ID. If you're targeting an envi
 
 Public ID of the target merchant.
 
-- Property name in the config file: `merchant`
-- Property name in the env variable: `NOSTO_MERCHANT`
+> Property name in the config file: `merchant`
+
+> Property name in the env variable: `NOSTO_MERCHANT`
 
 #### API URL (Optional):
 
 By default, the CLI will try to contact as the base URL. You may need to specify a different URL to target the correct environment.
 
-> Production URL: `https://api.nosto.com`
+- Production URL: `https://api.nosto.com`
+- Staging URL: `https://api.staging.nosto.com`
+- Nosto internal development URL: `https://my.dev.nos.to/api`
 
-> Staging URL: `https://api.staging.nosto.com`
+> Property name in the config file: `apiUrl`
 
-> Nosto internal development URL: `https://my.dev.nos.to/api`
-
-- Property name in the config file: `apiUrl`
-- Property name in the env variable: `NOSTO_API_URL`
+> Property name in the env variable: `NOSTO_API_URL`
 
 #### API Key (Optional):
 
@@ -72,8 +72,9 @@ By default, the CLI will use your user credentials created by `nosto login`. If 
 
 Your access key for the target merchant. Specifically, a private Nosto API_APPS token that you can find in the merchant admin settings.
 
-- Property name in the config file: `apiKey`
-- Property name in the env variable: `NOSTO_API_KEY`
+> Property name in the config file: `apiKey`
+
+> Property name in the env variable: `NOSTO_API_KEY`
 
 ## Excluded files
 
