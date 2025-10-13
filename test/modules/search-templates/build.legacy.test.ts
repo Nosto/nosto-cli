@@ -11,7 +11,7 @@ vi.mock("esbuild", () => ({
   context: vi.fn()
 }))
 
-describe("Build Search Templates", () => {
+describe("Search Templates build / legacy", () => {
   const mockContext = {
     rebuild: vi.fn(),
     dispose: vi.fn(),

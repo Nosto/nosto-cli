@@ -1,13 +1,36 @@
 import chalk from "chalk"
 import path from "path"
 
-import { getCachedConfig } from "#config/config.ts"
+import { getCachedConfig, getCachedSearchTemplatesConfig } from "#config/config.ts"
 import { Logger } from "#console/logger.ts"
 import { getBuildContext } from "#filesystem/esbuild.ts"
+import { pushOnRebuildPlugin } from "#filesystem/esbuildPlugins.ts"
+import { isModernTemplateProject } from "#filesystem/legacyUtils.ts"
 import { loadLibrary } from "#filesystem/loadLibrary.ts"
-import { pushOnRebuildPlugin } from "#filesystem/plugins.ts"
+
+import { pushSearchTemplate } from "./push.ts"
 
 export async function searchTemplateDevMode() {
+  if (isModernTemplateProject()) {
+    await modernSearchTemplateDevMode()
+  } else {
+    await legacySearchTemplateDevMode()
+  }
+}
+
+async function modernSearchTemplateDevMode() {
+  const { onBuildWatch } = getCachedSearchTemplatesConfig()
+
+  Logger.info(`Starting dev mode. ${chalk.yellow("Press Ctrl+C to stop")}`)
+
+  await onBuildWatch({
+    onAfterBuild: async () => {
+      pushSearchTemplate({ paths: ["build"], force: false })
+    }
+  })
+}
+
+async function legacySearchTemplateDevMode() {
   const { projectPath } = getCachedConfig()
   const libraryPath = path.resolve(projectPath, ".nostocache/library")
 

@@ -11,7 +11,7 @@ const fs = setupMockFileSystem()
 const server = setupMockServer()
 const mockConsole = setupMockConsole()
 
-describe("Search Template Dev Mode", () => {
+describe("Search Templates dev mode / legacy", () => {
   const mockContext = {
     watch: vi.fn(),
     dispose: vi.fn()

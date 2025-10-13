@@ -1,7 +1,7 @@
 import { PluginBuild } from "esbuild"
 import { describe, it } from "vitest"
 
-import { createLoaderPlugin } from "#filesystem/plugins.ts"
+import { createLoaderPlugin } from "#filesystem/esbuildPlugins.ts"
 import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
 
 const fs = setupMockFileSystem()

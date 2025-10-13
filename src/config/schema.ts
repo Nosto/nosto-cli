@@ -38,11 +38,33 @@ export const EnvironmentConfigSchema = z.object({
   maxRequests: z.coerce.number().optional()
 })
 
-export const PartialPersistentConfigSchema = PersistentConfigSchema.partial()
+// Modern config, can be committed to repo (nosto.config.ts file)
+export const SearchTemplatesConfigSchema = z.object({
+  onBuild: z
+    .custom<() => Promise<void>>((val): val is () => Promise<void> => typeof val === "function")
+    .default(() => async () => {
+      throw new Error("onBuild function not implemented")
+    }),
+  onBuildWatch: z
+    .custom<(props: OnStartDevProps) => Promise<void>>(
+      (val): val is (props: OnStartDevProps) => Promise<void> => typeof val === "function"
+    )
+    .default(() => async () => {
+      throw new Error("onBuildWatch function not implemented")
+    })
+})
+export type OnStartDevProps = {
+  onAfterBuild: () => Promise<void>
+}
 
-export type Config = PersistentConfig & RuntimeConfig & { auth: AuthConfig }
+export type SearchTemplatesMode = "modern" | "legacy" | "unknown"
+export type Config = PersistentConfig &
+  RuntimeConfig & { auth: AuthConfig; searchTemplates: { mode: SearchTemplatesMode; data: SearchTemplatesConfig } }
 export type PersistentConfig = z.infer<typeof PersistentConfigSchema>
-export type EnvironmentConfig = z.infer<typeof EnvironmentConfigSchema>
 export type RuntimeConfig = z.infer<typeof RuntimeConfigSchema>
 export type AuthConfig = z.infer<typeof AuthConfigSchema>
+export type EnvironmentConfig = z.infer<typeof EnvironmentConfigSchema>
+export type SearchTemplatesConfig = z.infer<typeof SearchTemplatesConfigSchema>
+
+export const PartialPersistentConfigSchema = PersistentConfigSchema.partial()
 export type PartialPersistentConfig = z.infer<typeof PartialPersistentConfigSchema>
