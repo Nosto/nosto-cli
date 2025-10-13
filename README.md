@@ -55,7 +55,7 @@ Public ID of the target merchant.
 
 #### API URL (Optional):
 
-By default, the CLI will try to contact as the base URL. You may need to specify a different URL to target the correct environment.
+By default, the CLI will try to contact production as the base URL. You may need to specify a different URL to target the correct environment.
 
 - Production URL: `https://api.nosto.com`
 - Staging URL: `https://api.staging.nosto.com`
