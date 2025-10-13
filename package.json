@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "./src/index.ts",
   "bin": {
-    "nosto": "./src/bootstrap.sh"
+    "nosto": "./src/bootstrap.mjs"
   },
   "author": "Nosto",
   "type": "module",
@@ -33,9 +33,10 @@
     "commander": "^14.0.1",
     "esbuild": "^0.25.10",
     "ignore": "^7.0.5",
-    "open": "^10.2.0",
     "ky": "^1.11.0",
+    "open": "^10.2.0",
     "preact": "^10.27.2",
+    "tsx": "^4.20.6",
     "zod": "^4.1.11"
   },
   "devDependencies": {

@@ -1,14 +1,17 @@
 import crypto from "crypto"
 import fs from "fs"
+import path from "path"
 
 import { getCachedConfig } from "#config/config.ts"
 
 import { getIgnoreInstance } from "./isIgnored.ts"
 
 export function calculateTreeHash() {
+  const { projectPath } = getCachedConfig()
   const hash = crypto.createHash("sha256")
   for (const filePath of listAllFilesForHashing()) {
-    const fileContent = fs.readFileSync(filePath, "utf-8")
+    const fullFilePath = path.join(projectPath, filePath)
+    const fileContent = fs.readFileSync(fullFilePath, "utf-8")
     hash.update(fileContent)
   }
   return hash.digest("hex")

@@ -42,7 +42,7 @@ export async function runCLI(argv: string[]) {
     .description("Prints setup information and creates a configuration file")
     .option("-m, --merchant <merchant>", "merchant to create config for")
     .action(async (projectPath = ".", options) => {
-      await loadConfig({ options, allowIncomplete: true, projectPath: "." })
+      await loadConfig({ options, allowIncomplete: true, projectPath })
       await withErrorHandler(() => printSetupHelp(projectPath, options))
     })
 
@@ -50,7 +50,7 @@ export async function runCLI(argv: string[]) {
     .command("status [projectPath]")
     .description("Print the configuration status")
     .action(async (projectPath = ".", options) => {
-      await loadConfig({ options, allowIncomplete: true, projectPath: "." })
+      await loadConfig({ options, allowIncomplete: true, projectPath })
       await withErrorHandler(() => printStatus(projectPath))
     })
 
