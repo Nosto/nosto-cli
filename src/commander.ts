@@ -60,18 +60,6 @@ export async function runCLI(argv: string[]) {
     .description("Search templates management commands")
 
   searchTemplates
-    .command("build [projectPath]")
-    .description("Build the search-templates locally")
-    .option("--dry-run", "perform a dry run without making changes")
-    .option("--verbose", "set log level to debug")
-    .option("-w, --watch", "watch for changes and rebuild")
-    .action(async (projectPath = ".", options) => {
-      await withSafeEnvironment({ projectPath, options }, async () => {
-        await buildSearchTemplate({ watch: options.watch ?? false })
-      })
-    })
-
-  searchTemplates
     .command("pull [projectPath]")
     .description("Pull the search-templates source from the Nosto VSCode Web")
     .option("-p, --paths <files...>", "specific file paths to fetch (space-separated list)")
@@ -101,6 +89,18 @@ export async function runCLI(argv: string[]) {
           paths: options.paths ?? [],
           force: options.force ?? false
         })
+      })
+    })
+
+  searchTemplates
+    .command("build [projectPath]")
+    .description("Build the search-templates locally")
+    .option("--dry-run", "perform a dry run without making changes")
+    .option("--verbose", "set log level to debug")
+    .option("-w, --watch", "watch for changes and rebuild")
+    .action(async (projectPath = ".", options) => {
+      await withSafeEnvironment({ projectPath, options }, async () => {
+        await buildSearchTemplate({ watch: options.watch ?? false })
       })
     })
 
