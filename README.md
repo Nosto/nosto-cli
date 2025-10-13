@@ -14,6 +14,8 @@ A command-line interface to interact with Nosto's backend systems. Primarily aim
 
 Nosto CLI aims to be as user-friendly as CLI tools get. You should be able to get up and running by utilizing the built-in `help` and `setup` commands, but a quick-start guide is also provided here.
 
+To start with, you may create an empty folder for your folder; or you may clone your git repository to work with.
+
 ```bash
 # Install the CLI tool:
 npm i @nosto/nosto-cli -g
@@ -22,7 +24,7 @@ npm i @nosto/nosto-cli -g
 # You will see the browser window open with further instructions.
 nosto login
 
-# Invoke the tool on the project directory:
+# Run the tool targeting a project directory:
 nosto status /path/to/project
 
 # Alternatively, `cd` into the project directory and omit the path
@@ -39,7 +41,7 @@ See output of `nosto setup` for the full list of options.
 
 ### Required configuration
 
-At the minimum, two options are required: Merchant ID and the API key. If you're targeting an environment other than production, API Url will also be required.
+At the minimum, one option is required: Merchant ID. If you're targeting an environment other than production, an API URL will also be required.
 
 > To quickly create a minimal configuration file, you may use the following command:
 > `NOSTO_MERCHANT=merchant-id nosto setup`
@@ -51,6 +53,20 @@ Public ID of the target merchant.
 - Property name in the config file: `merchant`
 - Property name in the env variable: `NOSTO_MERCHANT`
 
+#### API URL (Optional):
+
+By default, the CLI will try to contact  as the base URL.
+
+For staging, use: 
+For local backend development, use, for example: 
+
+- Production URL: `https://api.nosto.com`
+- Staging URL: `https://api.staging.nosto.com`
+- Nosto internal development URL: `https://my.dev.nos.to/api`
+
+- Property name in the config file: `apiUrl`
+- Property name in the env variable: `NOSTO_API_URL`
+
 #### API Key (Optional):
 
 By default, the CLI will use your user credentials created by `nosto login`. If the API token is provided for a given project, it will be used instead.
@@ -60,19 +76,9 @@ Your access key for the target merchant. Specifically, a private Nosto API_APPS 
 - Property name in the config file: `apiKey`
 - Property name in the env variable: `NOSTO_API_KEY`
 
-#### API Url (Optional):
-
-By default, the CLI will try to contact `https://api.nosto.com` as the base URL.
-
-For staging, use: `https://api.staging.nosto.com`
-For local backend development, use, for example: `https://my.dev.nos.to/api`
-
-- Property name in the config file: `apiUrl`
-- Property name in the env variable: `NOSTO_API_URL`
-
 ## Excluded files
 
-Nosto CLI takes the contents of your `.gitignore` file into account when pushing files to the remote. It will skip all patterns found there. In addition, the CLI implicitly ignores any files or folders that start with `.`. I.e. `.nosto.json` is excluded automatically.
+Nosto CLI takes the contents of your `.gitignore` file into account when pushing files to the remote, skipping all files matching these patterns. In addition, the CLI implicitly ignores any files or folders that start with `.`. I.e. `.nosto.json` is excluded automatically.
 
 During the pull, CLI downloads all files from the remote.
 
