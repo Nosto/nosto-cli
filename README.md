@@ -41,9 +41,8 @@ See output of `nosto setup` for the full list of options.
 
 At the minimum, two options are required: Merchant ID and the API key. If you're targeting an environment other than production, API Url will also be required.
 
-To quickly create a minimal configuration file, you may use the following command:
-
-- `NOSTO_MERCHANT=merchant-id nosto setup`
+> To quickly create a minimal configuration file, you may use the following command:
+> `NOSTO_MERCHANT=merchant-id nosto setup`
 
 #### Merchant ID:
 
@@ -73,9 +72,11 @@ For local backend development, use, for example: `https://my.dev.nos.to/api`
 
 ## Excluded files
 
-Nosto CLI takes the contents of your `.gitignore` file into account when pushing files to the remote. It will skip all patterns ignored by git, except that it will always include the `build/` folder while pushing to the remote. In addition, the CLI implicitly ignores any files or folders that start with `.`. I.e. `.nosto.json` is excluded automatically.
+Nosto CLI takes the contents of your `.gitignore` file into account when pushing files to the remote. It will skip all patterns found there. In addition, the CLI implicitly ignores any files or folders that start with `.`. I.e. `.nosto.json` is excluded automatically.
 
-During the pull, CLI downloads all files from the remote, excluding the `build/` folder.
+During the pull, CLI downloads all files from the remote.
+
+> The `/build` folder is an exception to the rules above. It will never be skipped during pushing, even if added to .gitignore, and it is always ignored while pulling.
 
 ### Recommended .gitignore
 
