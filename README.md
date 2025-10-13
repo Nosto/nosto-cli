@@ -50,8 +50,7 @@ At the minimum, one option is required: Merchant ID. If you're targeting an envi
 
 Public ID of the target merchant.
 
-> Property name in the config file: `merchant`
-
+> Property name in the config file: `merchant`<br/>
 > Property name in the env variable: `NOSTO_MERCHANT`
 
 #### API URL (Optional):
@@ -62,8 +61,7 @@ By default, the CLI will try to contact as the base URL. You may need to specify
 - Staging URL: `https://api.staging.nosto.com`
 - Nosto internal development URL: `https://my.dev.nos.to/api`
 
-> Property name in the config file: `apiUrl`
-
+> Property name in the config file: `apiUrl` <br/>
 > Property name in the env variable: `NOSTO_API_URL`
 
 #### API Key (Optional):
@@ -72,8 +70,7 @@ By default, the CLI will use your user credentials created by `nosto login`. If 
 
 Your access key for the target merchant. Specifically, a private Nosto API_APPS token that you can find in the merchant admin settings.
 
-> Property name in the config file: `apiKey`
-
+> Property name in the config file: `apiKey`<br/>
 > Property name in the env variable: `NOSTO_API_KEY`
 
 ## Excluded files
@@ -87,9 +84,9 @@ During the pull, CLI downloads all files from the remote.
 ### Recommended .gitignore
 
 ```bash
+build
 .nosto.json
 .nostocache
-build
 ```
 
 ## Supported commands
