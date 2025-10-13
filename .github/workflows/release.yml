@@ -1,0 +1,52 @@
+name: Build & Publish
+
+on:
+  push:
+    branches: ["main"]
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, and wait for the current one to finish
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v4.0.0
+        with:
+          node-version: 24
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Publish project
+        uses: cycjimmy/semantic-release-action@9cc899c47e6841430bbaedb43de1560a568dfd16 # v5.0.0
+        id: semantic
+        with:
+          extra_plugins: |
+            @semantic-release/changelog
+            @semantic-release/git
+          branches: |
+            [
+              "main"
+            ]
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PAT_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPMJS_TOKEN }}
