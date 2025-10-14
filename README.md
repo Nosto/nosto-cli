@@ -6,11 +6,11 @@ A command-line interface to interact with Nosto's backend systems. Primarily aim
 
 # About Nosto
 
-If you are unfamiliar with Nosto as a company, you are welcome to visit out homepage at [https://nosto.com/](https://www.nosto.com/).
+If you are unfamiliar with Nosto as a company, you are welcome to visit our homepage at [https://nosto.com/](https://www.nosto.com/).
 
 If you wish to know more about our tech stack, we publish extensive documentation known as the [Techdocs](https://docs.nosto.com/techdocs).
 
-## Usage
+# Usage
 
 Nosto CLI aims to be as user-friendly as CLI tools get. You should be able to get up and running by utilizing the built-in `help` and `setup` commands, but a quick-start guide is also provided here.
 
@@ -123,13 +123,13 @@ With the addition of local builds, the external dependencies are something that 
 
 If you would still like to try your luck with introducing dependencies into a legacy app, we recommend you stick with only build-time dependencies like TypeScript that disappear at runtime. In that case, build your app as you would, and point the CLI's build to the output folder.
 
-## Development
+# Development
 
-### Testing
+## Testing
 
 This project uses [Vitest](https://vitest.dev/) as the test runner. Tests are organized under the `test/` directory mirroring the structure of `src/`.
 
-#### Available scripts
+### Available scripts
 
 ```bash
 # Run tests once
@@ -152,3 +152,7 @@ npm run test:coverage
 Running `nosto st push` after `nosto st dev` without changing any files will stop early with the "No files to push" message due to the hashing mechanism not taking the pushed paths into account properly.
 
 **Workaround**: Use `nosto st push -f` or change any of the files to update the hash.
+
+## Contributions
+
+We welcome both internal and external contributions to this project! Feel free to request bugfixes, open issues or PRs for review. Nosto is actively maintaining this project, and we will process your contributions as soon as possible.
