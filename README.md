@@ -14,7 +14,7 @@ If you wish to know more about our tech stack, we publish extensive documentatio
 
 Nosto CLI aims to be as user-friendly as CLI tools get. You should be able to get up and running by utilizing the built-in `help` and `setup` commands, but a quick-start guide is also provided here.
 
-To start with, you may create an empty folder for your folder; or you may clone your git repository to work with.
+To start with, you may create an empty folder for your project; or you may clone your git repository to work with.
 
 ```bash
 # Install the CLI tool:
