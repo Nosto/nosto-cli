@@ -6,7 +6,7 @@ A command-line interface to interact with Nosto's backend systems. Primarily aim
 
 # About Nosto
 
-If you are unfamiliar with Nosto as a company, you are welcome to visit our homepage at [https://nosto.com/](https://www.nosto.com/).
+If you are unfamiliar with Nosto as a company, you are welcome to visit our homepage at [https://www.nosto.com](https://www.nosto.com/).
 
 If you wish to know more about our tech stack, we publish extensive documentation known as the [Techdocs](https://docs.nosto.com/techdocs).
 
