@@ -13,6 +13,7 @@ export default defineConfig({
     include: ["test/**/*.test.ts"],
     exclude: ["node_modules", "dist"],
     setupFiles: ["test/setup.ts"],
+    mockReset: true,
     restoreMocks: true,
     reporters: ["default"],
     coverage: {
