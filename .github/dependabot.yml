@@ -8,9 +8,6 @@ updates:
       prefix: "deps"
     open-pull-requests-limit: 10
     groups:
-      commitlint:
-        patterns:
-          - "@commitlint/*"
       eslint:
         patterns:
           - "@eslint/*"
