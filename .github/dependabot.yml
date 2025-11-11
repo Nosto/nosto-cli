@@ -7,3 +7,14 @@ updates:
     commit-message:
       prefix: "deps"
     open-pull-requests-limit: 10
+    groups:
+      eslint:
+        patterns:
+          - "@eslint/*"
+          - "eslint"
+          - "eslint-*"
+          - "typescript-eslint"
+      vitest:
+        patterns:
+          - "@vitest/*"
+          - "vitest"
