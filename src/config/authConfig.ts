@@ -1,13 +1,13 @@
 import fs from "fs"
-import os from "os"
 import path from "path"
 import z from "zod"
 
 import { MissingConfigurationError } from "#errors/MissingConfigurationError.ts"
+import { HomeDirectory } from "#filesystem/homeDirectory.ts"
 
 import { type AuthConfig, AuthConfigSchema } from "./schema.ts"
 
-export const AuthConfigFilePath = path.join(os.homedir(), ".nosto", ".auth.json")
+export const AuthConfigFilePath = path.join(HomeDirectory, ".nosto", ".auth.json")
 
 export function authFileExists() {
   return fs.existsSync(AuthConfigFilePath)

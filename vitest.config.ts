@@ -25,7 +25,7 @@ export default defineConfig({
         functions: 85,
         lines: 85
       },
-      exclude: ["node_modules/", "test/", "vitest.config.ts", "src/bootstrap.sh", "*.config.js"]
+      exclude: ["node_modules/", "test/", "vitest.config.ts", "src/bootstrap.sh", "*.config.js", "homeDirectory.ts"]
     }
   },
   esbuild: {

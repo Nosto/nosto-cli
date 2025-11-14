@@ -93,4 +93,20 @@ describe("Logger", () => {
     Logger.error("Error message", new Error("Test error"))
     expect(consoleMock).toHaveBeenCalledWith(expect.stringContaining("Error: Test error"))
   })
+
+  it("prints merchant id when set in context", () => {
+    const consoleMock = vi.spyOn(console, "info").mockImplementation(() => undefined)
+    Logger.context.merchantId = "merchant123"
+    Logger.context.logLevel = "info"
+    Logger.info("Info message")
+    expect(consoleMock).toHaveBeenCalledWith(expect.stringContaining("[merchant123]"))
+  })
+
+  it("prints the dry run label when isDryRun is true", () => {
+    const consoleMock = vi.spyOn(console, "info").mockImplementation(() => undefined)
+    Logger.context.isDryRun = true
+    Logger.context.logLevel = "info"
+    Logger.info("Info message")
+    expect(consoleMock).toHaveBeenCalledWith(expect.stringContaining("(DRY RUN)"))
+  })
 })
