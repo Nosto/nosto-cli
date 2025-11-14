@@ -17,7 +17,7 @@ import {
 import { parseSearchTemplatesConfigFile } from "./searchTemplatesConfig.ts"
 
 let isConfigLoaded = false
-let cachedConfig: Config = {
+const defaultCachedConfig: Config = {
   ...getDefaultConfig(),
   auth: AuthConfigSchema.parse({
     user: "",
@@ -30,6 +30,7 @@ let cachedConfig: Config = {
   },
   ...RuntimeConfigSchema.parse({})
 }
+let cachedConfig: Config = defaultCachedConfig
 
 export type LoadConfigProps = {
   projectPath: string
@@ -106,4 +107,9 @@ export function getDefaultConfig() {
   return PersistentConfigSchema.parse({
     merchant: ""
   })
+}
+
+export function clearCachedConfig() {
+  isConfigLoaded = false
+  cachedConfig = defaultCachedConfig
 }

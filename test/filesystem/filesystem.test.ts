@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { listAllFiles, writeFile } from "#filesystem/filesystem.ts"
+import { listAllFiles, readFileIfExists, writeFile } from "#filesystem/filesystem.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
 
@@ -48,6 +48,22 @@ describe("Filesystem", () => {
     expect(listAllFiles(".")).toEqual({
       allFiles: ["subfolder/file1.txt", "other/subfolder/file2.txt"],
       unfilteredFileCount: 2
+    })
+  })
+
+  describe("readFileIfExists", () => {
+    it("should read file content if file exists", () => {
+      const filePath = "readable.txt"
+      const fileContent = "This is readable content."
+      mockFileSystem.writeFile(filePath, fileContent)
+
+      const content = readFileIfExists(filePath)
+      expect(content).toBe(fileContent)
+    })
+
+    it("should return null if file does not exist", () => {
+      const content = readFileIfExists("nonexistent.txt")
+      expect(content).toBeNull()
     })
   })
 })

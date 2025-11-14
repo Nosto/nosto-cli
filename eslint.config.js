@@ -27,9 +27,19 @@ export default defineConfig([
     },
     rules: {
       "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
+        "warn",
+        {
+          vars: "all",
+          varsIgnorePattern: "^_",
+          args: "after-used",
+          argsIgnorePattern: "^_"
+        }
+      ],
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
-      "no-restricted-imports": ["error", "node:test"]
+      "no-restricted-imports": ["error", "node:test"],
+      "@typescript-eslint/no-unused-vars": "off"
     }
   },
   eslintPluginPrettierRecommended

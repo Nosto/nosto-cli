@@ -2,6 +2,7 @@ import path from "path"
 import { vi } from "vitest"
 
 import { SearchTemplatesConfig } from "#config/schema.ts"
+import { Logger } from "#console/logger.ts"
 import { makeConfig } from "#exports.ts"
 
 import { setupMockFileSystem } from "./mockFileSystem.ts"
@@ -15,10 +16,10 @@ export function setupMockStarterManifest({ projectPath, mockScript }: Props = {}
   const fs = setupMockFileSystem()
   const manifest = makeConfig({
     onBuild: async () => {
-      console.log("Building...")
+      Logger.debug("Building...")
     },
     onBuildWatch: async () => {
-      console.log("Watching...")
+      Logger.debug("Watching...")
     },
     ...mockScript
   })

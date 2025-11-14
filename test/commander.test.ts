@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, MockInstance, vi } from "vitest"
 
+import { clearCachedConfig, getCachedConfig } from "#config/config.ts"
 import { MissingConfigurationError } from "#errors/MissingConfigurationError.ts"
+import * as login from "#modules/login.ts"
+import * as logout from "#modules/logout.ts"
 import * as build from "#modules/search-templates/build.ts"
 import * as dev from "#modules/search-templates/dev.ts"
 import * as pull from "#modules/search-templates/pull.ts"
@@ -14,6 +17,8 @@ import { setupMockFileSystem } from "./utils/mockFileSystem.ts"
 const fs = setupMockFileSystem()
 const commander = setupMockCommander()
 
+let loginSpy: MockInstance
+let logoutSpy: MockInstance
 let setupSpy: MockInstance
 let statusSpy: MockInstance
 let buildSpy: MockInstance
@@ -22,14 +27,36 @@ let pushSpy: MockInstance
 let devSpy: MockInstance
 
 describe("commander", () => {
-  // Make sure the actual functions are never called
   beforeEach(() => {
+    loginSpy = vi.spyOn(login, "loginToPlaycart").mockImplementation(() => Promise.resolve())
+    logoutSpy = vi.spyOn(logout, "removeLoginCredentials").mockImplementation(() => Promise.resolve())
     setupSpy = vi.spyOn(setup, "printSetupHelp").mockImplementation(() => Promise.resolve())
     statusSpy = vi.spyOn(status, "printStatus").mockImplementation(() => Promise.resolve())
     buildSpy = vi.spyOn(build, "buildSearchTemplate").mockImplementation(() => Promise.resolve())
     pullSpy = vi.spyOn(pull, "pullSearchTemplate").mockImplementation(() => Promise.resolve())
     pushSpy = vi.spyOn(push, "pushSearchTemplate").mockImplementation(() => Promise.resolve())
     devSpy = vi.spyOn(dev, "searchTemplateDevMode").mockImplementation(() => Promise.resolve())
+    clearCachedConfig()
+    fs.mockUserAuthentication()
+  })
+
+  describe("nosto login", () => {
+    it("should call the function", async () => {
+      await commander.run("nosto login")
+      expect(loginSpy).toHaveBeenCalledWith()
+    })
+
+    it("should load the config", async () => {
+      await commander.run("nosto login --verbose")
+      expect(getCachedConfig().verbose).toBe(true)
+    })
+  })
+
+  describe("nosto logout", () => {
+    it("should call the function", async () => {
+      await commander.run("nosto logout")
+      expect(logoutSpy).toHaveBeenCalledWith()
+    })
   })
 
   describe("nosto setup", () => {
@@ -143,6 +170,9 @@ describe("commander", () => {
   })
 
   describe("nosto search-templates pull", () => {
+    beforeEach(() => {
+      fs.writeFile(".nosto.json", JSON.stringify({ apiKey: "123", merchant: "456" }))
+    })
     it("should pull even without files present", async () => {
       await commander.run("nosto st pull")
       expect(pullSpy).toHaveBeenCalled()
@@ -150,7 +180,6 @@ describe("commander", () => {
 
     describe("with valid environment", () => {
       beforeEach(() => {
-        fs.writeFile(".nosto.json", JSON.stringify({ apiKey: "123", merchant: "456" }))
         fs.writeFile("index.js", "@nosto/preact")
       })
 

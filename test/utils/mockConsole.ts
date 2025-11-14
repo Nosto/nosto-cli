@@ -36,8 +36,26 @@ export function setupMockConsole() {
     setUserResponse: (response: string) => {
       mockedConsoleIn.userResponse = response
     },
+    setContext: (context: Partial<typeof mockedConsoleOut.Logger.context>) => {
+      mockedConsoleOut.Logger.context = {
+        ...mockedConsoleOut.Logger.context,
+        ...context
+      }
+    },
     clearPrompts: () => {
       mockedConsoleIn.recordedPrompts = []
+    },
+    resetMocks: () => {
+      mockedConsoleOut.Logger.raw.mockReset()
+      mockedConsoleOut.Logger.debug.mockReset()
+      mockedConsoleOut.Logger.info.mockReset()
+      mockedConsoleOut.Logger.warn.mockReset()
+      mockedConsoleOut.Logger.error.mockReset()
+      mockedConsoleOut.Logger.context = {
+        logLevel: "info",
+        merchantId: "",
+        isDryRun: false
+      }
     },
     getSpy: (method: Exclude<keyof typeof mockedConsoleOut.Logger, "context">) => {
       return mockedConsoleOut.Logger[method]

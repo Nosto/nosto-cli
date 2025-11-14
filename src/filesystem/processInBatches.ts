@@ -27,6 +27,7 @@ export async function processInBatches({ files, logIcon, processElement }: Props
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : String(error)
         Logger.error(`${chalk.red("✗")} ${chalk.cyan(file)}: ${errorMessage}`)
+        throw error
       }
     })
     const results = await Promise.allSettled(batchPromises)
