@@ -20,10 +20,10 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "json", "html"],
       thresholds: {
-        statements: 85,
-        branches: 80,
-        functions: 85,
-        lines: 85
+        statements: 90,
+        branches: 84,
+        functions: 90,
+        lines: 90
       },
       exclude: ["node_modules/", "test/", "vitest.config.ts", "src/bootstrap.sh", "*.config.js", "homeDirectory.ts"]
     }
