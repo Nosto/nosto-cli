@@ -68,7 +68,7 @@ export function makeFileMatcher(path: string) {
   return {
     toContain: (expectedContent: string) => {
       const content = fs.readFileSync(path, "utf8")
-      expect(content, `File ${path} has content ${content}`).toEqual(expectedContent)
+      expect(content, `File ${path} actually has\n ${content}`).toEqual(expectedContent)
     },
     toExist: () => {
       return expect(fs.existsSync(path), `File ${path} does not exist when it was expected to`).toBe(true)
@@ -76,7 +76,7 @@ export function makeFileMatcher(path: string) {
     not: {
       toContain: (expectedContent: string) => {
         const content = fs.readFileSync(path, "utf8")
-        expect(content, `File ${path} has content ${content}`).not.toEqual(expectedContent)
+        expect(content, `File ${path} actually has\n ${content}`).not.toEqual(expectedContent)
       },
       toExist: () => {
         return expect(fs.existsSync(path), `File ${path} exists when it was not expected to`).toBe(false)

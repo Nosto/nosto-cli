@@ -2,17 +2,14 @@ import chalk from "chalk"
 import fs from "fs"
 import path from "path"
 
+import { putWithRetry } from "#api/retry.ts"
 import { fetchSourceFileIfExists } from "#api/source/fetchSourceFile.ts"
-import { putSourceFile } from "#api/source/putSourceFile.ts"
 import { getCachedConfig } from "#config/config.ts"
 import { Logger } from "#console/logger.ts"
 import { promptForConfirmation } from "#console/userPrompt.ts"
 import { calculateTreeHash } from "#filesystem/calculateTreeHash.ts"
 import { listAllFiles, readFileIfExists, writeFile } from "#filesystem/filesystem.ts"
 import { processInBatches } from "#filesystem/processInBatches.ts"
-
-const MAX_RETRIES = 3
-const INITIAL_RETRY_DELAY = 1000 // 1 second
 
 type PushSearchTemplateOptions = {
   // Filter to only push these files. Ignored if empty.
@@ -101,21 +98,4 @@ export async function pushSearchTemplate({ paths, force }: PushSearchTemplateOpt
       await putWithRetry(file, fs.readFileSync(filePath, "utf-8"))
     }
   })
-}
-
-async function putWithRetry(filePath: string, content: string, retryCount = 0): Promise<void> {
-  try {
-    return await putSourceFile(filePath, content)
-  } catch (error: unknown) {
-    if (retryCount >= MAX_RETRIES) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      throw new Error(`Failed to push ${filePath} after ${MAX_RETRIES} retries: ${errorMessage}`)
-    }
-    const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount)
-    Logger.warn(
-      `${chalk.yellow("⟳")} Failed to push ${chalk.cyan(filePath)}: Retrying in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`
-    )
-    await new Promise(resolve => setTimeout(resolve, delay))
-    return putWithRetry(filePath, content, retryCount + 1)
-  }
 }

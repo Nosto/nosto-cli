@@ -68,9 +68,7 @@ export async function printSetupHelp(projectPath: string, options: Options) {
   const envConfig = getEnvConfig()
   const configToCreate = defaultConfig
   Object.entries(envConfig).forEach(([key, value]) => {
-    if (key in configToCreate) {
-      Object.assign(configToCreate, { [key]: value })
-    }
+    Object.assign(configToCreate, { [key]: value })
   })
 
   const { merchant } = options

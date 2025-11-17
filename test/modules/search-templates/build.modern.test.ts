@@ -22,7 +22,11 @@ describe("Search Templates build / modern", () => {
 
   it("should build templates with watch mode", async () => {
     const manifest = setupMockStarterManifest({
-      mockScript: { onBuildWatch: vi.fn() }
+      mockScript: {
+        onBuildWatch: vi.fn().mockImplementation(async ({ onAfterBuild }) => {
+          await onAfterBuild()
+        })
+      }
     })
     setupMockConfig({
       searchTemplates: await parseSearchTemplatesConfigFile({ projectPath: "." })

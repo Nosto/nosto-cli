@@ -4,7 +4,7 @@ import { pushSearchTemplate } from "#modules/search-templates/push.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
 import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
-import { mockPutSourceFile, setupMockServer } from "#test/utils/mockServer.ts"
+import { mockFetchSourceFile, mockPutSourceFile, setupMockServer } from "#test/utils/mockServer.ts"
 
 const fs = setupMockFileSystem()
 const server = setupMockServer()
@@ -105,5 +105,149 @@ describe("Push Search Template", () => {
     mockPutSourceFile(server, { path: "file1.js", error: { status: 500, message: "Upload failed" } })
 
     await pushSearchTemplate({ paths: [], force: true })
+  })
+
+  it("should abort if remote template is already up to date", async () => {
+    fs.writeFile("index.js", "old content")
+    mockFetchSourceFile(server, {
+      path: "build/hash",
+      response: "34a780ad578b997db55b260beb60b501f3e04d30ba1a51fcf43cd8dd1241780d",
+      contentType: "raw"
+    })
+
+    await pushSearchTemplate({ paths: [], force: false })
+    expect(terminal.getSpy("success")).toHaveBeenCalledWith("Remote template is already up to date.")
+    fs.expectFile("/.nostocache/hash").toContain("34a780ad578b997db55b260beb60b501f3e04d30ba1a51fcf43cd8dd1241780d")
+  })
+
+  it("should skip prompt when remote and last seen hashes match", async () => {
+    fs.writeFile("index.js", "content with @nosto/preact")
+    fs.writeFile(".nostocache/hash", "matching-hash")
+
+    mockFetchSourceFile(server, {
+      path: "build/hash",
+      response: "matching-hash",
+      contentType: "raw"
+    })
+    mockPutSourceFile(server, { path: "index.js" })
+    mockPutSourceFile(server, { path: "build/hash" })
+
+    await pushSearchTemplate({ paths: [], force: false })
+
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith("Pushing template from: /")
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith("Found 2 files to push (1 source, 1 built, 0 ignored).")
+  })
+
+  it("should handle build/hash file already existing", async () => {
+    fs.writeFile("index.js", "content with @nosto/preact")
+    fs.writeFile(".nostocache/hash", "matching-hash")
+    fs.writeFile("build/hash", "matching-hash")
+
+    mockFetchSourceFile(server, {
+      path: "build/hash",
+      response: "matching-hash",
+      contentType: "raw"
+    })
+    mockPutSourceFile(server, { path: "index.js" })
+    mockPutSourceFile(server, { path: "build/hash" })
+
+    await pushSearchTemplate({ paths: [], force: false })
+
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith("Pushing template from: /")
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith("Found 2 files to push (1 source, 1 built, 1 ignored).")
+  })
+
+  it("should prompt for confirmation when remote hash exists but no last seen hash", async () => {
+    fs.writeFile("index.js", "content with @nosto/preact")
+
+    mockFetchSourceFile(server, {
+      path: "build/hash",
+      response: "remote-hash",
+      contentType: "raw"
+    })
+    mockPutSourceFile(server, { path: "index.js" })
+    mockPutSourceFile(server, { path: "build/hash" })
+
+    terminal.setUserResponse("y")
+
+    await pushSearchTemplate({ paths: [], force: false })
+
+    terminal.expect.user.toHaveBeenPromptedWith(
+      "It seems that this is the first time you are pushing to this environment. Please make sure your local copy is up to date. Continue? (y/N):"
+    )
+  })
+
+  it("should prompt for confirmation when remote hash differs from last seen hash", async () => {
+    fs.writeFile("index.js", "content with @nosto/preact")
+    fs.writeFile(".nostocache/hash", "old-hash")
+
+    mockFetchSourceFile(server, {
+      path: "build/hash",
+      response: "different-remote-hash",
+      contentType: "raw"
+    })
+    mockPutSourceFile(server, { path: "index.js" })
+    mockPutSourceFile(server, { path: "build/hash" })
+
+    terminal.setUserResponse("y")
+
+    await pushSearchTemplate({ paths: [], force: false })
+
+    terminal.expect.user.toHaveBeenPromptedWith(
+      "It seems that the template has been changed since your last push. Are you sure you want to continue? (y/N):"
+    )
+  })
+
+  it("should prompt for confirmation when no remote hash exists", async () => {
+    fs.writeFile("index.js", "content with @nosto/preact")
+    fs.writeFile(".nostocache/hash", "some-hash")
+
+    mockFetchSourceFile(server, {
+      path: "build/hash",
+      error: { status: 404, message: "Not Found" }
+    })
+    mockPutSourceFile(server, { path: "index.js" })
+    mockPutSourceFile(server, { path: "build/hash" })
+
+    terminal.setUserResponse("y")
+
+    await pushSearchTemplate({ paths: [], force: false })
+
+    terminal.expect.user.toHaveBeenPromptedWith(
+      "It seems that this is the first time you are pushing to this environment. Please make sure your local copy is up to date. Continue? (y/N):"
+    )
+  })
+
+  it("should cancel operation when user declines prompt for first-time push", async () => {
+    fs.writeFile("index.js", "content with @nosto/preact")
+
+    mockFetchSourceFile(server, {
+      path: "build/hash",
+      response: "remote-hash",
+      contentType: "raw"
+    })
+
+    terminal.setUserResponse("N")
+
+    await pushSearchTemplate({ paths: [], force: false })
+
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith("Push operation cancelled by user.")
+  })
+
+  it("should cancel operation when user declines prompt for conflicting changes", async () => {
+    fs.writeFile("index.js", "content with @nosto/preact")
+    fs.writeFile(".nostocache/hash", "old-hash")
+
+    mockFetchSourceFile(server, {
+      path: "build/hash",
+      response: "different-remote-hash",
+      contentType: "raw"
+    })
+
+    terminal.setUserResponse("N")
+
+    await pushSearchTemplate({ paths: [], force: false })
+
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith("Push operation cancelled by user.")
   })
 })

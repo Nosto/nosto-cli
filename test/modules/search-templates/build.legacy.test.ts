@@ -3,9 +3,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
+import { setupMockConsole } from "#test/utils/mockConsole.ts"
 import { mockFetchLibraryFile, setupMockServer } from "#test/utils/mockServer.ts"
 
 const server = setupMockServer()
+const terminal = setupMockConsole()
 
 vi.mock("esbuild", () => ({
   context: vi.fn()
@@ -69,6 +71,29 @@ describe("Search Templates build / legacy", () => {
       expect(processOnSpy).toHaveBeenCalledWith("SIGINT", expect.any(Function))
 
       processOnSpy.mockRestore()
+    })
+
+    it("should handle SIGINT signal correctly", async () => {
+      const processOnSpy = vi.spyOn(process, "on").mockImplementation(() => process)
+      const processExitSpy = vi.spyOn(process, "exit").mockImplementation(() => undefined as never)
+
+      await buildSearchTemplate({ watch: true })
+
+      // Get the SIGINT handler that was registered
+      const sigintCall = processOnSpy.mock.calls.find(call => call[0] === "SIGINT")
+      const sigintHandler = sigintCall?.[1] as () => void
+      expect(sigintHandler).toBeDefined()
+
+      // Simulate SIGINT signal
+      sigintHandler()
+
+      // Verify the handler behavior
+      expect(mockContext.dispose).toHaveBeenCalled()
+      expect(terminal.getSpy("info")).toHaveBeenCalledWith(expect.stringContaining("Watch mode stopped."))
+      expect(processExitSpy).toHaveBeenCalledWith(0)
+
+      processOnSpy.mockRestore()
+      processExitSpy.mockRestore()
     })
   })
 })

@@ -30,7 +30,7 @@ const defaultCachedConfig: Config = {
   },
   ...RuntimeConfigSchema.parse({})
 }
-let cachedConfig: Config = defaultCachedConfig
+let cachedConfig = defaultCachedConfig
 
 export type LoadConfigProps = {
   projectPath: string

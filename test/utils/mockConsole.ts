@@ -19,6 +19,7 @@ export const mockedConsoleOut = {
       merchantId: "",
       isDryRun: false
     },
+    success: vi.fn(),
     raw: vi.fn(),
     debug: vi.fn(),
     info: vi.fn(),
@@ -46,6 +47,7 @@ export function setupMockConsole() {
       mockedConsoleIn.recordedPrompts = []
     },
     resetMocks: () => {
+      mockedConsoleOut.Logger.success.mockReset()
       mockedConsoleOut.Logger.raw.mockReset()
       mockedConsoleOut.Logger.debug.mockReset()
       mockedConsoleOut.Logger.info.mockReset()

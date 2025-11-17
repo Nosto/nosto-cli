@@ -11,8 +11,7 @@ export async function withErrorHandler(fn: () => void | Promise<void>): Promise<
     const config = getCachedConfig()
     if (config.verbose) {
       Logger.raw(chalk.red(prettyPrintStack(error.stack)))
-    }
-    if (!config.verbose) {
+    } else {
       Logger.info(chalk.gray("Rerun with --verbose to see details"))
     }
   }

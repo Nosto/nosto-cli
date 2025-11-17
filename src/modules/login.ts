@@ -29,6 +29,9 @@ export async function loginToPlaycart() {
 
   Logger.info("Awaiting response from the browser...")
   const response = await server.responseData
+  if ("error" in response) {
+    throw new InvalidLoginResponseError(response.error)
+  }
   writeFile(AuthConfigFilePath, JSON.stringify(response, null, 2) + "\n")
 
   Logger.success(`Login successful! Auth file saved at ${AuthConfigFilePath}`)
@@ -39,7 +42,7 @@ type AuthServer = {
   responseData: Promise<PlaycartResponse>
 }
 
-type PlaycartResponse = z.infer<typeof AuthConfigSchema>
+type PlaycartResponse = z.infer<typeof AuthConfigSchema> | { error: string }
 
 /**
  * The authentication server is created to handle a single redirect from the browser.
@@ -58,7 +61,9 @@ async function createAuthServer(): Promise<AuthServer> {
       expiresAt: url.searchParams.get("expiresAt")
     })
     if (!parsed.success) {
-      throw new InvalidLoginResponseError(`Failed to parse playcart response: ${parsed.error.message}`)
+      const error = `Failed to parse playcart response: ${parsed.error.message}`
+      resolveTokenPromise({ error })
+      throw new InvalidLoginResponseError(error)
     }
     resolveTokenPromise(parsed.data)
   }
@@ -70,11 +75,12 @@ async function createAuthServer(): Promise<AuthServer> {
     server.close()
   })
 
-  const port = await new Promise<number>(resolve => {
+  const port = await new Promise<number>((resolve, reject) => {
     server.listen(0, "localhost", () => {
       const addr = server.address()
       if (!addr || typeof addr !== "object") {
-        throw new Error("Failed to get server address")
+        reject(new Error("Failed to get server address"))
+        return
       }
       resolve(addr.port)
     })
