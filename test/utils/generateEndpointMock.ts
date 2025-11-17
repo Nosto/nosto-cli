@@ -4,14 +4,19 @@ import type { SetupServer } from "msw/node"
 type HttpMethod = keyof typeof http
 
 export type MockParams<ResponseT extends DefaultBodyType | void> =
-  | (ResponseT extends void ? object : { response: ResponseT })
+  | (ResponseT extends void ? object : { response: ResponseT; contentType?: "json" | "raw" })
   | {
       error: { status: number; message: string }
     }
 
 export const generateEndpointMock = (
   server: SetupServer,
-  { method, path, ...params }: { method: HttpMethod; path: string } & MockParams<DefaultBodyType>
+  {
+    method,
+    path,
+    contentType,
+    ...params
+  }: { method: HttpMethod; path: string; contentType?: "json" | "raw" } & MockParams<DefaultBodyType>
 ) => {
   let invocations: unknown[] = []
 
@@ -36,7 +41,9 @@ export const generateEndpointMock = (
 
     const requestsWithBody = ["POST", "PUT", "PATCH"]
     invocations.push(requestsWithBody.includes(request.method) ? await toBody(request) : {})
-
+    if (contentType === "raw") {
+      return HttpResponse.text(returnedResponse as string, { status })
+    }
     return HttpResponse.json(returnedResponse, { status })
   })
   server.use(handler)

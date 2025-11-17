@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-import { fetchWithRetry } from "#api/retry.ts"
+import { fetchWithRetry, putWithRetry } from "#api/retry.ts"
+import * as putSourceFileModule from "#api/source/putSourceFile.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
 
 const terminal = setupMockConsole()
@@ -97,6 +98,45 @@ describe("API Retry", () => {
       )
       await vi.runAllTimersAsync()
       await assertion
+    })
+  })
+
+  describe("putWithRetry", () => {
+    let putSourceFileSpy: ReturnType<typeof vi.spyOn>
+
+    beforeEach(() => {
+      vi.clearAllMocks()
+      putSourceFileSpy = vi.spyOn(putSourceFileModule, "putSourceFile")
+    })
+
+    afterEach(() => {
+      putSourceFileSpy.mockRestore()
+    })
+
+    it("should complete successfully on first attempt", async () => {
+      putSourceFileSpy.mockResolvedValue(undefined)
+
+      await putWithRetry("test-file.txt", "content")
+
+      expect(putSourceFileSpy).toHaveBeenCalledTimes(1)
+      expect(putSourceFileSpy).toHaveBeenCalledWith("test-file.txt", "content")
+    })
+
+    it("should use 'push' operation type in error messages", async () => {
+      putSourceFileSpy.mockRejectedValue(new Error("Network error"))
+
+      const retryPromise = putWithRetry("test-file.txt", "content")
+
+      const assertion = expect(retryPromise).rejects.toThrow(
+        "Failed to push test-file.txt after 3 retries: Network error"
+      )
+      await vi.runAllTimersAsync()
+
+      await assertion
+
+      expect(terminal.getSpy("warn")).toHaveBeenCalledWith(
+        expect.stringContaining("Failed to push test-file.txt: Retrying in 1000ms (attempt 1/3)")
+      )
     })
   })
 })

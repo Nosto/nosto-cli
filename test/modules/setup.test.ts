@@ -31,6 +31,22 @@ describe("Setup Module", () => {
     fs.expectFile(".nosto.json").toExist()
   })
 
+  it("should create config file with merchant param", async () => {
+    await printSetupHelp(".", { merchant: "test-merchant" })
+
+    fs.expectFile(".nosto.json").toExist()
+    fs.expectFile(".nosto.json").toContain(expect.stringContaining('"merchant": "test-merchant"'))
+  })
+
+  it("should include environmental variables in created config file", async () => {
+    process.env.NOSTO_API_KEY = "env-variable-key"
+    terminal.setUserResponse("Y")
+
+    await printSetupHelp(".", {})
+
+    fs.expectFile(".nosto.json").toContain(expect.stringContaining('"apiKey": "env-variable-key"'))
+  })
+
   it("should not create config file when user declines", async () => {
     terminal.setUserResponse("N")
 

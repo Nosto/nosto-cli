@@ -9,7 +9,7 @@ export async function printStatus(projectPath: string) {
     await loadConfig({ projectPath, options: {} })
   } catch (error) {
     if (error instanceof MissingConfigurationError) {
-      Logger.error("Some required configuration is missing\n")
+      // Configuration is missing, we will report it below
     } else {
       throw error
     }

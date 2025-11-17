@@ -21,11 +21,18 @@ export default defineConfig({
       reporter: ["text", "json", "html"],
       thresholds: {
         statements: 90,
-        branches: 84,
+        branches: 90,
         functions: 90,
         lines: 90
       },
-      exclude: ["node_modules/", "test/", "vitest.config.ts", "src/bootstrap.sh", "*.config.js", "homeDirectory.ts"]
+      exclude: [
+        "node_modules/",
+        "test/",
+        "vitest.config.ts",
+        "src/bootstrap.sh",
+        "*.config.js",
+        "src/filesystem/homeDirectory.ts"
+      ]
     }
   },
   esbuild: {

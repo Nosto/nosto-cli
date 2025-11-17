@@ -65,6 +65,29 @@ describe("Search Templates dev mode / legacy", () => {
     processOnSpy.mockRestore()
   })
 
+  it("should handle SIGINT signal correctly", async () => {
+    const processOnSpy = vi.spyOn(process, "on").mockImplementation(() => process)
+    const processExitSpy = vi.spyOn(process, "exit").mockImplementation(() => undefined as never)
+
+    await searchTemplateDevMode()
+
+    // Get the SIGINT handler that was registered
+    const sigintCall = processOnSpy.mock.calls.find(call => call[0] === "SIGINT")
+    const sigintHandler = sigintCall?.[1] as () => void
+    expect(sigintHandler).toBeDefined()
+
+    // Simulate SIGINT signal
+    sigintHandler()
+
+    // Verify the handler behavior
+    expect(mockContext.dispose).toHaveBeenCalled()
+    expect(mockConsole.getSpy("info")).toHaveBeenCalledWith(expect.stringContaining("Watch mode stopped."))
+    expect(processExitSpy).toHaveBeenCalledWith(0)
+
+    processOnSpy.mockRestore()
+    processExitSpy.mockRestore()
+  })
+
   it("should have pulled the library", async () => {
     await searchTemplateDevMode()
 
