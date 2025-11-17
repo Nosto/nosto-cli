@@ -31,7 +31,7 @@ export default defineConfig({
         "vitest.config.ts",
         "src/bootstrap.sh",
         "*.config.js",
-        "rc/filesystem/homeDirectory.ts"
+        "src/filesystem/homeDirectory.ts"
       ]
     }
   },
