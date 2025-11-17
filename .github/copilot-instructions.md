@@ -74,7 +74,7 @@ tsx /path/to/nosto-cli/src/index.ts st --help
 tsx /path/to/nosto-cli/src/index.ts st build --help
 
 # Test dry run (will attempt API connection and fail - this is expected)
-mkdir -p src && echo 'console.log("test");' > src/test.js
+mkdir -p src && echo 'console.info("test");' > src/test.js
 tsx /path/to/nosto-cli/src/index.ts st build --dry-run
 ```
 
@@ -220,7 +220,7 @@ const server = setupMockServer()
 // Usage
 mockFetchSourceFile(server, {
   path: "index.js",
-  response: "console.log('test')"
+  response: "console.info('test')"
 })
 ```
 

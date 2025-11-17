@@ -9,6 +9,6 @@ export class InvalidLoginResponseError extends NostoError {
   }
 
   handle() {
-    Logger.error(this.message)
+    Logger.error(`Received malformed login response from server. This is probably a bug on our side.`, this)
   }
 }
