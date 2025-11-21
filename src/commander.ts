@@ -3,6 +3,7 @@ import { Command } from "commander"
 import { loadConfig } from "#config/config.ts"
 import { Logger } from "#console/logger.ts"
 import { withErrorHandler } from "#errors/withErrorHandler.ts"
+import { deploymentsList } from "#modules/deployments/list.ts"
 import { loginToPlaycart } from "#modules/login.ts"
 import { removeLoginCredentials } from "#modules/logout.ts"
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
@@ -52,6 +53,18 @@ export async function runCLI(argv: string[]) {
     .action(async (projectPath = ".", options) => {
       await loadConfig({ options, allowIncomplete: true, projectPath })
       await withErrorHandler(() => printStatus(projectPath))
+    })
+
+  const deployments = program.command("dp").alias("deployments").description("Deployments related commands")
+
+  deployments
+    .command("list [projectPath]")
+    .description("List all deployments for a project")
+    .option("--verbose", "set log level to debug")
+    .action(async (projectPath = ".", options) => {
+      await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
+        await deploymentsList()
+      })
     })
 
   const searchTemplates = program
