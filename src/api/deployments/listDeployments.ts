@@ -8,6 +8,5 @@ export async function listDeployments() {
   const response = await ky.get(getSourceUrl("deployments/{env}"), {
     headers: getJsonHeaders()
   })
-  const deployments = ListDeploymentsSchema.parse(await response.json())
-  return deployments
+  return ListDeploymentsSchema.parse(await response.json())
 }
