@@ -1,15 +1,8 @@
 import ky from "ky"
 
 import { getJsonHeaders, getSourceUrl } from "#api/utils.ts"
-import { getCachedConfig } from "#config/config.ts"
 
 export async function deploy(path: string, description: string) {
-  const config = getCachedConfig()
-
-  if (config.dryRun) {
-    return
-  }
-
   const url = getSourceUrl(`deployments/{env}/${path}`)
 
   await ky.post(url, {

@@ -74,7 +74,6 @@ export async function runCLI(argv: string[]) {
     .command("deploy [projectPath]")
     .description("Deploy a project")
     .option("-d, --description <description>", "description for the deployment")
-    .option("--dry-run", "perform a dry run without making changes")
     .option("--verbose", "set log level to debug")
     .option("-f, --force", "skip confirmation prompt")
     .action(async (projectPath = ".", options) => {
@@ -90,7 +89,6 @@ export async function runCLI(argv: string[]) {
     .command("redeploy [projectPath]")
     .description("Redeploy an existing deployment")
     .option("-i, --id <deploymentId>", "deployment ID to redeploy (skips interactive selection)")
-    .option("--dry-run", "perform a dry run without making changes")
     .option("--verbose", "set log level to debug")
     .option("-f, --force", "skip confirmation prompt")
     .action(async (projectPath = ".", options) => {
@@ -105,7 +103,6 @@ export async function runCLI(argv: string[]) {
   deployments
     .command("disable [projectPath]")
     .description("Disable the currently active deployment")
-    .option("--dry-run", "perform a dry run without making changes")
     .option("--verbose", "set log level to debug")
     .option("-f --force", "skip confirmation prompt")
     .action(async (projectPath = ".", options) => {
