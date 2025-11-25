@@ -3,9 +3,9 @@ import { Command } from "commander"
 import { loadConfig } from "#config/config.ts"
 import { Logger } from "#console/logger.ts"
 import { withErrorHandler } from "#errors/withErrorHandler.ts"
+import { deploymentsDeploy } from "#modules/deployments/deploy.ts"
 import { deploymentsDisable } from "#modules/deployments/disable.ts"
 import { deploymentsList } from "#modules/deployments/list.ts"
-import { deploymentsPush } from "#modules/deployments/push.ts"
 import { deploymentsRedeploy } from "#modules/deployments/redeploy.ts"
 import { loginToPlaycart } from "#modules/login.ts"
 import { removeLoginCredentials } from "#modules/logout.ts"
@@ -79,7 +79,7 @@ export async function runCLI(argv: string[]) {
     .option("-f, --force", "skip confirmation prompt")
     .action(async (projectPath = ".", options) => {
       await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
-        await deploymentsPush({
+        await deploymentsDeploy({
           description: options.description,
           force: options.force ?? false
         })
