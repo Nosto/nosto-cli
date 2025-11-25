@@ -1,6 +1,6 @@
 import ky from "ky"
 
-import { getHeaders, getJsonHeaders, getSourceUrl } from "#api/utils.ts"
+import { getJsonHeaders, getSourceUrl } from "#api/utils.ts"
 import { getCachedConfig } from "#config/config.ts"
 
 export async function deploy(path: string, description: string) {

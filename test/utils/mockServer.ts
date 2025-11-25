@@ -1,6 +1,10 @@
 import { SetupServer, setupServer } from "msw/node"
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest"
 
+import { deploy } from "#api/deployments/deploy.ts"
+import { disableDeployment } from "#api/deployments/disableDeployment.ts"
+import { listDeployments } from "#api/deployments/listDeployments.ts"
+import { redeploy } from "#api/deployments/redeploy.ts"
 import { fetchLibraryFile } from "#api/library/fetchLibraryFile.ts"
 import { fetchSourceFile } from "#api/source/fetchSourceFile.ts"
 import { listSourceFiles } from "#api/source/listSourceFiles.ts"
@@ -72,5 +76,51 @@ export function mockFetchLibraryFile(
     ...params,
     method: "get",
     path: `https://library.nosto.com/${params.path}`
+  })
+}
+
+export function mockListDeployments(
+  server: SetupServer,
+  params: MockParams<Awaited<ReturnType<typeof listDeployments>>>
+) {
+  return generateEndpointMock(server, {
+    ...params,
+    method: "get",
+    path: getSourceUrl("deployments/{env}")
+  })
+}
+
+export function mockDeploy(
+  server: SetupServer,
+  params: { path: string } & MockParams<Awaited<ReturnType<typeof deploy>>>
+) {
+  const { path, ...mockParams } = params
+  return generateEndpointMock(server, {
+    method: "post",
+    path: getSourceUrl(`deployments/{env}/${path}`),
+    ...mockParams
+  })
+}
+
+export function mockRedeploy(
+  server: SetupServer,
+  params: { deploymentId: string } & MockParams<Awaited<ReturnType<typeof redeploy>>>
+) {
+  const { deploymentId, ...mockParams } = params
+  return generateEndpointMock(server, {
+    method: "post",
+    path: getSourceUrl(`deployment/{env}/${deploymentId}`),
+    ...mockParams
+  })
+}
+
+export function mockDisableDeployment(
+  server: SetupServer,
+  params: MockParams<Awaited<ReturnType<typeof disableDeployment>>>
+) {
+  return generateEndpointMock(server, {
+    ...params,
+    method: "delete",
+    path: getSourceUrl("deployment/{env}")
   })
 }
