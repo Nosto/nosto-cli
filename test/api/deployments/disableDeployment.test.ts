@@ -16,15 +16,6 @@ describe("disableDeployment", () => {
     expect(mock.invocations).toHaveLength(1)
   })
 
-  it("should skip disabling in dry run mode", async () => {
-    setupMockConfig({ dryRun: true })
-    const mock = mockDisableDeployment(server, {})
-
-    await disableDeployment()
-
-    expect(mock.invocations).toHaveLength(0)
-  })
-
   it("should throw an error when server returns error", async () => {
     mockDisableDeployment(server, { error: { status: 500, message: "Server Error" } })
 

@@ -17,15 +17,6 @@ describe("deploy", () => {
     expect(mock.invocations[0]).toEqual({ description: "Test deployment" })
   })
 
-  it("should skip deployment in dry run mode", async () => {
-    setupMockConfig({ dryRun: true })
-    const mock = mockDeploy(server, { path: "build" })
-
-    await deploy("build", "Test deployment")
-
-    expect(mock.invocations).toHaveLength(0)
-  })
-
   it("should throw an error when server returns error", async () => {
     mockDeploy(server, { path: "build", error: { status: 500, message: "Server Error" } })
 

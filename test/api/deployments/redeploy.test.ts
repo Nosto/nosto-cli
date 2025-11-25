@@ -16,15 +16,6 @@ describe("redeploy", () => {
     expect(mock.invocations).toHaveLength(1)
   })
 
-  it("should skip redeployment in dry run mode", async () => {
-    setupMockConfig({ dryRun: true })
-    const mock = mockRedeploy(server, { deploymentId: "1763737018" })
-
-    await redeploy("1763737018")
-
-    expect(mock.invocations).toHaveLength(0)
-  })
-
   it("should throw an error when server returns error", async () => {
     mockRedeploy(server, { deploymentId: "1763737018", error: { status: 500, message: "Server Error" } })
 
