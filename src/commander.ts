@@ -3,7 +3,10 @@ import { Command } from "commander"
 import { loadConfig } from "#config/config.ts"
 import { Logger } from "#console/logger.ts"
 import { withErrorHandler } from "#errors/withErrorHandler.ts"
+import { deploymentsDisable } from "#modules/deployments/disable.ts"
 import { deploymentsList } from "#modules/deployments/list.ts"
+import { deploymentsPush } from "#modules/deployments/push.ts"
+import { deploymentsRedeploy } from "#modules/deployments/redeploy.ts"
 import { loginToPlaycart } from "#modules/login.ts"
 import { removeLoginCredentials } from "#modules/logout.ts"
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
@@ -64,6 +67,52 @@ export async function runCLI(argv: string[]) {
     .action(async (projectPath = ".", options) => {
       await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
         await deploymentsList()
+      })
+    })
+
+  deployments
+    .command("deploy [projectPath]")
+    .description("Deploy a project")
+    .option("-d, --description <description>", "description for the deployment")
+    .option("--dry-run", "perform a dry run without making changes")
+    .option("--verbose", "set log level to debug")
+    .option("-f, --force", "skip confirmation prompt")
+    .action(async (projectPath = ".", options) => {
+      await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
+        await deploymentsPush({
+          description: options.description,
+          force: options.force ?? false
+        })
+      })
+    })
+
+  deployments
+    .command("redeploy [projectPath]")
+    .description("Redeploy an existing deployment")
+    .option("-i, --id <deploymentId>", "deployment ID to redeploy (skips interactive selection)")
+    .option("--dry-run", "perform a dry run without making changes")
+    .option("--verbose", "set log level to debug")
+    .option("-f, --force", "skip confirmation prompt")
+    .action(async (projectPath = ".", options) => {
+      await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
+        await deploymentsRedeploy({
+          deploymentId: options.id,
+          force: options.force ?? false
+        })
+      })
+    })
+
+  deployments
+    .command("disable [projectPath]")
+    .description("Disable the currently active deployment")
+    .option("--dry-run", "perform a dry run without making changes")
+    .option("--verbose", "set log level to debug")
+    .option("-f --force", "skip confirmation prompt")
+    .action(async (projectPath = ".", options) => {
+      await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
+        await deploymentsDisable({
+          force: options.force ?? false
+        })
       })
     })
 
