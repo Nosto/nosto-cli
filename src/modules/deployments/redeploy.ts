@@ -1,10 +1,8 @@
 import { select } from "@inquirer/prompts"
 import chalk from "chalk"
-import z from "zod"
 
 import { listDeployments } from "#api/deployments/listDeployments.ts"
 import { redeploy } from "#api/deployments/redeploy.ts"
-import { ListDeploymentsSchema } from "#api/deployments/schema.ts"
 import { Logger } from "#console/logger.ts"
 import { promptForConfirmation } from "#console/userPrompt.ts"
 import { formatDate } from "#utils/formatDate.ts"
@@ -20,7 +18,8 @@ export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptio
 
   if (deploymentId) {
     selectedDeploymentId = deploymentId
-    selectedDeployment = await findDeploymentById(selectedDeploymentId)
+    const deployments = await listDeployments()
+    selectedDeployment = deployments.find(d => d.id === deploymentId) || null
 
     if (!selectedDeployment) {
       Logger.error(`Deployment with ID "${selectedDeploymentId}" not found.`)
@@ -38,7 +37,10 @@ export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptio
     selectedDeployment = result.deployment
   }
 
-  displayDeploymentInfo(selectedDeployment)
+  Logger.info(`\nSelected deployment: ${chalk.cyan(selectedDeployment.id)}`)
+  if (selectedDeployment.description) {
+    Logger.info(`Description: ${selectedDeployment.description}`)
+  }
 
   if (!force) {
     const confirmed = await promptForConfirmation(
@@ -57,8 +59,6 @@ export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptio
 
   Logger.success("Redeployed successfully!")
 }
-
-type Deployment = z.infer<typeof ListDeploymentsSchema>[number]
 
 export async function selectDeploymentInteractively(message: string) {
   const deployments = await listDeployments()
@@ -95,16 +95,4 @@ export async function selectDeploymentInteractively(message: string) {
 
   const selectedDeployment = deployments.find(d => d.id === selectedId)
   return selectedDeployment ? { id: selectedId, deployment: selectedDeployment } : null
-}
-
-export async function findDeploymentById(deploymentId: string): Promise<Deployment | null> {
-  const deployments = await listDeployments()
-  return deployments.find(d => d.id === deploymentId) || null
-}
-
-export function displayDeploymentInfo(deployment: Deployment): void {
-  Logger.info(`\nSelected deployment: ${chalk.cyan(deployment.id)}`)
-  if (deployment.description) {
-    Logger.info(`Description: ${deployment.description}`)
-  }
 }
