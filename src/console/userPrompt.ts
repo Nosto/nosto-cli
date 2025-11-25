@@ -14,3 +14,14 @@ export async function promptForConfirmation(message: string, defaultAnswer: "Y" 
   const evaluatedAnswer = answer.length === 0 ? defaultAnswer : answer.toUpperCase()
   return evaluatedAnswer === "Y"
 }
+
+export async function promptForInput(message: string): Promise<string> {
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout
+  })
+
+  const answer = await rl.question("\n" + message + " ")
+  rl.close()
+  return answer.trim()
+}

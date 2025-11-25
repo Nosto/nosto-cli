@@ -17,8 +17,8 @@ export async function deploymentsList() {
     const statusBadge = deployment.active ? chalk.green("Active") : chalk.red("Inactive")
     const latestBadge = deployment.latest ? chalk.greenBright("[LATEST] ") : ""
     const createdDate = new Date(deployment.created).toUTCString()
-
-    Logger.info(`${chalk.bgCyanBright("  ")} ${latestBadge}${chalk.blueBright(`ID: ${deployment.id}`)}`)
+    const bulletin = deployment.active ? chalk.bgGreenBright("  ") : chalk.bgCyanBright("  ")
+    Logger.info(`${bulletin} ${latestBadge}${chalk.blueBright(`ID: ${deployment.id}`)}`)
     Logger.info(`   ${chalk.bold("Status:")}      ${statusBadge}`)
     Logger.info(`   ${chalk.bold("Created At:")}  ${chalk.cyan(createdDate)}`)
 
