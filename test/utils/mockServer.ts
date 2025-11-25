@@ -1,10 +1,12 @@
 import { SetupServer, setupServer } from "msw/node"
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest"
 
+// Deployment API functions (imported for ReturnType type inference)
 import { deploy } from "#api/deployments/deploy.ts"
 import { disableDeployment } from "#api/deployments/disableDeployment.ts"
 import { listDeployments } from "#api/deployments/listDeployments.ts"
 import { redeploy } from "#api/deployments/redeploy.ts"
+// Library and source API functions (imported for ReturnType type inference)
 import { fetchLibraryFile } from "#api/library/fetchLibraryFile.ts"
 import { fetchSourceFile } from "#api/source/fetchSourceFile.ts"
 import { listSourceFiles } from "#api/source/listSourceFiles.ts"
