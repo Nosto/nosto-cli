@@ -2,6 +2,7 @@ import chalk from "chalk"
 
 import { listDeployments } from "#api/deployments/listDeployments.ts"
 import { Logger } from "#console/logger.ts"
+import { formatDate } from "#utils/formatDate.ts"
 
 export async function deploymentsList() {
   const deployments = await listDeployments()
@@ -16,7 +17,7 @@ export async function deploymentsList() {
   deployments.forEach((deployment, index) => {
     const statusBadge = deployment.active ? chalk.green("Active") : chalk.red("Inactive")
     const latestBadge = deployment.latest ? chalk.greenBright("[LATEST] ") : ""
-    const createdDate = new Date(deployment.created).toUTCString()
+    const createdDate = formatDate(deployment.created)
     const bulletin = deployment.active ? chalk.bgGreenBright("  ") : chalk.bgCyanBright("  ")
     Logger.info(`${bulletin} ${latestBadge}${chalk.blueBright(`ID: ${deployment.id}`)}`)
     Logger.info(`   ${chalk.bold("Status:")}      ${statusBadge}`)

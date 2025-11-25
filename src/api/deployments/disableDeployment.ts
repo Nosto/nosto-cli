@@ -3,17 +3,16 @@ import ky from "ky"
 import { getHeaders, getSourceUrl } from "#api/utils.ts"
 import { getCachedConfig } from "#config/config.ts"
 
-export async function deploy(path: string, description: string) {
+export async function disableDeployment() {
   const config = getCachedConfig()
 
   if (config.dryRun) {
     return
   }
 
-  const url = getSourceUrl(`deployments/{env}/${path}`)
+  const url = getSourceUrl(`deployment/{env}`)
 
-  await ky.post(url, {
-    headers: getHeaders(),
-    body: JSON.stringify({ description })
+  await ky.delete(url, {
+    headers: getHeaders()
   })
 }
