@@ -9,28 +9,19 @@ import { promptForConfirmation, promptForInput } from "#console/userPrompt.ts"
 import { calculateTreeHash } from "#filesystem/calculateTreeHash.ts"
 import { readFileIfExists, writeFile } from "#filesystem/filesystem.ts"
 
-type PushDeploymentOptions = {
+type DeployOptions = {
   description?: string
   force: boolean
 }
 
 const formatHash = (hash: string | null) => chalk.cyan(hash?.slice(0, 8) || "none")
 
-const confirmOrCancel = async (message: string, defaultAnswer: "N" | "Y" = "N") => {
-  const confirmed = await promptForConfirmation(message, defaultAnswer)
-  if (!confirmed) {
-    Logger.info("Deployment cancelled by user.")
-  }
-  return confirmed
-}
-
-export async function deploymentsPush({ description, force }: PushDeploymentOptions) {
+export async function deploymentsDeploy({ description, force }: DeployOptions) {
   const { projectPath } = getCachedConfig()
-  const targetFolder = path.resolve(projectPath)
 
   const localHash = calculateTreeHash()
   const remoteHash = await fetchSourceFileIfExists("build/hash")
-  const lastSeenRemoteHash = readFileIfExists(path.join(targetFolder, ".nostocache/hash"))
+  const lastSeenRemoteHash = readFileIfExists(path.join(projectPath, ".nostocache/hash"))
 
   if (!remoteHash) {
     Logger.error("No files found in remote. Please run 'st push' first to push your files.")
@@ -41,14 +32,18 @@ export async function deploymentsPush({ description, force }: PushDeploymentOpti
     if (localHash !== remoteHash) {
       Logger.warn(`Local files (hash: ${formatHash(localHash)}) don't match remote (hash: ${formatHash(remoteHash)}).`)
       Logger.warn(`You may need to run ${chalk.cyan("st push")} first to push your changes.`)
-      if (!(await confirmOrCancel("Continue with deployment anyway?"))) {
+      const confirmed = await promptForConfirmation("Continue with deployment anyway?", "N")
+      if (!confirmed) {
+        Logger.info("Deployment cancelled by user.")
         return
       }
     }
 
     if (lastSeenRemoteHash !== remoteHash) {
       Logger.warn(`Remote files have changed since your last sync (last seen: ${formatHash(lastSeenRemoteHash)}).`)
-      if (!(await confirmOrCancel("Continue with deployment?"))) {
+      const confirmed = await promptForConfirmation("Continue with deployment?", "N")
+      if (!confirmed) {
+        Logger.info("Deployment cancelled by user.")
         return
       }
     }
@@ -62,8 +57,12 @@ export async function deploymentsPush({ description, force }: PushDeploymentOpti
   }
 
   if (!force) {
-    const confirmationMessage = `You are about to create a deployment with description: ${chalk.cyan(`"${deploymentDescription}"`)}. Continue?`
-    if (!(await confirmOrCancel(confirmationMessage))) {
+    const confirmed = await promptForConfirmation(
+      `You are about to create a deployment with description: ${chalk.cyan(`"${deploymentDescription}"`)}. Continue?`,
+      "N"
+    )
+    if (!confirmed) {
+      Logger.info("Deployment cancelled by user.")
       return
     }
   }
@@ -75,5 +74,5 @@ export async function deploymentsPush({ description, force }: PushDeploymentOpti
 
   Logger.success("Deployment created successfully!")
 
-  writeFile(path.join(targetFolder, ".nostocache/hash"), remoteHash)
+  writeFile(path.join(projectPath, ".nostocache/hash"), remoteHash)
 }
