@@ -104,7 +104,7 @@ export async function runCLI(argv: string[]) {
     .command("disable [projectPath]")
     .description("Disable the currently active deployment")
     .option("--verbose", "set log level to debug")
-    .option("-f --force", "skip confirmation prompt")
+    .option("-f, --force", "skip confirmation prompt")
     .action(async (projectPath = ".", options) => {
       await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
         await deploymentsDisable({
