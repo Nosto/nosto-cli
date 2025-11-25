@@ -55,7 +55,7 @@ export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptio
 
   await redeploy(selectedDeploymentId)
 
-  Logger.success("Redeploymed successfully!")
+  Logger.success("Redeployed successfully!")
 }
 
 type Deployment = z.infer<typeof ListDeploymentsSchema>[number]

@@ -76,7 +76,7 @@ export async function runCLI(argv: string[]) {
     .option("-d, --description <description>", "description for the deployment")
     .option("--dry-run", "perform a dry run without making changes")
     .option("--verbose", "set log level to debug")
-    .option("-f --force", "skip confirmation prompt")
+    .option("-f, --force", "skip confirmation prompt")
     .action(async (projectPath = ".", options) => {
       await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
         await deploymentsPush({
@@ -92,7 +92,7 @@ export async function runCLI(argv: string[]) {
     .option("-i, --id <deploymentId>", "deployment ID to redeploy (skips interactive selection)")
     .option("--dry-run", "perform a dry run without making changes")
     .option("--verbose", "set log level to debug")
-    .option("-f --force", "skip confirmation prompt")
+    .option("-f, --force", "skip confirmation prompt")
     .action(async (projectPath = ".", options) => {
       await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
         await deploymentsRedeploy({
