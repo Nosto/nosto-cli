@@ -8,6 +8,7 @@ import { Logger } from "#console/logger.ts"
 import { promptForConfirmation, promptForInput } from "#console/userPrompt.ts"
 import { calculateTreeHash } from "#filesystem/calculateTreeHash.ts"
 import { readFileIfExists, writeFile } from "#filesystem/filesystem.ts"
+import { isValidAlphaNumeric } from "#utils/validations.ts"
 
 type DeployOptions = {
   description?: string
@@ -51,8 +52,8 @@ export async function deploymentsDeploy({ description, force }: DeployOptions) {
 
   const deploymentDescription = description || (await promptForInput("Enter a description for this deployment:"))
 
-  if (!deploymentDescription) {
-    Logger.error("Description is required for deployment.")
+  if (!isValidAlphaNumeric(deploymentDescription)) {
+    Logger.error("Description must be alphanumeric and between 1 and 200 characters.")
     return
   }
 
