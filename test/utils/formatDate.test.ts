@@ -7,7 +7,7 @@ describe("formatDate", () => {
     const date = new Date("2025-11-21T14:56:58Z")
     const formatted = formatDate(date)
 
-    expect(formatted).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/)
+    expect(formatted).toBe("2025-11-21 14:56")
   })
 
   it("should format a timestamp in milliseconds correctly", () => {
@@ -21,34 +21,34 @@ describe("formatDate", () => {
     const date = new Date("2025-01-05T08:03:00Z")
     const formatted = formatDate(date)
 
-    expect(formatted).toMatch(/^2025-01-05 \d{2}:\d{2}$/)
+    expect(formatted).toBe("2025-01-05 08:03")
   })
 
   it("should pad single-digit hours and minutes with zeros", () => {
     const date = new Date("2025-11-21T08:03:00Z")
     const formatted = formatDate(date)
 
-    expect(formatted).toMatch(/^\d{4}-\d{2}-\d{2} 08:03$/)
+    expect(formatted).toBe("2025-11-21 08:03")
   })
 
   it("should handle midnight correctly", () => {
     const date = new Date("2025-11-21T00:00:00Z")
     const formatted = formatDate(date)
 
-    expect(formatted).toMatch(/^\d{4}-\d{2}-\d{2} 00:00$/)
+    expect(formatted).toBe("2025-11-21 00:00")
   })
 
   it("should handle end of day correctly", () => {
     const date = new Date("2025-11-21T23:59:00Z")
     const formatted = formatDate(date)
 
-    expect(formatted).toMatch(/^\d{4}-\d{2}-\d{2} 23:59$/)
+    expect(formatted).toBe("2025-11-21 23:59")
   })
 
   it("should handle year boundaries correctly", () => {
     const date = new Date("2025-12-31T23:59:00Z")
     const formatted = formatDate(date)
 
-    expect(formatted).toMatch(/^2025-12-31 23:59$/)
+    expect(formatted).toBe("2025-12-31 23:59")
   })
 })
