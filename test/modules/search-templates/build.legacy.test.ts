@@ -2,12 +2,17 @@ import * as esbuild from "esbuild"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
+import { pushSearchTemplate } from "#modules/search-templates/push.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
 import { mockFetchLibraryFile, setupMockServer } from "#test/utils/mockServer.ts"
 
 const server = setupMockServer()
 const terminal = setupMockConsole()
+
+vi.mock("#modules/search-templates/push.ts", () => ({
+  pushSearchTemplate: vi.fn()
+}))
 
 vi.mock("esbuild", () => ({
   context: vi.fn()
@@ -94,6 +99,40 @@ describe("Search Templates build / legacy", () => {
 
       processOnSpy.mockRestore()
       processExitSpy.mockRestore()
+    })
+
+    it("should push templates after build when push is true", async () => {
+      await buildSearchTemplate({ watch: false, push: true })
+
+      expect(mockContext.rebuild).toHaveBeenCalled()
+      expect(mockContext.dispose).toHaveBeenCalled()
+      expect(vi.mocked(pushSearchTemplate)).toHaveBeenCalledWith({
+        paths: ["build"],
+        force: false
+      })
+    })
+
+    it("should not push templates when push is false", async () => {
+      await buildSearchTemplate({ watch: false, push: false })
+
+      expect(mockContext.rebuild).toHaveBeenCalled()
+      expect(mockContext.dispose).toHaveBeenCalled()
+      expect(vi.mocked(pushSearchTemplate)).not.toHaveBeenCalled()
+    })
+
+    it("should not push templates when push is undefined", async () => {
+      await buildSearchTemplate({ watch: false })
+
+      expect(mockContext.rebuild).toHaveBeenCalled()
+      expect(mockContext.dispose).toHaveBeenCalled()
+      expect(vi.mocked(pushSearchTemplate)).not.toHaveBeenCalled()
+    })
+
+    it("should not push templates in watch mode even if push is true", async () => {
+      await buildSearchTemplate({ watch: true, push: true })
+
+      expect(mockContext.watch).toHaveBeenCalled()
+      expect(vi.mocked(pushSearchTemplate)).not.toHaveBeenCalled()
     })
   })
 })

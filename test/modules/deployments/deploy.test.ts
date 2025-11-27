@@ -100,6 +100,18 @@ describe("deploymentsDeploy", () => {
     expect(mock.invocations).toHaveLength(1)
   })
 
+  it("should cancel when user declines remote changes prompt", async () => {
+    mockFetchSourceFile(server, { path: "build/hash", response: "abcd1234", contentType: "raw" })
+    fs.writeFile(".nostocache/hash", "different_hash")
+    terminal.setUserResponse("n")
+    const mock = mockCreateDeployment(server, { path: "build" })
+
+    await deploymentsDeploy({ description: "Test deployment", force: false })
+
+    expect(mock.invocations).toHaveLength(0)
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith("Deployment cancelled by user.")
+  })
+
   it("should update cache hash after successful deployment", async () => {
     mockFetchSourceFile(server, { path: "build/hash", response: "abcd1234", contentType: "raw" })
     fs.writeFile(".nostocache/hash", "old_hash")
@@ -108,5 +120,80 @@ describe("deploymentsDeploy", () => {
     await deploymentsDeploy({ description: "Test deployment", force: true })
 
     fs.expectFile(".nostocache/hash").toContain("abcd1234")
+  })
+
+  it("should prompt for final confirmation when not forced", async () => {
+    mockFetchSourceFile(server, { path: "build/hash", response: "abcd1234", contentType: "raw" })
+    fs.writeFile(".nostocache/hash", "abcd1234")
+    terminal.setUserResponse("y")
+    const mock = mockCreateDeployment(server, { path: "build" })
+
+    await deploymentsDeploy({ description: "Test deployment", force: false })
+
+    expect(mock.invocations).toHaveLength(1)
+    terminal.expect.user.toHaveBeenPromptedWith(
+      'You are about to create a deployment with description: "Test deployment". Continue? (y/N):'
+    )
+  })
+
+  it("should cancel deployment when user declines final confirmation", async () => {
+    mockFetchSourceFile(server, { path: "build/hash", response: "abcd1234", contentType: "raw" })
+    fs.writeFile(".nostocache/hash", "abcd1234")
+    terminal.setUserResponse("n")
+    const mock = mockCreateDeployment(server, { path: "build" })
+
+    await deploymentsDeploy({ description: "Test deployment", force: false })
+
+    expect(mock.invocations).toHaveLength(0)
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith("Deployment cancelled by user.")
+  })
+
+  it("should reject description with special characters", async () => {
+    mockFetchSourceFile(server, { path: "build/hash", response: "abcd1234", contentType: "raw" })
+    fs.writeFile(".nostocache/hash", "abcd1234")
+    terminal.setUserResponse("test@deployment#123")
+    const mock = mockCreateDeployment(server, { path: "build" })
+
+    await deploymentsDeploy({ force: true })
+
+    expect(mock.invocations).toHaveLength(0)
+    expect(terminal.getSpy("error")).toHaveBeenCalledWith(
+      "Description must be alphanumeric and between 1 and 200 characters."
+    )
+  })
+
+  it("should handle both hash mismatch and remote changes warnings", async () => {
+    mockFetchSourceFile(server, { path: "build/hash", response: "efgh5678", contentType: "raw" })
+    fs.writeFile(".nostocache/hash", "different_hash")
+    terminal.setUserResponse("y")
+    const mock = mockCreateDeployment(server, { path: "build" })
+
+    await deploymentsDeploy({ description: "Test deployment", force: false })
+
+    expect(terminal.getSpy("warn")).toHaveBeenCalledWith("Local files don't match remote.")
+    expect(terminal.getSpy("warn")).toHaveBeenCalledWith("Remote files have changed since your last sync.")
+    expect(mock.invocations).toHaveLength(1)
+  })
+
+  it("should display deployment info messages", async () => {
+    mockFetchSourceFile(server, { path: "build/hash", response: "abcd1234", contentType: "raw" })
+    fs.writeFile(".nostocache/hash", "abcd1234")
+    mockCreateDeployment(server, { path: "build" })
+
+    await deploymentsDeploy({ description: "Test deployment", force: true })
+
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith("Creating deployment from remote 'build' path...")
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith(expect.stringContaining('Description: "Test deployment"'))
+  })
+
+  it("should suggest running st push when local hash mismatch", async () => {
+    mockFetchSourceFile(server, { path: "build/hash", response: "efgh5678", contentType: "raw" })
+    fs.writeFile(".nostocache/hash", "efgh5678")
+    terminal.setUserResponse("n")
+    mockCreateDeployment(server, { path: "build" })
+
+    await deploymentsDeploy({ description: "Test deployment", force: false })
+
+    expect(terminal.getSpy("warn")).toHaveBeenCalledWith(expect.stringContaining("st push"))
   })
 })
