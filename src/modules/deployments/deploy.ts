@@ -15,8 +15,6 @@ type DeployOptions = {
   force: boolean
 }
 
-const formatHash = (hash: string | null) => chalk.cyan(hash?.slice(0, 8) || "none")
-
 export async function deploymentsDeploy({ description, force }: DeployOptions) {
   const { projectPath } = getCachedConfig()
 
@@ -25,13 +23,13 @@ export async function deploymentsDeploy({ description, force }: DeployOptions) {
   const lastSeenRemoteHash = readFileIfExists(path.join(projectPath, ".nostocache/hash"))
 
   if (!remoteHash) {
-    Logger.error("No files found in remote. Please run 'st push' first to push your files.")
+    Logger.error("No files found in remote. Please run 'st build --push' first to push your build.")
     return
   }
 
   if (!force) {
     if (localHash !== remoteHash) {
-      Logger.warn(`Local files (hash: ${formatHash(localHash)}) don't match remote (hash: ${formatHash(remoteHash)}).`)
+      Logger.warn("Local files don't match remote.")
       Logger.warn(`You may need to run ${chalk.cyan("st push")} first to push your changes.`)
       const confirmed = await promptForConfirmation("Continue with deployment anyway?", "N")
       if (!confirmed) {
@@ -41,7 +39,7 @@ export async function deploymentsDeploy({ description, force }: DeployOptions) {
     }
 
     if (lastSeenRemoteHash !== remoteHash) {
-      Logger.warn(`Remote files have changed since your last sync (last seen: ${formatHash(lastSeenRemoteHash)}).`)
+      Logger.warn("Remote files have changed since your last sync.")
       const confirmed = await promptForConfirmation("Continue with deployment?", "N")
       if (!confirmed) {
         Logger.info("Deployment cancelled by user.")

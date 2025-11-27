@@ -1,12 +1,12 @@
-import { disableDeployment } from "#api/deployments/disableDeployment.ts"
+import { rollbackDeployment } from "#api/deployments/rollbackDeployment.ts"
 import { Logger } from "#console/logger.ts"
 import { promptForConfirmation } from "#console/userPrompt.ts"
 
-type DisableOptions = {
+type RollbackOptions = {
   force: boolean
 }
 
-export async function deploymentsDisable({ force }: DisableOptions) {
+export async function deploymentsRollback({ force }: RollbackOptions) {
   if (!force) {
     const confirmed = await promptForConfirmation(
       `Are you sure you want to disable the currently active deployment?`,
@@ -20,7 +20,7 @@ export async function deploymentsDisable({ force }: DisableOptions) {
 
   Logger.info("Disabling active deployment...")
 
-  await disableDeployment()
+  await rollbackDeployment()
 
   Logger.success("Active deployment disabled successfully!")
 }

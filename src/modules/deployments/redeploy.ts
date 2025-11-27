@@ -2,7 +2,7 @@ import { select } from "@inquirer/prompts"
 import chalk from "chalk"
 
 import { listDeployments } from "#api/deployments/listDeployments.ts"
-import { redeploy } from "#api/deployments/redeploy.ts"
+import { updateDeployment } from "#api/deployments/updateDeployment.ts"
 import { Logger } from "#console/logger.ts"
 import { promptForConfirmation } from "#console/userPrompt.ts"
 import { formatDate } from "#utils/formatDate.ts"
@@ -55,7 +55,7 @@ export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptio
 
   Logger.info(`\nRedeploying deployment ${chalk.cyan(selectedDeploymentId)}...`)
 
-  await redeploy(selectedDeploymentId)
+  await updateDeployment(selectedDeploymentId)
 
   Logger.success("Redeployed successfully!")
 }

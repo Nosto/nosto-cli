@@ -4,9 +4,9 @@ import { loadConfig } from "#config/config.ts"
 import { Logger } from "#console/logger.ts"
 import { withErrorHandler } from "#errors/withErrorHandler.ts"
 import { deploymentsDeploy } from "#modules/deployments/deploy.ts"
-import { deploymentsDisable } from "#modules/deployments/disable.ts"
 import { deploymentsList } from "#modules/deployments/list.ts"
 import { deploymentsRedeploy } from "#modules/deployments/redeploy.ts"
+import { deploymentsRollback } from "#modules/deployments/rollback.ts"
 import { loginToPlaycart } from "#modules/login.ts"
 import { removeLoginCredentials } from "#modules/logout.ts"
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
@@ -107,7 +107,7 @@ export async function runCLI(argv: string[]) {
     .option("-f, --force", "skip confirmation prompt")
     .action(async (projectPath = ".", options) => {
       await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
-        await deploymentsDisable({
+        await deploymentsRollback({
           force: options.force ?? false
         })
       })
@@ -157,9 +157,10 @@ export async function runCLI(argv: string[]) {
     .option("--dry-run", "perform a dry run without making changes")
     .option("--verbose", "set log level to debug")
     .option("-w, --watch", "watch for changes and rebuild")
+    .option("-p, --push", "automatically push build artifacts after building")
     .action(async (projectPath = ".", options) => {
       await withSafeEnvironment({ projectPath, options }, async () => {
-        await buildSearchTemplate({ watch: options.watch ?? false })
+        await buildSearchTemplate({ watch: options.watch ?? false, push: options.push ?? false })
       })
     })
 
