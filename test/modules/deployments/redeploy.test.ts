@@ -228,7 +228,7 @@ describe("selectDeploymentInteractively", () => {
       }
     ]
     mockListDeployments(server, { response: mockDeployments })
-    vi.mocked(select).mockResolvedValue(undefined as any)
+    vi.mocked(select).mockResolvedValue(undefined)
 
     const result = await selectDeploymentInteractively("Select deployment:")
 
