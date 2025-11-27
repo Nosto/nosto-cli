@@ -2,10 +2,10 @@ import { SetupServer, setupServer } from "msw/node"
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest"
 
 // Deployment API functions (imported for ReturnType type inference)
-import { deploy } from "#api/deployments/deploy.ts"
-import { disableDeployment } from "#api/deployments/disableDeployment.ts"
+import { createDeployment } from "#api/deployments/createDeployment.ts"
 import { listDeployments } from "#api/deployments/listDeployments.ts"
-import { redeploy } from "#api/deployments/redeploy.ts"
+import { rollbackDeployment } from "#api/deployments/rollbackDeployment.ts"
+import { updateDeployment } from "#api/deployments/updateDeployment.ts"
 // Library and source API functions (imported for ReturnType type inference)
 import { fetchLibraryFile } from "#api/library/fetchLibraryFile.ts"
 import { fetchSourceFile } from "#api/source/fetchSourceFile.ts"
@@ -92,9 +92,9 @@ export function mockListDeployments(
   })
 }
 
-export function mockDeploy(
+export function mockCreateDeployment(
   server: SetupServer,
-  params: { path: string } & MockParams<Awaited<ReturnType<typeof deploy>>>
+  params: { path: string } & MockParams<Awaited<ReturnType<typeof createDeployment>>>
 ) {
   const { path, ...mockParams } = params
   return generateEndpointMock(server, {
@@ -104,9 +104,9 @@ export function mockDeploy(
   })
 }
 
-export function mockRedeploy(
+export function mockUpdateDeployment(
   server: SetupServer,
-  params: { deploymentId: string } & MockParams<Awaited<ReturnType<typeof redeploy>>>
+  params: { deploymentId: string } & MockParams<Awaited<ReturnType<typeof updateDeployment>>>
 ) {
   const { deploymentId, ...mockParams } = params
   return generateEndpointMock(server, {
@@ -116,9 +116,9 @@ export function mockRedeploy(
   })
 }
 
-export function mockDisableDeployment(
+export function mockRollbackDeployment(
   server: SetupServer,
-  params: MockParams<Awaited<ReturnType<typeof disableDeployment>>>
+  params: MockParams<Awaited<ReturnType<typeof rollbackDeployment>>>
 ) {
   return generateEndpointMock(server, {
     ...params,

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest"
 import { deploymentsRedeploy, selectDeploymentInteractively } from "#modules/deployments/redeploy.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
-import { mockListDeployments, mockRedeploy, setupMockServer } from "#test/utils/mockServer.ts"
+import { mockListDeployments, mockUpdateDeployment, setupMockServer } from "#test/utils/mockServer.ts"
 
 const server = setupMockServer()
 const terminal = setupMockConsole()
@@ -21,7 +21,7 @@ describe("deploymentsRedeploy", () => {
       }
     ]
     mockListDeployments(server, { response: mockDeployments })
-    const mock = mockRedeploy(server, { deploymentId: "1763737018" })
+    const mock = mockUpdateDeployment(server, { deploymentId: "1763737018" })
 
     await deploymentsRedeploy({ deploymentId: "1763737018", force: true })
 
@@ -39,7 +39,7 @@ describe("deploymentsRedeploy", () => {
       }
     ]
     mockListDeployments(server, { response: mockDeployments })
-    const mock = mockRedeploy(server, { deploymentId: "9999999999" })
+    const mock = mockUpdateDeployment(server, { deploymentId: "9999999999" })
 
     await deploymentsRedeploy({ deploymentId: "9999999999", force: true })
 
@@ -58,7 +58,7 @@ describe("deploymentsRedeploy", () => {
       }
     ]
     mockListDeployments(server, { response: mockDeployments })
-    mockRedeploy(server, { deploymentId: "1763737018" })
+    mockUpdateDeployment(server, { deploymentId: "1763737018" })
 
     await deploymentsRedeploy({ deploymentId: "1763737018", force: true })
 
@@ -77,7 +77,7 @@ describe("deploymentsRedeploy", () => {
     ]
     mockListDeployments(server, { response: mockDeployments })
     terminal.setUserResponse("y")
-    const mock = mockRedeploy(server, { deploymentId: "1763737018" })
+    const mock = mockUpdateDeployment(server, { deploymentId: "1763737018" })
 
     await deploymentsRedeploy({ deploymentId: "1763737018", force: false })
 
@@ -96,7 +96,7 @@ describe("deploymentsRedeploy", () => {
     ]
     mockListDeployments(server, { response: mockDeployments })
     terminal.setUserResponse("n")
-    const mock = mockRedeploy(server, { deploymentId: "1763737018" })
+    const mock = mockUpdateDeployment(server, { deploymentId: "1763737018" })
 
     await deploymentsRedeploy({ deploymentId: "1763737018", force: false })
 

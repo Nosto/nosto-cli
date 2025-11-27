@@ -1,20 +1,20 @@
 import { describe, expect, it } from "vitest"
 
-import { deploymentsDisable } from "#modules/deployments/disable.ts"
+import { deploymentsRollback } from "#modules/deployments/rollback.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
-import { mockDisableDeployment, setupMockServer } from "#test/utils/mockServer.ts"
+import { mockRollbackDeployment, setupMockServer } from "#test/utils/mockServer.ts"
 
 const server = setupMockServer()
 const terminal = setupMockConsole()
 setupMockConfig()
 
-describe("deploymentsDisable", () => {
+describe("deploymentsRollback", () => {
   it("should disable deployment when user confirms", async () => {
     terminal.setUserResponse("y")
-    const mock = mockDisableDeployment(server, {})
+    const mock = mockRollbackDeployment(server, {})
 
-    await deploymentsDisable({ force: false })
+    await deploymentsRollback({ force: false })
 
     expect(mock.invocations).toHaveLength(1)
     expect(terminal.getSpy("success")).toHaveBeenCalledWith("Active deployment disabled successfully!")
@@ -22,18 +22,18 @@ describe("deploymentsDisable", () => {
 
   it("should cancel when user declines", async () => {
     terminal.setUserResponse("n")
-    const mock = mockDisableDeployment(server, {})
+    const mock = mockRollbackDeployment(server, {})
 
-    await deploymentsDisable({ force: false })
+    await deploymentsRollback({ force: false })
 
     expect(mock.invocations).toHaveLength(0)
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Operation cancelled by user.")
   })
 
   it("should skip confirmation when force is true", async () => {
-    const mock = mockDisableDeployment(server, {})
+    const mock = mockRollbackDeployment(server, {})
 
-    await deploymentsDisable({ force: true })
+    await deploymentsRollback({ force: true })
 
     expect(mock.invocations).toHaveLength(1)
     expect(terminal.getSpy("success")).toHaveBeenCalledWith("Active deployment disabled successfully!")
@@ -41,9 +41,9 @@ describe("deploymentsDisable", () => {
 
   it("should display confirmation message", async () => {
     terminal.setUserResponse("y")
-    mockDisableDeployment(server, {})
+    mockRollbackDeployment(server, {})
 
-    await deploymentsDisable({ force: false })
+    await deploymentsRollback({ force: false })
 
     terminal.expect.user.toHaveBeenPromptedWith(
       "Are you sure you want to disable the currently active deployment? (y/N):"
@@ -51,9 +51,9 @@ describe("deploymentsDisable", () => {
   })
 
   it("should display progress message", async () => {
-    mockDisableDeployment(server, {})
+    mockRollbackDeployment(server, {})
 
-    await deploymentsDisable({ force: true })
+    await deploymentsRollback({ force: true })
 
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Disabling active deployment...")
   })
