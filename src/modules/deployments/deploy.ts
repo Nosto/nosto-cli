@@ -23,7 +23,7 @@ export async function deploymentsDeploy({ description, force }: DeployOptions) {
   const lastSeenRemoteHash = readFileIfExists(path.join(projectPath, ".nostocache/hash"))
 
   if (!remoteHash) {
-    Logger.error("No files found in remote. Please run 'st push' first to push your files.")
+    Logger.error("No files found in remote. Please run 'st build --push' first to push your build.")
     return
   }
 
