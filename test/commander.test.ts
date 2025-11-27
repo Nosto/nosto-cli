@@ -2,6 +2,10 @@ import { beforeEach, describe, expect, it, MockInstance, vi } from "vitest"
 
 import { clearCachedConfig, getCachedConfig } from "#config/config.ts"
 import { MissingConfigurationError } from "#errors/MissingConfigurationError.ts"
+import * as deployModule from "#modules/deployments/deploy.ts"
+import * as listModule from "#modules/deployments/list.ts"
+import * as redeployModule from "#modules/deployments/redeploy.ts"
+import * as rollbackModule from "#modules/deployments/rollback.ts"
 import * as login from "#modules/login.ts"
 import * as logout from "#modules/logout.ts"
 import * as build from "#modules/search-templates/build.ts"
@@ -25,6 +29,10 @@ let buildSpy: MockInstance
 let pullSpy: MockInstance
 let pushSpy: MockInstance
 let devSpy: MockInstance
+let deploymentsListSpy: MockInstance
+let deploymentsDeploySpy: MockInstance
+let deploymentsRedeploySpy: MockInstance
+let deploymentsRollbackSpy: MockInstance
 
 describe("commander", () => {
   beforeEach(() => {
@@ -36,6 +44,10 @@ describe("commander", () => {
     pullSpy = vi.spyOn(pull, "pullSearchTemplate").mockImplementation(() => Promise.resolve())
     pushSpy = vi.spyOn(push, "pushSearchTemplate").mockImplementation(() => Promise.resolve())
     devSpy = vi.spyOn(dev, "searchTemplateDevMode").mockImplementation(() => Promise.resolve())
+    deploymentsListSpy = vi.spyOn(listModule, "deploymentsList").mockImplementation(() => Promise.resolve())
+    deploymentsDeploySpy = vi.spyOn(deployModule, "deploymentsDeploy").mockImplementation(() => Promise.resolve())
+    deploymentsRedeploySpy = vi.spyOn(redeployModule, "deploymentsRedeploy").mockImplementation(() => Promise.resolve())
+    deploymentsRollbackSpy = vi.spyOn(rollbackModule, "deploymentsRollback").mockImplementation(() => Promise.resolve())
     clearCachedConfig()
     fs.mockUserAuthentication()
   })
@@ -133,6 +145,134 @@ describe("commander", () => {
     })
   })
 
+  describe("nosto deployments list", () => {
+    beforeEach(() => {
+      fs.writeFile(".nosto.json", JSON.stringify({ apiKey: "123", merchant: "456" }))
+    })
+
+    it("should call the function", async () => {
+      await commander.run("nosto dp list")
+      expect(deploymentsListSpy).toHaveBeenCalled()
+    })
+
+    it("should work with alias", async () => {
+      await commander.run("nosto deployments list")
+      expect(deploymentsListSpy).toHaveBeenCalled()
+    })
+
+    it("should rethrow errors", async () => {
+      vi.spyOn(listModule, "deploymentsList").mockImplementation(() => {
+        throw new Error("Unknown error")
+      })
+
+      await commander.expect("nosto dp list").toThrow()
+    })
+  })
+
+  describe("nosto deployments deploy", () => {
+    beforeEach(() => {
+      fs.writeFile(".nosto.json", JSON.stringify({ apiKey: "123", merchant: "456" }))
+    })
+
+    it("should call the function with default options", async () => {
+      await commander.run("nosto dp deploy")
+      expect(deploymentsDeploySpy).toHaveBeenCalledWith({
+        description: undefined,
+        force: false
+      })
+    })
+
+    it("should call the function with description", async () => {
+      await commander.run("nosto dp deploy -d test-deployment")
+      expect(deploymentsDeploySpy).toHaveBeenCalledWith({
+        description: "test-deployment",
+        force: false
+      })
+    })
+
+    it("should call the function with force flag", async () => {
+      await commander.run("nosto dp deploy --force")
+      expect(deploymentsDeploySpy).toHaveBeenCalledWith({
+        description: undefined,
+        force: true
+      })
+    })
+
+    it("should rethrow errors", async () => {
+      vi.spyOn(deployModule, "deploymentsDeploy").mockImplementation(() => {
+        throw new Error("Unknown error")
+      })
+
+      await commander.expect("nosto dp deploy").toThrow()
+    })
+  })
+
+  describe("nosto deployments redeploy", () => {
+    beforeEach(() => {
+      fs.writeFile(".nosto.json", JSON.stringify({ apiKey: "123", merchant: "456" }))
+    })
+
+    it("should call the function with default options", async () => {
+      await commander.run("nosto dp redeploy")
+      expect(deploymentsRedeploySpy).toHaveBeenCalledWith({
+        deploymentId: undefined,
+        force: false
+      })
+    })
+
+    it("should call the function with deployment ID", async () => {
+      await commander.run("nosto dp redeploy -i deployment-123")
+      expect(deploymentsRedeploySpy).toHaveBeenCalledWith({
+        deploymentId: "deployment-123",
+        force: false
+      })
+    })
+
+    it("should call the function with force flag", async () => {
+      await commander.run("nosto dp redeploy --force")
+      expect(deploymentsRedeploySpy).toHaveBeenCalledWith({
+        deploymentId: undefined,
+        force: true
+      })
+    })
+
+    it("should rethrow errors", async () => {
+      vi.spyOn(redeployModule, "deploymentsRedeploy").mockImplementation(() => {
+        throw new Error("Unknown error")
+      })
+
+      await commander.expect("nosto dp redeploy").toThrow()
+    })
+  })
+
+  describe("nosto deployments disable", () => {
+    beforeEach(() => {
+      fs.writeFile(".nosto.json", JSON.stringify({ apiKey: "123", merchant: "456" }))
+    })
+
+    it("should call the function with default options", async () => {
+      await commander.run("nosto dp disable")
+      expect(deploymentsRollbackSpy).toHaveBeenCalledWith({
+        force: false
+      })
+    })
+
+    it("should call the function with force flag", async () => {
+      await commander.run("nosto dp disable --force")
+      expect(deploymentsRollbackSpy).toHaveBeenCalledWith({
+        force: true
+      })
+    })
+
+    it("should rethrow errors", async () => {
+      vi.spyOn(rollbackModule, "deploymentsRollback").mockImplementation(() => {
+        throw new Error("Unknown error")
+      })
+
+      await commander.expect("nosto dp disable").toThrow()
+    })
+  })
+
   describe("nosto search-templates build", () => {
     it("should fail sanity check", async () => {
       await commander.run("nosto st build")
@@ -147,7 +287,22 @@ describe("commander", () => {
 
       it("should call the function", async () => {
         await commander.run("nosto st build")
-        expect(buildSpy).toHaveBeenCalledWith({ watch: false })
+        expect(buildSpy).toHaveBeenCalledWith({ watch: false, push: false })
+      })
+
+      it("should call the function with watch flag", async () => {
+        await commander.run("nosto st build --watch")
+        expect(buildSpy).toHaveBeenCalledWith({ watch: true, push: false })
+      })
+
+      it("should call the function with push flag", async () => {
+        await commander.run("nosto st build --push")
+        expect(buildSpy).toHaveBeenCalledWith({ watch: false, push: true })
+      })
+
+      it("should call the function with both watch and push flags", async () => {
+        await commander.run("nosto st build -w -p")
+        expect(buildSpy).toHaveBeenCalledWith({ watch: true, push: true })
       })
 
       it("should rethrow errors", async () => {
