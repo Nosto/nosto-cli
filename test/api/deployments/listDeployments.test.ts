@@ -7,32 +7,41 @@ import { mockListDeployments, setupMockServer } from "#test/utils/mockServer.ts"
 const server = setupMockServer()
 setupMockConfig()
 
+const mockDeploymentsWithAllFields = [
+  {
+    id: "1763737018",
+    created: 1732200000000,
+    active: false,
+    latest: true,
+    userId: "user@nosto.com",
+    description: "Latest deployment"
+  },
+  {
+    id: "1763737609",
+    created: 1732199000000,
+    active: true,
+    latest: false,
+    userId: "user@nosto.com",
+    description: "Additional fixes etc.."
+  }
+]
+
+const mockDeploymentsWithoutOptionalFields = [
+  {
+    id: "1763737018",
+    created: 1732200000000,
+    active: false,
+    latest: true
+  }
+]
+
 describe("listDeployments", () => {
   it("should fetch and return list of deployments", async () => {
-    const mockDeployments = [
-      {
-        id: "1763737018",
-        created: 1732200000000,
-        active: false,
-        latest: true,
-        userId: "user@nosto.com",
-        description: "Latest deployment"
-      },
-      {
-        id: "1763737609",
-        created: 1732199000000,
-        active: true,
-        latest: false,
-        userId: "user@nosto.com",
-        description: "Additional fixes etc.."
-      }
-    ]
-
-    mockListDeployments(server, { response: mockDeployments })
+    mockListDeployments(server, { response: mockDeploymentsWithAllFields })
 
     const deployments = await listDeployments()
 
-    expect(deployments).toEqual(mockDeployments)
+    expect(deployments).toEqual(mockDeploymentsWithAllFields)
     expect(deployments).toHaveLength(2)
   })
 
@@ -46,20 +55,11 @@ describe("listDeployments", () => {
   })
 
   it("should handle deployments without optional fields", async () => {
-    const mockDeployments = [
-      {
-        id: "1763737018",
-        created: 1732200000000,
-        active: false,
-        latest: true
-      }
-    ]
-
-    mockListDeployments(server, { response: mockDeployments })
+    mockListDeployments(server, { response: mockDeploymentsWithoutOptionalFields })
 
     const deployments = await listDeployments()
 
-    expect(deployments).toEqual(mockDeployments)
+    expect(deployments).toEqual(mockDeploymentsWithoutOptionalFields)
     expect(deployments[0].userId).toBeUndefined()
     expect(deployments[0].description).toBeUndefined()
   })
