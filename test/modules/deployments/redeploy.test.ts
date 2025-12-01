@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest"
 import { deploymentsRedeploy, selectDeploymentInteractively } from "#modules/deployments/redeploy.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
+import { createMockDeployment } from "#test/utils/mockDeployment.ts"
 import { mockListDeployments, mockUpdateDeployment, setupMockServer } from "#test/utils/mockServer.ts"
 
 // Mock @inquirer/prompts
@@ -17,13 +18,11 @@ setupMockConfig()
 describe("deploymentsRedeploy", () => {
   it("should redeploy deployment by ID when provided", async () => {
     const mockDeployments = [
-      {
+      createMockDeployment({
         id: "1763737018",
-        created: 1732200000000,
-        active: false,
         latest: true,
         description: "Test deployment"
-      }
+      })
     ]
     mockListDeployments(server, { response: mockDeployments })
     const mock = mockUpdateDeployment(server, { deploymentId: "1763737018" })
@@ -35,14 +34,7 @@ describe("deploymentsRedeploy", () => {
   })
 
   it("should show error when deployment ID not found", async () => {
-    const mockDeployments = [
-      {
-        id: "1763737018",
-        created: 1732200000000,
-        active: false,
-        latest: true
-      }
-    ]
+    const mockDeployments = [createMockDeployment({ id: "1763737018", latest: true })]
     mockListDeployments(server, { response: mockDeployments })
     const mock = mockUpdateDeployment(server, { deploymentId: "9999999999" })
 
@@ -54,13 +46,11 @@ describe("deploymentsRedeploy", () => {
 
   it("should display deployment info", async () => {
     const mockDeployments = [
-      {
+      createMockDeployment({
         id: "1763737018",
-        created: 1732200000000,
-        active: false,
         latest: true,
         description: "Test deployment"
-      }
+      })
     ]
     mockListDeployments(server, { response: mockDeployments })
     mockUpdateDeployment(server, { deploymentId: "1763737018" })
@@ -72,14 +62,7 @@ describe("deploymentsRedeploy", () => {
   })
 
   it("should prompt for confirmation when not forced", async () => {
-    const mockDeployments = [
-      {
-        id: "1763737018",
-        created: 1732200000000,
-        active: false,
-        latest: true
-      }
-    ]
+    const mockDeployments = [createMockDeployment({ id: "1763737018", latest: true })]
     mockListDeployments(server, { response: mockDeployments })
     terminal.setUserResponse("y")
     const mock = mockUpdateDeployment(server, { deploymentId: "1763737018" })
@@ -91,14 +74,7 @@ describe("deploymentsRedeploy", () => {
   })
 
   it("should cancel when user declines confirmation", async () => {
-    const mockDeployments = [
-      {
-        id: "1763737018",
-        created: 1732200000000,
-        active: false,
-        latest: true
-      }
-    ]
+    const mockDeployments = [createMockDeployment({ id: "1763737018", latest: true })]
     mockListDeployments(server, { response: mockDeployments })
     terminal.setUserResponse("n")
     const mock = mockUpdateDeployment(server, { deploymentId: "1763737018" })
@@ -110,14 +86,7 @@ describe("deploymentsRedeploy", () => {
   })
 
   it("should handle deployment without description field", async () => {
-    const mockDeployments = [
-      {
-        id: "1763737018",
-        created: 1732200000000,
-        active: false,
-        latest: true
-      }
-    ]
+    const mockDeployments = [createMockDeployment({ id: "1763737018", latest: true })]
     mockListDeployments(server, { response: mockDeployments })
     mockUpdateDeployment(server, { deploymentId: "1763737018" })
 
@@ -166,26 +135,22 @@ describe("selectDeploymentInteractively", () => {
   it("should display active deployment indicator and format choices correctly", async () => {
     const { select } = await import("@inquirer/prompts")
     const mockDeployments = [
-      {
+      createMockDeployment({
         id: "1763737018",
         created: 1732200000000,
         active: true,
-        latest: false,
         description: "Active deployment"
-      },
-      {
+      }),
+      createMockDeployment({
         id: "1763737019",
         created: 1732199000000,
-        active: false,
         latest: true,
         description: "Latest deployment"
-      },
-      {
+      }),
+      createMockDeployment({
         id: "1763737020",
-        created: 1732198000000,
-        active: false,
-        latest: false
-      }
+        created: 1732198000000
+      })
     ]
     mockListDeployments(server, { response: mockDeployments })
     vi.mocked(select).mockResolvedValue("1763737018")
@@ -219,14 +184,7 @@ describe("selectDeploymentInteractively", () => {
 
   it("should return null when no selection is made", async () => {
     const { select } = await import("@inquirer/prompts")
-    const mockDeployments = [
-      {
-        id: "1763737018",
-        created: 1732200000000,
-        active: false,
-        latest: true
-      }
-    ]
+    const mockDeployments = [createMockDeployment({ id: "1763737018", latest: true })]
     mockListDeployments(server, { response: mockDeployments })
     vi.mocked(select).mockResolvedValue(undefined)
 
@@ -237,14 +195,7 @@ describe("selectDeploymentInteractively", () => {
 
   it("should return null when selected deployment not found", async () => {
     const { select } = await import("@inquirer/prompts")
-    const mockDeployments = [
-      {
-        id: "1763737018",
-        created: 1732200000000,
-        active: false,
-        latest: true
-      }
-    ]
+    const mockDeployments = [createMockDeployment({ id: "1763737018", latest: true })]
     mockListDeployments(server, { response: mockDeployments })
     vi.mocked(select).mockResolvedValue("nonexistent")
 
@@ -256,13 +207,11 @@ describe("selectDeploymentInteractively", () => {
   it("should use interactive selection when no deploymentId provided", async () => {
     const { select } = await import("@inquirer/prompts")
     const mockDeployments = [
-      {
+      createMockDeployment({
         id: "1763737018",
-        created: 1732200000000,
-        active: false,
         latest: true,
         description: "Test deployment"
-      }
+      })
     ]
     mockListDeployments(server, { response: mockDeployments })
     vi.mocked(select).mockResolvedValue("1763737018")

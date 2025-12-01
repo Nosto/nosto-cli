@@ -2,37 +2,38 @@ import { describe, expect, it } from "vitest"
 
 import { listDeployments } from "#api/deployments/listDeployments.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
+import { createMockDeployment } from "#test/utils/mockDeployment.ts"
 import { mockListDeployments, setupMockServer } from "#test/utils/mockServer.ts"
 
 const server = setupMockServer()
 setupMockConfig()
 
 const mockDeploymentsWithAllFields = [
-  {
+  createMockDeployment({
     id: "1763737018",
     created: 1732200000000,
     active: false,
     latest: true,
     userId: "user@nosto.com",
     description: "Latest deployment"
-  },
-  {
+  }),
+  createMockDeployment({
     id: "1763737609",
     created: 1732199000000,
     active: true,
     latest: false,
     userId: "user@nosto.com",
     description: "Additional fixes etc.."
-  }
+  })
 ]
 
 const mockDeploymentsWithoutOptionalFields = [
-  {
+  createMockDeployment({
     id: "1763737018",
     created: 1732200000000,
     active: false,
     latest: true
-  }
+  })
 ]
 
 describe("listDeployments", () => {

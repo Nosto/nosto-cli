@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import { deploymentsList } from "#modules/deployments/list.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
+import { createMockDeployment } from "#test/utils/mockDeployment.ts"
 import { mockListDeployments, setupMockServer } from "#test/utils/mockServer.ts"
 
 const server = setupMockServer()
@@ -12,22 +13,20 @@ setupMockConfig()
 describe("deploymentsList", () => {
   it("should display list of deployments", async () => {
     const mockDeployments = [
-      {
+      createMockDeployment({
         id: "1763737018",
         created: 1732200000000,
-        active: false,
         latest: true,
         userId: "user@nosto.com",
         description: "Latest deployment"
-      },
-      {
+      }),
+      createMockDeployment({
         id: "1763737609",
         created: 1732199000000,
         active: true,
-        latest: false,
         userId: "user@nosto.com",
         description: "Additional fixes etc.."
-      }
+      })
     ]
 
     mockListDeployments(server, { response: mockDeployments })
@@ -50,14 +49,7 @@ describe("deploymentsList", () => {
   })
 
   it("should display deployments without optional fields", async () => {
-    const mockDeployments = [
-      {
-        id: "1763737018",
-        created: 1732200000000,
-        active: false,
-        latest: true
-      }
-    ]
+    const mockDeployments = [createMockDeployment({ id: "1763737018", latest: true })]
 
     mockListDeployments(server, { response: mockDeployments })
 
@@ -68,14 +60,7 @@ describe("deploymentsList", () => {
   })
 
   it("should display active status correctly", async () => {
-    const mockDeployments = [
-      {
-        id: "1763737018",
-        created: 1732200000000,
-        active: true,
-        latest: false
-      }
-    ]
+    const mockDeployments = [createMockDeployment({ active: true })]
 
     mockListDeployments(server, { response: mockDeployments })
 
@@ -85,14 +70,7 @@ describe("deploymentsList", () => {
   })
 
   it("should display inactive status correctly", async () => {
-    const mockDeployments = [
-      {
-        id: "1763737018",
-        created: 1732200000000,
-        active: false,
-        latest: false
-      }
-    ]
+    const mockDeployments = [createMockDeployment()]
 
     mockListDeployments(server, { response: mockDeployments })
 
@@ -102,14 +80,7 @@ describe("deploymentsList", () => {
   })
 
   it("should display latest badge for latest deployment", async () => {
-    const mockDeployments = [
-      {
-        id: "1763737018",
-        created: 1732200000000,
-        active: false,
-        latest: true
-      }
-    ]
+    const mockDeployments = [createMockDeployment({ latest: true })]
 
     mockListDeployments(server, { response: mockDeployments })
 
@@ -119,14 +90,7 @@ describe("deploymentsList", () => {
   })
 
   it("should format dates correctly", async () => {
-    const mockDeployments = [
-      {
-        id: "1763737018",
-        created: 1732200000000,
-        active: false,
-        latest: true
-      }
-    ]
+    const mockDeployments = [createMockDeployment({ latest: true })]
 
     mockListDeployments(server, { response: mockDeployments })
 
