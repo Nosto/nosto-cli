@@ -1,5 +1,6 @@
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
+import * as calculateTreeHashModule from "#filesystem/calculateTreeHash.ts"
 import { deploymentsDeploy } from "#modules/deployments/deploy.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
@@ -11,11 +12,11 @@ const terminal = setupMockConsole()
 const fs = setupMockFileSystem()
 setupMockConfig()
 
-vi.mock("#filesystem/calculateTreeHash.ts", () => ({
-  calculateTreeHash: vi.fn(() => "abcd1234")
-}))
-
 describe("deploymentsDeploy", () => {
+  beforeEach(() => {
+    vi.spyOn(calculateTreeHashModule, "calculateTreeHash").mockReturnValue("abcd1234")
+  })
+
   it("should deploy when hashes match", async () => {
     mockFetchSourceFile(server, { path: "build/hash", response: "abcd1234", contentType: "raw" })
     fs.writeFile(".nostocache/hash", "abcd1234")

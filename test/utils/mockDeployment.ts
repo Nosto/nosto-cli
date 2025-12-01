@@ -9,10 +9,6 @@ type DeploymentData = {
 
 let deploymentCounter = 1763737000
 
-/**
- * Helper function to generate mock deployment objects with sensible defaults.
- * Most repeated values are set as defaults and can be overridden as needed.
- */
 export function createMockDeployment(overrides: DeploymentData = {}) {
   const id = overrides.id ?? String(deploymentCounter++)
   const created = overrides.created ?? 1732200000000

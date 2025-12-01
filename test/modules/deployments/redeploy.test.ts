@@ -6,7 +6,6 @@ import { setupMockConsole } from "#test/utils/mockConsole.ts"
 import { createMockDeployment } from "#test/utils/mockDeployment.ts"
 import { mockListDeployments, mockUpdateDeployment, setupMockServer } from "#test/utils/mockServer.ts"
 
-// Mock @inquirer/prompts
 vi.mock("@inquirer/prompts", () => ({
   select: vi.fn()
 }))
