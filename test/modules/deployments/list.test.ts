@@ -17,7 +17,7 @@ describe("deploymentsList", () => {
         created: 1732200000000,
         active: false,
         latest: true,
-        userId: "tomas.jaseliunas@nosto.com",
+        userId: "user@nosto.com",
         description: "Latest deployment"
       },
       {
@@ -25,7 +25,7 @@ describe("deploymentsList", () => {
         created: 1732199000000,
         active: true,
         latest: false,
-        userId: "tomas.jaseliunas@nosto.com",
+        userId: "user@nosto.com",
         description: "Additional fixes etc.."
       }
     ]
