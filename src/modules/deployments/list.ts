@@ -8,7 +8,7 @@ import { formatDate } from "#utils/formatDate.ts"
 export async function deploymentsList() {
   const spinner = ora("Collecting deployment data...").start()
   const deployments = await listDeployments()
-  spinner.stop()
+  spinner.succeed()
 
   if (!deployments || deployments.length === 0) {
     Logger.info(chalk.yellow("No deployments found"))
