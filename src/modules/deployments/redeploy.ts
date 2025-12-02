@@ -6,6 +6,7 @@ import { updateDeployment } from "#api/deployments/updateDeployment.ts"
 import { Logger } from "#console/logger.ts"
 import { promptForConfirmation } from "#console/userPrompt.ts"
 import { formatDate } from "#utils/formatDate.ts"
+import ora from "ora"
 
 type RedeployOptions = {
   deploymentId?: string
@@ -18,8 +19,10 @@ export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptio
 
   if (deploymentId) {
     selectedDeploymentId = deploymentId
+    const spinner = ora("Collecting deployment data...").start()
     const deployments = await listDeployments()
     selectedDeployment = deployments.find(d => d.id === deploymentId) || null
+    spinner.stop()
 
     if (!selectedDeployment) {
       Logger.error(`Deployment with ID "${selectedDeploymentId}" not found.`)
@@ -37,14 +40,14 @@ export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptio
     selectedDeployment = result.deployment
   }
 
-  Logger.info(`\nSelected deployment: ${chalk.cyan(selectedDeployment.id)}`)
+  Logger.info(`Selected deployment: ${chalk.cyan(selectedDeployment.id)}`)
   if (selectedDeployment.description) {
     Logger.info(`Description: ${selectedDeployment.description}`)
   }
 
   if (!force) {
     const confirmed = await promptForConfirmation(
-      `Are you sure you want to redeploy deployment ${chalk.cyan(selectedDeploymentId)}?`,
+      `Are you sure you want to redeploy version ${chalk.cyan(selectedDeploymentId)}?`,
       "N"
     )
     if (!confirmed) {
@@ -53,22 +56,24 @@ export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptio
     }
   }
 
-  Logger.info(`\nRedeploying deployment ${chalk.cyan(selectedDeploymentId)}...`)
-
+  const spinner = ora(`Redeploying version ${chalk.cyan(selectedDeploymentId)}...`).start()
   await updateDeployment(selectedDeploymentId)
+  spinner.stop()
 
   Logger.success("Redeployed successfully!")
 }
 
 export async function selectDeploymentInteractively(message: string) {
+  const spinner = ora("Collecting deployment data...").start()
   const deployments = await listDeployments()
+  spinner.stop()
 
   if (!deployments || deployments.length === 0) {
     Logger.error("No deployments found.")
     return null
   }
 
-  Logger.info(chalk.gray(`\n${chalk.bgGreenBright("  ")} = Currently active deployment\n`))
+  Logger.info(chalk.gray(`${chalk.bgGreenBright("  ")} = Currently active deployment\n`))
 
   const choices = deployments.map(deployment => {
     const createdDate = formatDate(deployment.created)

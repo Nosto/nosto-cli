@@ -9,6 +9,7 @@ import { promptForConfirmation, promptForInput } from "#console/userPrompt.ts"
 import { calculateTreeHash } from "#filesystem/calculateTreeHash.ts"
 import { readFileIfExists, writeFile } from "#filesystem/filesystem.ts"
 import { isValidAlphaNumeric } from "#utils/validations.ts"
+import ora from "ora"
 
 type DeployOptions = {
   description?: string
@@ -69,7 +70,9 @@ export async function deploymentsDeploy({ description, force }: DeployOptions) {
   Logger.info("Creating deployment from remote 'build' path...")
   Logger.info(`Description: ${chalk.cyan(`"${deploymentDescription}"`)}`)
 
+  const spinner = ora("Creating deployment...").start()
   await deployWithRetry("build", deploymentDescription)
+  spinner.stop()
 
   Logger.success("Deployment created successfully!")
 
