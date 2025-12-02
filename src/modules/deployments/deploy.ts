@@ -1,4 +1,5 @@
 import chalk from "chalk"
+import ora from "ora"
 import path from "path"
 
 import { deployWithRetry } from "#api/retry.ts"
@@ -9,7 +10,6 @@ import { promptForConfirmation, promptForInput } from "#console/userPrompt.ts"
 import { calculateTreeHash } from "#filesystem/calculateTreeHash.ts"
 import { readFileIfExists, writeFile } from "#filesystem/filesystem.ts"
 import { isValidAlphaNumeric } from "#utils/validations.ts"
-import ora from "ora"
 
 type DeployOptions = {
   description?: string

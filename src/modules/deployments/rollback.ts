@@ -1,7 +1,8 @@
+import ora from "ora"
+
 import { rollbackDeployment } from "#api/deployments/rollbackDeployment.ts"
 import { Logger } from "#console/logger.ts"
 import { promptForConfirmation } from "#console/userPrompt.ts"
-import ora from "ora"
 
 type RollbackOptions = {
   force: boolean

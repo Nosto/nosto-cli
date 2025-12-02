@@ -1,12 +1,12 @@
 import { select } from "@inquirer/prompts"
 import chalk from "chalk"
+import ora from "ora"
 
 import { listDeployments } from "#api/deployments/listDeployments.ts"
 import { updateDeployment } from "#api/deployments/updateDeployment.ts"
 import { Logger } from "#console/logger.ts"
 import { promptForConfirmation } from "#console/userPrompt.ts"
 import { formatDate } from "#utils/formatDate.ts"
-import ora from "ora"
 
 type RedeployOptions = {
   deploymentId?: string
