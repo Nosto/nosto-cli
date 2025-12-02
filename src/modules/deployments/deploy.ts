@@ -1,4 +1,5 @@
 import chalk from "chalk"
+import ora from "ora"
 import path from "path"
 
 import { deployWithRetry } from "#api/retry.ts"
@@ -69,7 +70,9 @@ export async function deploymentsDeploy({ description, force }: DeployOptions) {
   Logger.info("Creating deployment from remote 'build' path...")
   Logger.info(`Description: ${chalk.cyan(`"${deploymentDescription}"`)}`)
 
+  const spinner = ora("Creating deployment...").start()
   await deployWithRetry("build", deploymentDescription)
+  spinner.stop()
 
   Logger.success("Deployment created successfully!")
 

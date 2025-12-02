@@ -1,18 +1,21 @@
 import chalk from "chalk"
+import ora from "ora"
 
 import { listDeployments } from "#api/deployments/listDeployments.ts"
 import { Logger } from "#console/logger.ts"
 import { formatDate } from "#utils/formatDate.ts"
 
 export async function deploymentsList() {
+  const spinner = ora("Collecting deployment data...").start()
   const deployments = await listDeployments()
+  spinner.stop()
 
   if (!deployments || deployments.length === 0) {
     Logger.info(chalk.yellow("No deployments found"))
     return
   }
 
-  Logger.info(chalk.bold(`\nFound ${deployments.length} deployment(s):\n`))
+  Logger.info(chalk.bold(`Found ${deployments.length} deployment(s):`))
 
   deployments.forEach((deployment, index) => {
     const statusBadge = deployment.active ? chalk.green("Active") : chalk.red("Inactive")
