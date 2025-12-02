@@ -48,4 +48,11 @@ describe("isValidAlphaNumeric", () => {
     expect(isValidAlphaNumeric("This is a test")).toBe(true)
     expect(isValidAlphaNumeric("Multiple   spaces")).toBe(true)
   })
+
+  it("should reject strings with newlines", () => {
+    expect(isValidAlphaNumeric("Test\ndeployment")).toBe(false)
+    expect(isValidAlphaNumeric("Multiple\n\nlines")).toBe(false)
+    expect(isValidAlphaNumeric("Test\rdeployment")).toBe(false)
+    expect(isValidAlphaNumeric("Test\r\ndeployment")).toBe(false)
+  })
 })

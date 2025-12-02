@@ -69,7 +69,7 @@ describe("deploymentsRedeploy", () => {
     await deploymentsRedeploy({ deploymentId: "1763737018", force: false })
 
     expect(mock.invocations).toHaveLength(1)
-    terminal.expect.user.toHaveBeenPromptedWith("Are you sure you want to redeploy deployment 1763737018? (y/N):")
+    terminal.expect.user.toHaveBeenPromptedWith("Are you sure you want to redeploy version 1763737018? (y/N):")
   })
 
   it("should cancel when user declines confirmation", async () => {
@@ -109,7 +109,8 @@ describe("deploymentsRedeploy", () => {
 
     await deploymentsRedeploy({ deploymentId: "1763737018", force: true })
 
-    expect(terminal.getSpy("info")).toHaveBeenCalledWith(expect.stringContaining("Redeploying deployment"))
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith(expect.stringContaining("Selected deployment"))
+    expect(terminal.getSpy("success")).toHaveBeenCalledWith("Redeployed successfully!")
   })
 
   it("should error when no deployment selected interactively", async () => {
