@@ -3,7 +3,7 @@ import { beforeEach } from "vitest"
 import { vi } from "vitest"
 
 import { mockHttpServer } from "./utils/mockAuthServer.ts"
-import { mockedConsoleIn, mockedConsoleOut } from "./utils/mockConsole.ts"
+import { mockedConsoleIn, mockedConsoleOut, mockedInquirer } from "./utils/mockConsole.ts"
 
 export const testVolume = Volume.fromJSON({}, "/")
 
@@ -23,6 +23,8 @@ vi.mock("readline/promises", () => {
   }
 })
 vi.mock("#/console/logger.ts", () => mockedConsoleOut)
+
+vi.mock("@inquirer/prompts", () => mockedInquirer)
 
 vi.mock("node:test", () => {
   throw new Error("You seem to have accidentally imported node:test instead of vitest.")

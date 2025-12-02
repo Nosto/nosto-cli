@@ -1,14 +1,10 @@
-import { describe, expect, it, vi } from "vitest"
+import { describe, expect, it } from "vitest"
 
 import { deploymentsRedeploy, selectDeploymentInteractively } from "#modules/deployments/redeploy.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
 import { createMockDeployment } from "#test/utils/mockDeployment.ts"
 import { mockListDeployments, mockUpdateDeployment, setupMockServer } from "#test/utils/mockServer.ts"
-
-vi.mock("@inquirer/prompts", () => ({
-  select: vi.fn()
-}))
 
 const server = setupMockServer()
 const terminal = setupMockConsole()
@@ -133,7 +129,6 @@ describe("selectDeploymentInteractively", () => {
   })
 
   it("should display active deployment indicator and format choices correctly", async () => {
-    const { select } = await import("@inquirer/prompts")
     const mockDeployments = [
       createMockDeployment({
         id: "1763737018",
@@ -153,7 +148,7 @@ describe("selectDeploymentInteractively", () => {
       })
     ]
     mockListDeployments(server, { response: mockDeployments })
-    vi.mocked(select).mockResolvedValue("1763737018")
+    terminal.setSelectResponse("1763737018")
 
     const result = await selectDeploymentInteractively("Select deployment:")
 
@@ -162,7 +157,7 @@ describe("selectDeploymentInteractively", () => {
       id: "1763737018",
       deployment: mockDeployments[0]
     })
-    expect(select).toHaveBeenCalledWith({
+    expect(terminal.getSelectSpy()).toHaveBeenCalledWith({
       message: "Select deployment:",
       choices: expect.arrayContaining([
         expect.objectContaining({
@@ -183,10 +178,9 @@ describe("selectDeploymentInteractively", () => {
   })
 
   it("should return null when no selection is made", async () => {
-    const { select } = await import("@inquirer/prompts")
     const mockDeployments = [createMockDeployment({ id: "1763737018", latest: true })]
     mockListDeployments(server, { response: mockDeployments })
-    vi.mocked(select).mockResolvedValue(undefined)
+    terminal.setSelectResponse(undefined)
 
     const result = await selectDeploymentInteractively("Select deployment:")
 
@@ -194,10 +188,9 @@ describe("selectDeploymentInteractively", () => {
   })
 
   it("should return null when selected deployment not found", async () => {
-    const { select } = await import("@inquirer/prompts")
     const mockDeployments = [createMockDeployment({ id: "1763737018", latest: true })]
     mockListDeployments(server, { response: mockDeployments })
-    vi.mocked(select).mockResolvedValue("nonexistent")
+    terminal.setSelectResponse("nonexistent")
 
     const result = await selectDeploymentInteractively("Select deployment:")
 
@@ -205,7 +198,6 @@ describe("selectDeploymentInteractively", () => {
   })
 
   it("should use interactive selection when no deploymentId provided", async () => {
-    const { select } = await import("@inquirer/prompts")
     const mockDeployments = [
       createMockDeployment({
         id: "1763737018",
@@ -214,12 +206,12 @@ describe("selectDeploymentInteractively", () => {
       })
     ]
     mockListDeployments(server, { response: mockDeployments })
-    vi.mocked(select).mockResolvedValue("1763737018")
+    terminal.setSelectResponse("1763737018")
     const mock = mockUpdateDeployment(server, { deploymentId: "1763737018" })
 
     await deploymentsRedeploy({ force: true })
 
-    expect(select).toHaveBeenCalled()
+    expect(terminal.getSelectSpy()).toHaveBeenCalled()
     expect(mock.invocations).toHaveLength(1)
     expect(terminal.getSpy("success")).toHaveBeenCalledWith("Redeployed successfully!")
   })

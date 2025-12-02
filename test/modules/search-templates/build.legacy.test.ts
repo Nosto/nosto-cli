@@ -2,17 +2,19 @@ import * as esbuild from "esbuild"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
-import { pushSearchTemplate } from "#modules/search-templates/push.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
-import { mockFetchLibraryFile, setupMockServer } from "#test/utils/mockServer.ts"
+import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
+import {
+  mockFetchLibraryFile,
+  mockFetchSourceFile,
+  mockPutSourceFile,
+  setupMockServer
+} from "#test/utils/mockServer.ts"
 
+const fs = setupMockFileSystem()
 const server = setupMockServer()
 const terminal = setupMockConsole()
-
-vi.mock("#modules/search-templates/push.ts", () => ({
-  pushSearchTemplate: vi.fn()
-}))
 
 vi.mock("esbuild", () => ({
   context: vi.fn()
@@ -102,37 +104,79 @@ describe("Search Templates build / legacy", () => {
     })
 
     it("should push templates after build when push is true", async () => {
+      // Create source file with Nosto import
+      fs.writeFile("/test-project/index.ts", "import { search } from '@nosto/preact'")
+
+      // Mock rebuild to create build output
+      mockContext.rebuild.mockImplementation(async () => {
+        fs.writeFile("/test-project/build/index.js", "console.log('built')")
+        return { errors: [], warnings: [] }
+      })
+
+      // Mock the API endpoints
+      mockFetchSourceFile(server, {
+        path: "build/hash",
+        error: { status: 404, message: "Not Found" }
+      })
+
+      const indexMock = mockPutSourceFile(server, { path: "build/index.js" })
+      const hashMock = mockPutSourceFile(server, { path: "build/hash" })
+
+      terminal.setUserResponse("y")
+
       await buildSearchTemplate({ watch: false, push: true })
 
       expect(mockContext.rebuild).toHaveBeenCalled()
       expect(mockContext.dispose).toHaveBeenCalled()
-      expect(vi.mocked(pushSearchTemplate)).toHaveBeenCalledWith({
-        paths: ["build"],
-        force: false
-      })
+      expect(indexMock.invocations).toHaveLength(1)
+      expect(hashMock.invocations).toHaveLength(1)
     })
 
     it("should not push templates when push is false", async () => {
+      // Create source file with Nosto import
+      fs.writeFile("/test-project/index.ts", "import { search } from '@nosto/preact'")
+
+      // Create build output
+      fs.writeFile("/test-project/build/index.js", "console.log('built')")
+
+      const indexMock = mockPutSourceFile(server, { path: "build/index.js" })
+
       await buildSearchTemplate({ watch: false, push: false })
 
       expect(mockContext.rebuild).toHaveBeenCalled()
       expect(mockContext.dispose).toHaveBeenCalled()
-      expect(vi.mocked(pushSearchTemplate)).not.toHaveBeenCalled()
+      expect(indexMock.invocations).toHaveLength(0)
     })
 
     it("should not push templates when push is undefined", async () => {
+      // Create source file with Nosto import
+      fs.writeFile("/test-project/index.ts", "import { search } from '@nosto/preact'")
+
+      // Create build output
+      fs.writeFile("/test-project/build/index.js", "console.log('built')")
+
+      const indexMock = mockPutSourceFile(server, { path: "build/index.js" })
+
       await buildSearchTemplate({ watch: false })
 
       expect(mockContext.rebuild).toHaveBeenCalled()
       expect(mockContext.dispose).toHaveBeenCalled()
-      expect(vi.mocked(pushSearchTemplate)).not.toHaveBeenCalled()
+      expect(indexMock.invocations).toHaveLength(0)
     })
 
     it("should not push templates in watch mode even if push is true", async () => {
+      // Create source file with Nosto import
+      fs.writeFile("/test-project/index.ts", "import { search } from '@nosto/preact'")
+
+      // Create build output
+      fs.writeFile("/test-project/build/index.js", "console.log('built')")
+
+      const indexMock = mockPutSourceFile(server, { path: "build/index.js" })
+
       await buildSearchTemplate({ watch: true, push: true })
 
       expect(mockContext.watch).toHaveBeenCalled()
-      expect(vi.mocked(pushSearchTemplate)).not.toHaveBeenCalled()
+      expect(indexMock.invocations).toHaveLength(0)
     })
   })
 })
