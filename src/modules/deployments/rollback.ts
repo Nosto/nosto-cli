@@ -1,7 +1,6 @@
-import ora from "ora"
-
 import { rollbackDeployment } from "#api/deployments/rollbackDeployment.ts"
 import { Logger } from "#console/logger.ts"
+import { withSpinner } from "#console/spinner.ts"
 import { promptForConfirmation } from "#console/userPrompt.ts"
 
 type RollbackOptions = {
@@ -22,9 +21,9 @@ export async function deploymentsRollback({ force }: RollbackOptions) {
 
   Logger.info("Disabling active deployment...")
 
-  const spinner = ora("Disabling active deployment...").start()
-  await rollbackDeployment()
-  spinner.succeed()
+  await withSpinner("Disabling active deployment...", async () => {
+    await rollbackDeployment()
+  })
 
   Logger.success("Active deployment disabled successfully!")
 }

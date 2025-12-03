@@ -1,11 +1,11 @@
 import chalk from "chalk"
-import ora from "ora"
 import path from "path"
 
 import { deployWithRetry } from "#api/retry.ts"
 import { fetchSourceFileIfExists } from "#api/source/fetchSourceFile.ts"
 import { getCachedConfig } from "#config/config.ts"
 import { Logger } from "#console/logger.ts"
+import { withSpinner } from "#console/spinner.ts"
 import { promptForConfirmation, promptForInput } from "#console/userPrompt.ts"
 import { calculateTreeHash } from "#filesystem/calculateTreeHash.ts"
 import { readFileIfExists, writeFile } from "#filesystem/filesystem.ts"
@@ -70,9 +70,9 @@ export async function deploymentsDeploy({ description, force }: DeployOptions) {
   Logger.info("Creating deployment from remote 'build' path...")
   Logger.info(`Description: ${chalk.cyan(`"${deploymentDescription}"`)}`)
 
-  const spinner = ora("Creating deployment...").start()
-  await deployWithRetry("build", deploymentDescription)
-  spinner.succeed()
+  await withSpinner("Creating deployment...", async () => {
+    await deployWithRetry("build", deploymentDescription)
+  })
 
   Logger.success("Deployment created successfully!")
 

@@ -3,7 +3,7 @@ import { beforeEach } from "vitest"
 import { vi } from "vitest"
 
 import { mockHttpServer } from "./utils/mockAuthServer.ts"
-import { mockedConsoleIn, mockedConsoleOut, mockedInquirer } from "./utils/mockConsole.ts"
+import { mockedConsoleIn, mockedConsoleOut, mockedInquirer, mockedSpinner } from "./utils/mockConsole.ts"
 
 export const testVolume = Volume.fromJSON({}, "/")
 
@@ -39,3 +39,9 @@ vi.mock("open", () => {
 vi.mock("node:http", () => ({
   default: mockHttpServer
 }))
+
+vi.mock("ora", () => {
+  return {
+    default: vi.fn(() => mockedSpinner)
+  }
+})
