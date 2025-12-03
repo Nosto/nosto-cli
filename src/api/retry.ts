@@ -2,6 +2,7 @@ import chalk from "chalk"
 
 import { Logger } from "#console/logger.ts"
 
+import { createDeployment } from "./deployments/createDeployment.ts"
 import { putSourceFile } from "./source/putSourceFile.ts"
 
 const MAX_RETRIES = 3
@@ -41,4 +42,8 @@ export async function fetchWithRetry(
 
 export async function putWithRetry(filePath: string, content: string): Promise<void> {
   return executeWithRetry(() => putSourceFile(filePath, content), filePath, "push")
+}
+
+export async function deployWithRetry(path: string, description: string): Promise<void> {
+  return executeWithRetry(() => createDeployment({ path, description }), path, "push")
 }

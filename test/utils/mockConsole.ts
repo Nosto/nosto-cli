@@ -28,9 +28,27 @@ export const mockedConsoleOut = {
   }
 }
 
+export const mockedSpinner = {
+  start: vi.fn(function (this: typeof mockedSpinner) {
+    return this
+  }),
+  stop: vi.fn(function (this: typeof mockedSpinner) {
+    return this
+  }),
+  succeed: vi.fn(function (this: typeof mockedSpinner) {
+    return this
+  }),
+  fail: vi.fn(function (this: typeof mockedSpinner) {
+    return this
+  }),
+  text: ""
+}
+
 export function setupMockConsole() {
   afterEach(() => {
     mockedConsoleIn.recordedPrompts = []
+    mockedSpinner.text = ""
+    vi.clearAllMocks()
   })
 
   return {
@@ -58,9 +76,17 @@ export function setupMockConsole() {
         merchantId: "",
         isDryRun: false
       }
+      mockedSpinner.start.mockClear()
+      mockedSpinner.stop.mockClear()
+      mockedSpinner.succeed.mockClear()
+      mockedSpinner.fail.mockClear()
+      mockedSpinner.text = ""
     },
     getSpy: (method: Exclude<keyof typeof mockedConsoleOut.Logger, "context">) => {
       return mockedConsoleOut.Logger[method]
+    },
+    getSpinnerSpy: (method: keyof typeof mockedSpinner) => {
+      return mockedSpinner[method]
     },
     expect: {
       user: {

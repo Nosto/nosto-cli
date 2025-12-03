@@ -1,0 +1,41 @@
+import chalk from "chalk"
+
+import { listDeployments } from "#api/deployments/listDeployments.ts"
+import { Logger } from "#console/logger.ts"
+import { withSpinner } from "#console/spinner.ts"
+import { formatDate } from "#utils/formatDate.ts"
+
+export async function deploymentsList() {
+  const deployments = await withSpinner("Collecting deployment data...", async () => {
+    return await listDeployments()
+  })
+
+  if (!deployments || deployments.length === 0) {
+    Logger.info(chalk.yellow("No deployments found"))
+    return
+  }
+
+  Logger.info(chalk.bold(`Found ${deployments.length} deployment(s):`))
+
+  deployments.forEach((deployment, index) => {
+    const statusBadge = deployment.active ? chalk.green("Active") : chalk.red("Inactive")
+    const latestBadge = deployment.latest ? chalk.greenBright("[LATEST] ") : ""
+    const createdDate = formatDate(deployment.created)
+    const bulletin = deployment.active ? chalk.bgGreenBright("  ") : "  "
+    Logger.info(`${bulletin} ${latestBadge}${chalk.blueBright(`ID: ${deployment.id}`)}`)
+    Logger.info(`   ${chalk.bold("Status:")}      ${statusBadge}`)
+    Logger.info(`   ${chalk.bold("Created At:")}  ${chalk.cyan(createdDate)}`)
+
+    if (deployment.userId) {
+      Logger.info(`   ${chalk.bold("User:")}        ${chalk.cyan(deployment.userId)}`)
+    }
+
+    if (deployment.description) {
+      Logger.info(`   ${chalk.bold("Description:")} ${deployment.description}`)
+    }
+
+    if (index < deployments.length - 1) {
+      Logger.info("")
+    }
+  })
+}

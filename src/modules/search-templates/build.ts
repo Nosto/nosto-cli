@@ -8,19 +8,22 @@ import { getBuildContext } from "#filesystem/esbuild.ts"
 import { isModernTemplateProject } from "#filesystem/legacyUtils.ts"
 import { loadLibrary } from "#filesystem/loadLibrary.ts"
 
+import { pushSearchTemplate } from "./push.ts"
+
 type Props = {
   watch: boolean
+  push?: boolean
 }
 
-export async function buildSearchTemplate({ watch }: Props) {
+export async function buildSearchTemplate({ watch, push = false }: Props) {
   if (isModernTemplateProject()) {
-    await buildModernSearchTemplate({ watch })
+    await buildModernSearchTemplate({ watch, push })
   } else {
-    await buildLegacySearchTemplate({ watch })
+    await buildLegacySearchTemplate({ watch, push })
   }
 }
 
-async function buildModernSearchTemplate({ watch }: Props) {
+async function buildModernSearchTemplate({ watch, push }: Props) {
   const { onBuild, onBuildWatch } = getCachedSearchTemplatesConfig()
 
   if (watch) {
@@ -30,9 +33,14 @@ async function buildModernSearchTemplate({ watch }: Props) {
   } else {
     await onBuild()
   }
+
+  if (push && !watch) {
+    Logger.info("")
+    await pushSearchTemplate({ paths: ["build"], force: false })
+  }
 }
 
-async function buildLegacySearchTemplate({ watch }: Props) {
+async function buildLegacySearchTemplate({ watch, push }: Props) {
   const { projectPath } = getCachedConfig()
   const libraryPath = path.resolve(projectPath, ".nostocache/library")
 
@@ -46,6 +54,11 @@ async function buildLegacySearchTemplate({ watch }: Props) {
   if (!watch) {
     await context.rebuild()
     await context.dispose()
+
+    if (push) {
+      Logger.info("")
+      await pushSearchTemplate({ paths: ["build"], force: false })
+    }
     return
   }
 
