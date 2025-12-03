@@ -6,9 +6,10 @@ import { promptForConfirmation } from "#console/userPrompt.ts"
 
 type RollbackOptions = {
   force: boolean
+  silent: boolean
 }
 
-export async function deploymentsRollback({ force }: RollbackOptions) {
+export async function deploymentsRollback({ force, silent }: RollbackOptions) {
   if (!force) {
     const confirmed = await promptForConfirmation(
       `Are you sure you want to disable the currently active deployment?`,
@@ -22,8 +23,7 @@ export async function deploymentsRollback({ force }: RollbackOptions) {
 
   Logger.info("Disabling active deployment...")
 
-  const isSilent = Logger.context.isSilent
-  const spinner = isSilent ? null : ora("Disabling active deployment...").start()
+  const spinner = silent ? null : ora("Disabling active deployment...").start()
   await rollbackDeployment()
   spinner?.succeed()
 

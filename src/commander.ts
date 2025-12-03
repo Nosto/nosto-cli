@@ -67,7 +67,7 @@ export async function runCLI(argv: string[]) {
     .option("-s, --silent", "skip informative logs and loading statuses")
     .action(async (projectPath = ".", options) => {
       await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
-        await deploymentsList()
+        await deploymentsList({ silent: options.silent ?? false })
       })
     })
 
@@ -82,7 +82,8 @@ export async function runCLI(argv: string[]) {
       await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
         await deploymentsDeploy({
           description: options.description,
-          force: options.force ?? false
+          force: options.force ?? false,
+          silent: options.silent ?? false
         })
       })
     })
@@ -98,7 +99,8 @@ export async function runCLI(argv: string[]) {
       await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
         await deploymentsRedeploy({
           deploymentId: options.id,
-          force: options.force ?? false
+          force: options.force ?? false,
+          silent: options.silent ?? false
         })
       })
     })
@@ -112,7 +114,8 @@ export async function runCLI(argv: string[]) {
     .action(async (projectPath = ".", options) => {
       await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
         await deploymentsRollback({
-          force: options.force ?? false
+          force: options.force ?? false,
+          silent: options.silent ?? false
         })
       })
     })

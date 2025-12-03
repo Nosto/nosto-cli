@@ -14,11 +14,11 @@ import { isValidAlphaNumeric } from "#utils/validations.ts"
 type DeployOptions = {
   description?: string
   force: boolean
+  silent: boolean
 }
 
-export async function deploymentsDeploy({ description, force }: DeployOptions) {
+export async function deploymentsDeploy({ description, force, silent }: DeployOptions) {
   const { projectPath } = getCachedConfig()
-  const isSilent = Logger.context.isSilent
 
   const localHash = calculateTreeHash()
   const remoteHash = await fetchSourceFileIfExists("build/hash")
@@ -71,7 +71,7 @@ export async function deploymentsDeploy({ description, force }: DeployOptions) {
   Logger.info("Creating deployment from remote 'build' path...")
   Logger.info(`Description: ${chalk.cyan(`"${deploymentDescription}"`)}`)
 
-  const spinner = isSilent ? null : ora("Creating deployment...").start()
+  const spinner = silent ? null : ora("Creating deployment...").start()
   await deployWithRetry("build", deploymentDescription)
   spinner?.succeed()
 

@@ -11,16 +11,16 @@ import { formatDate } from "#utils/formatDate.ts"
 type RedeployOptions = {
   deploymentId?: string
   force: boolean
+  silent: boolean
 }
 
-export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptions) {
-  const isSilent = Logger.context.isSilent
+export async function deploymentsRedeploy({ deploymentId, force, silent }: RedeployOptions) {
   let selectedDeployment = null
   let selectedDeploymentId
 
   if (deploymentId) {
     selectedDeploymentId = deploymentId
-    const spinner = isSilent ? null : ora("Collecting deployment data...").start()
+    const spinner = silent ? null : ora("Collecting deployment data...").start()
     const deployments = await listDeployments()
     selectedDeployment = deployments.find(d => d.id === deploymentId) || null
     spinner?.stop()
@@ -30,7 +30,7 @@ export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptio
       return
     }
   } else {
-    const result = await selectDeploymentInteractively("Select a deployment to redeploy:")
+    const result = await selectDeploymentInteractively("Select a deployment to redeploy:", silent)
 
     if (!result) {
       Logger.error("No deployment selected. Aborting.")
@@ -57,16 +57,15 @@ export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptio
     }
   }
 
-  const spinner = isSilent ? null : ora(`Redeploying version ${chalk.cyan(selectedDeploymentId)}...`).start()
+  const spinner = silent ? null : ora(`Redeploying version ${chalk.cyan(selectedDeploymentId)}...`).start()
   await updateDeployment(selectedDeploymentId)
   spinner?.succeed()
 
   Logger.success("Redeployed successfully!")
 }
 
-export async function selectDeploymentInteractively(message: string) {
-  const isSilent = Logger.context.isSilent
-  const spinner = isSilent ? null : ora("Collecting deployment data...").start()
+export async function selectDeploymentInteractively(message: string, silent: boolean) {
+  const spinner = silent ? null : ora("Collecting deployment data...").start()
   const deployments = await listDeployments()
   spinner?.succeed()
 

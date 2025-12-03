@@ -5,9 +5,12 @@ import { listDeployments } from "#api/deployments/listDeployments.ts"
 import { Logger } from "#console/logger.ts"
 import { formatDate } from "#utils/formatDate.ts"
 
-export async function deploymentsList() {
-  const isSilent = Logger.context.isSilent
-  const spinner = isSilent ? null : ora("Collecting deployment data...").start()
+type ListOptions = {
+  silent: boolean
+}
+
+export async function deploymentsList({ silent }: ListOptions) {
+  const spinner = silent ? null : ora("Collecting deployment data...").start()
   const deployments = await listDeployments()
   spinner?.succeed()
 
