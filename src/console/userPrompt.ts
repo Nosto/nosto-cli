@@ -1,7 +1,7 @@
 import chalk from "chalk"
 import { createInterface } from "readline/promises"
 
-export async function promptForConfirmation(message: string, defaultAnswer: "Y" | "N"): Promise<boolean> {
+export async function promptForConfirmation(message: string, defaultAnswer: "Y" | "N"){
   const rl = createInterface({
     input: process.stdin,
     output: process.stdout
@@ -15,7 +15,7 @@ export async function promptForConfirmation(message: string, defaultAnswer: "Y" 
   return evaluatedAnswer === "Y"
 }
 
-export async function promptForInput(message: string): Promise<string> {
+export async function promptForInput(message: string){
   const rl = createInterface({
     input: process.stdin,
     output: process.stdout

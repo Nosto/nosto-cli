@@ -1,6 +1,6 @@
 import ora from "ora"
 
-export async function withSpinner<T>(text: string, operation: () => Promise<T>): Promise<T> {
+export async function withSpinner<T>(text: string, operation: () => Promise<T>) {
   const spinner = ora(text).start()
 
   try {
