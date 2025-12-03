@@ -1,14 +1,14 @@
 import chalk from "chalk"
-import ora from "ora"
 
 import { listDeployments } from "#api/deployments/listDeployments.ts"
 import { Logger } from "#console/logger.ts"
+import { withSpinner } from "#console/spinner.ts"
 import { formatDate } from "#utils/formatDate.ts"
 
 export async function deploymentsList() {
-  const spinner = ora("Collecting deployment data...").start()
-  const deployments = await listDeployments()
-  spinner.succeed()
+  const deployments = await withSpinner("Collecting deployment data...", async () => {
+    return await listDeployments()
+  })
 
   if (!deployments || deployments.length === 0) {
     Logger.info(chalk.yellow("No deployments found"))

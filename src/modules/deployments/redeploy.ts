@@ -1,10 +1,10 @@
 import { select } from "@inquirer/prompts"
 import chalk from "chalk"
-import ora from "ora"
 
 import { listDeployments } from "#api/deployments/listDeployments.ts"
 import { updateDeployment } from "#api/deployments/updateDeployment.ts"
 import { Logger } from "#console/logger.ts"
+import { withSpinner } from "#console/spinner.ts"
 import { promptForConfirmation } from "#console/userPrompt.ts"
 import { formatDate } from "#utils/formatDate.ts"
 
@@ -19,10 +19,10 @@ export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptio
 
   if (deploymentId) {
     selectedDeploymentId = deploymentId
-    const spinner = ora("Collecting deployment data...").start()
-    const deployments = await listDeployments()
+    const deployments = await withSpinner("Collecting deployment data...", async () => {
+      return await listDeployments()
+    })
     selectedDeployment = deployments.find(d => d.id === deploymentId) || null
-    spinner.stop()
 
     if (!selectedDeployment) {
       Logger.error(`Deployment with ID "${selectedDeploymentId}" not found.`)
@@ -56,17 +56,17 @@ export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptio
     }
   }
 
-  const spinner = ora(`Redeploying version ${chalk.cyan(selectedDeploymentId)}...`).start()
-  await updateDeployment(selectedDeploymentId)
-  spinner.succeed()
+  await withSpinner(`Redeploying version ${chalk.cyan(selectedDeploymentId)}...`, async () => {
+    await updateDeployment(selectedDeploymentId)
+  })
 
   Logger.success("Redeployed successfully!")
 }
 
 export async function selectDeploymentInteractively(message: string) {
-  const spinner = ora("Collecting deployment data...").start()
-  const deployments = await listDeployments()
-  spinner.succeed()
+  const deployments = await withSpinner("Collecting deployment data...", async () => {
+    return await listDeployments()
+  })
 
   if (!deployments || deployments.length === 0) {
     Logger.error("No deployments found.")
