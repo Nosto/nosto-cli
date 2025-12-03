@@ -72,7 +72,7 @@ export async function deploymentsDeploy({ description, force }: DeployOptions) {
 
   const spinner = ora("Creating deployment...").start()
   await deployWithRetry("build", deploymentDescription)
-  spinner.stop()
+  spinner.succeed()
 
   Logger.success("Deployment created successfully!")
 

@@ -58,7 +58,7 @@ export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptio
 
   const spinner = ora(`Redeploying version ${chalk.cyan(selectedDeploymentId)}...`).start()
   await updateDeployment(selectedDeploymentId)
-  spinner.stop()
+  spinner.succeed()
 
   Logger.success("Redeployed successfully!")
 }
@@ -66,7 +66,7 @@ export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptio
 export async function selectDeploymentInteractively(message: string) {
   const spinner = ora("Collecting deployment data...").start()
   const deployments = await listDeployments()
-  spinner.stop()
+  spinner.succeed()
 
   if (!deployments || deployments.length === 0) {
     Logger.error("No deployments found.")
