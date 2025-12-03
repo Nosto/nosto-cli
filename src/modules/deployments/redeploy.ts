@@ -14,15 +14,16 @@ type RedeployOptions = {
 }
 
 export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptions) {
+  const isSilent = Logger.context.isSilent
   let selectedDeployment = null
   let selectedDeploymentId
 
   if (deploymentId) {
     selectedDeploymentId = deploymentId
-    const spinner = ora("Collecting deployment data...").start()
+    const spinner = isSilent ? null : ora("Collecting deployment data...").start()
     const deployments = await listDeployments()
     selectedDeployment = deployments.find(d => d.id === deploymentId) || null
-    spinner.stop()
+    spinner?.stop()
 
     if (!selectedDeployment) {
       Logger.error(`Deployment with ID "${selectedDeploymentId}" not found.`)
@@ -56,17 +57,18 @@ export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptio
     }
   }
 
-  const spinner = ora(`Redeploying version ${chalk.cyan(selectedDeploymentId)}...`).start()
+  const spinner = isSilent ? null : ora(`Redeploying version ${chalk.cyan(selectedDeploymentId)}...`).start()
   await updateDeployment(selectedDeploymentId)
-  spinner.succeed()
+  spinner?.succeed()
 
   Logger.success("Redeployed successfully!")
 }
 
 export async function selectDeploymentInteractively(message: string) {
-  const spinner = ora("Collecting deployment data...").start()
+  const isSilent = Logger.context.isSilent
+  const spinner = isSilent ? null : ora("Collecting deployment data...").start()
   const deployments = await listDeployments()
-  spinner.succeed()
+  spinner?.succeed()
 
   if (!deployments || deployments.length === 0) {
     Logger.error("No deployments found.")

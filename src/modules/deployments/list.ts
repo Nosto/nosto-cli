@@ -6,9 +6,10 @@ import { Logger } from "#console/logger.ts"
 import { formatDate } from "#utils/formatDate.ts"
 
 export async function deploymentsList() {
-  const spinner = ora("Collecting deployment data...").start()
+  const isSilent = Logger.context.isSilent
+  const spinner = isSilent ? null : ora("Collecting deployment data...").start()
   const deployments = await listDeployments()
-  spinner.succeed()
+  spinner?.succeed()
 
   if (!deployments || deployments.length === 0) {
     Logger.info(chalk.yellow("No deployments found"))

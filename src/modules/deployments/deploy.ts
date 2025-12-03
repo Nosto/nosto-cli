@@ -18,6 +18,7 @@ type DeployOptions = {
 
 export async function deploymentsDeploy({ description, force }: DeployOptions) {
   const { projectPath } = getCachedConfig()
+  const isSilent = Logger.context.isSilent
 
   const localHash = calculateTreeHash()
   const remoteHash = await fetchSourceFileIfExists("build/hash")
@@ -70,9 +71,9 @@ export async function deploymentsDeploy({ description, force }: DeployOptions) {
   Logger.info("Creating deployment from remote 'build' path...")
   Logger.info(`Description: ${chalk.cyan(`"${deploymentDescription}"`)}`)
 
-  const spinner = ora("Creating deployment...").start()
+  const spinner = isSilent ? null : ora("Creating deployment...").start()
   await deployWithRetry("build", deploymentDescription)
-  spinner.succeed()
+  spinner?.succeed()
 
   Logger.success("Deployment created successfully!")
 

@@ -17,7 +17,8 @@ export const PersistentConfigSchema = z.object({
 export const RuntimeConfigSchema = z.object({
   projectPath: z.string().default("."),
   dryRun: z.boolean().default(false),
-  verbose: z.boolean().default(false)
+  verbose: z.boolean().default(false),
+  silent: z.boolean().default(false)
 })
 
 // Authentication config (~/nosto/.auth.json file)

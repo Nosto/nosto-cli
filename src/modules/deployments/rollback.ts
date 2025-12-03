@@ -22,9 +22,10 @@ export async function deploymentsRollback({ force }: RollbackOptions) {
 
   Logger.info("Disabling active deployment...")
 
-  const spinner = ora("Disabling active deployment...").start()
+  const isSilent = Logger.context.isSilent
+  const spinner = isSilent ? null : ora("Disabling active deployment...").start()
   await rollbackDeployment()
-  spinner.succeed()
+  spinner?.succeed()
 
   Logger.success("Active deployment disabled successfully!")
 }

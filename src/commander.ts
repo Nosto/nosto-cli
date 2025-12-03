@@ -64,6 +64,7 @@ export async function runCLI(argv: string[]) {
     .command("list [projectPath]")
     .description("List all deployments for a project")
     .option("--verbose", "set log level to debug")
+    .option("-s, --silent", "skip informative logs and loading statuses")
     .action(async (projectPath = ".", options) => {
       await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
         await deploymentsList()
@@ -76,6 +77,7 @@ export async function runCLI(argv: string[]) {
     .option("-d, --description <description>", "description for the deployment")
     .option("--verbose", "set log level to debug")
     .option("-f, --force", "skip confirmation prompt")
+    .option("-s, --silent", "skip informative logs and loading statuses")
     .action(async (projectPath = ".", options) => {
       await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
         await deploymentsDeploy({
@@ -91,6 +93,7 @@ export async function runCLI(argv: string[]) {
     .option("-i, --id <deploymentId>", "deployment ID to redeploy (skips interactive selection)")
     .option("--verbose", "set log level to debug")
     .option("-f, --force", "skip confirmation prompt")
+    .option("-s, --silent", "skip informative logs and loading statuses")
     .action(async (projectPath = ".", options) => {
       await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
         await deploymentsRedeploy({
@@ -105,6 +108,7 @@ export async function runCLI(argv: string[]) {
     .description("Disable the currently active deployment")
     .option("--verbose", "set log level to debug")
     .option("-f, --force", "skip confirmation prompt")
+    .option("-s, --silent", "skip informative logs and loading statuses")
     .action(async (projectPath = ".", options) => {
       await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
         await deploymentsRollback({

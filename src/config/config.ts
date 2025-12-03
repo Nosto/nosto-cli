@@ -39,7 +39,7 @@ export type LoadConfigProps = {
 }
 
 export async function loadConfig({ projectPath, options, allowIncomplete }: LoadConfigProps) {
-  const { dryRun, verbose } = RuntimeConfigSchema.parse({ ...options, projectPath })
+  const { dryRun, verbose, silent } = RuntimeConfigSchema.parse({ ...options, projectPath })
 
   if (isConfigLoaded) {
     Logger.debug(`Using cached configuration`)
@@ -78,7 +78,8 @@ export async function loadConfig({ projectPath, options, allowIncomplete }: Load
       logLevel: verbose ? "debug" : persistentConfig.logLevel,
       projectPath,
       dryRun,
-      verbose
+      verbose,
+      silent
     }
     updateLoggerContext(cachedConfig)
     isConfigLoaded = true
@@ -92,7 +93,8 @@ function updateLoggerContext(config: Config) {
   Logger.context = {
     logLevel: config.logLevel,
     merchantId: config.merchant,
-    isDryRun: config.dryRun
+    isDryRun: config.dryRun,
+    isSilent: config.silent
   }
 }
 

@@ -62,7 +62,8 @@ export const Logger = {
   context: {
     logLevel: LogLevel[1] as (typeof LogLevel)[number],
     merchantId: "",
-    isDryRun: false
+    isDryRun: false,
+    isSilent: false
   },
   raw: (message: string, extra?: unknown) => {
     console.log(message)
@@ -76,10 +77,12 @@ export const Logger = {
   },
 
   info: (message: string, extra?: unknown) => {
+    if (Logger.context.isSilent) return
     printToLog(message, Presets.info, extra)
   },
 
   success: (message: string, extra?: unknown) => {
+    if (Logger.context.isSilent) return
     printToLog(message, Presets.success, extra)
   },
 
