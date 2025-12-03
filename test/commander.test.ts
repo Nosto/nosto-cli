@@ -147,7 +147,7 @@ describe("commander", () => {
 
       it("should call the function", async () => {
         await commander.run("nosto st build")
-        expect(buildSpy).toHaveBeenCalledWith({ watch: false })
+        expect(buildSpy).toHaveBeenCalledWith({ watch: false, push: false })
       })
 
       it("should rethrow errors", async () => {
