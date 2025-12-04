@@ -1,5 +1,9 @@
 import { afterEach, expect, vi } from "vitest"
 
+export const mockedInquirer = {
+  select: vi.fn()
+}
+
 export const mockedConsoleIn = {
   userResponse: "q",
   recordedPrompts: [] as string[],
@@ -47,6 +51,7 @@ export const mockedSpinner = {
 export function setupMockConsole() {
   afterEach(() => {
     mockedConsoleIn.recordedPrompts = []
+    mockedInquirer.select.mockReset()
     mockedSpinner.text = ""
     vi.clearAllMocks()
   })
@@ -54,6 +59,9 @@ export function setupMockConsole() {
   return {
     setUserResponse: (response: string) => {
       mockedConsoleIn.userResponse = response
+    },
+    setSelectResponse: (response: string | undefined) => {
+      mockedInquirer.select.mockResolvedValue(response)
     },
     setContext: (context: Partial<typeof mockedConsoleOut.Logger.context>) => {
       mockedConsoleOut.Logger.context = {
@@ -84,6 +92,9 @@ export function setupMockConsole() {
     },
     getSpy: (method: Exclude<keyof typeof mockedConsoleOut.Logger, "context">) => {
       return mockedConsoleOut.Logger[method]
+    },
+    getSelectSpy: () => {
+      return mockedInquirer.select
     },
     getSpinnerSpy: (method: keyof typeof mockedSpinner) => {
       return mockedSpinner[method]

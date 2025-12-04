@@ -1,6 +1,12 @@
 import { SetupServer, setupServer } from "msw/node"
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest"
 
+// Deployment API functions (imported for ReturnType type inference)
+import { createDeployment } from "#api/deployments/createDeployment.ts"
+import { listDeployments } from "#api/deployments/listDeployments.ts"
+import { rollbackDeployment } from "#api/deployments/rollbackDeployment.ts"
+import { updateDeployment } from "#api/deployments/updateDeployment.ts"
+// Library and source API functions (imported for ReturnType type inference)
 import { fetchLibraryFile } from "#api/library/fetchLibraryFile.ts"
 import { fetchSourceFile } from "#api/source/fetchSourceFile.ts"
 import { listSourceFiles } from "#api/source/listSourceFiles.ts"
@@ -72,5 +78,51 @@ export function mockFetchLibraryFile(
     ...params,
     method: "get",
     path: `https://library.nosto.com/${params.path}`
+  })
+}
+
+export function mockListDeployments(
+  server: SetupServer,
+  params: MockParams<Awaited<ReturnType<typeof listDeployments>>>
+) {
+  return generateEndpointMock(server, {
+    ...params,
+    method: "get",
+    path: getSourceUrl("deployments/{env}")
+  })
+}
+
+export function mockCreateDeployment(
+  server: SetupServer,
+  params: { path: string } & MockParams<Awaited<ReturnType<typeof createDeployment>>>
+) {
+  const { path, ...mockParams } = params
+  return generateEndpointMock(server, {
+    method: "post",
+    path: getSourceUrl(`deployments/{env}/${path}`),
+    ...mockParams
+  })
+}
+
+export function mockUpdateDeployment(
+  server: SetupServer,
+  params: { deploymentId: string } & MockParams<Awaited<ReturnType<typeof updateDeployment>>>
+) {
+  const { deploymentId, ...mockParams } = params
+  return generateEndpointMock(server, {
+    method: "post",
+    path: getSourceUrl(`deployment/{env}/${deploymentId}`),
+    ...mockParams
+  })
+}
+
+export function mockRollbackDeployment(
+  server: SetupServer,
+  params: MockParams<Awaited<ReturnType<typeof rollbackDeployment>>>
+) {
+  return generateEndpointMock(server, {
+    ...params,
+    method: "delete",
+    path: getSourceUrl("deployment/{env}")
   })
 }
