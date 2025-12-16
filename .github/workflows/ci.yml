@@ -19,7 +19,7 @@ jobs:
       run: npm ci
 
     - name: Audit dependencies
-      run: npm audit --audit-level=critical
+      run: npm audit --audit-level=high
 
     - name: Run linting
       run: npm run lint
@@ -39,7 +39,7 @@ jobs:
       run: npm ci
 
     - name: Audit dependencies
-      run: npm audit --audit-level=critical
+      run: npm audit --audit-level=high
 
     - name: Run TypeScript type checking
       run: npm run type-check
@@ -59,7 +59,7 @@ jobs:
       run: npm ci
 
     - name: Audit dependencies
-      run: npm audit --audit-level=critical
+      run: npm audit --audit-level=high
 
     - name: Run tests
       run: npm run test
