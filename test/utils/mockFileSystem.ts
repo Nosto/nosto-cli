@@ -48,7 +48,6 @@ export function setupMockFileSystem() {
       const content = {
         ...getDefaultConfig(),
         merchant: "test-merchant",
-        apiKey: "test-api-key",
         ...overrides
       }
       writeFileContent(".nosto.json", JSON.stringify(content))

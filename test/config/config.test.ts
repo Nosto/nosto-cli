@@ -68,4 +68,9 @@ describe("Config", () => {
       /not implemented/
     )
   })
+
+  it("does not throw if auth file is missing while an api key is provided", async () => {
+    fs.mockConfigFile({ apiKey: "test-api-key" })
+    await expect(loadConfig({ projectPath: ".", options: {} })).resolves.not.toThrow()
+  })
 })

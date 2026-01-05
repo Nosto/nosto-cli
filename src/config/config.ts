@@ -4,7 +4,7 @@ import { cleanUrl } from "#api/utils.ts"
 import { Logger } from "#console/logger.ts"
 import { MissingConfigurationError } from "#errors/MissingConfigurationError.ts"
 
-import { authFileExists, getAuthFileMissingError, parseAuthFile } from "./authConfig.ts"
+import { parseAuthFile } from "./authConfig.ts"
 import { getEnvConfig } from "./envConfig.ts"
 import { parseConfigFile } from "./fileConfig.ts"
 import {
@@ -48,10 +48,7 @@ export async function loadConfig({ projectPath, options, allowIncomplete }: Load
 
   const fullPath = resolve(projectPath)
   Logger.debug(`Loading configuration from folder: ${fullPath}`)
-  if (!allowIncomplete && !authFileExists()) {
-    throw getAuthFileMissingError()
-  }
-  const authConfig = parseAuthFile({ allowIncomplete })
+
   const searchTemplatesConfig = await parseSearchTemplatesConfigFile({ projectPath })
   const fileConfig = parseConfigFile({ projectPath, allowIncomplete })
   const envConfig = getEnvConfig()
@@ -63,6 +60,9 @@ export async function loadConfig({ projectPath, options, allowIncomplete }: Load
     ...fileConfig,
     ...envConfig
   }
+
+  const authConfig = parseAuthFile({ allowIncomplete: allowIncomplete || !!combinedConfig.apiKey })
+
   if (!combinedConfig.merchant && !allowIncomplete) {
     throw new MissingConfigurationError("Invalid configuration: Missing merchant ID")
   }
