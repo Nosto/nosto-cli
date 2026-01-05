@@ -61,7 +61,7 @@ export async function loadConfig({ projectPath, options, allowIncomplete }: Load
     ...envConfig
   }
 
-  const authConfig = parseAuthFile({ allowIncomplete: allowIncomplete || combinedConfig.apiKey !== undefined })
+  const authConfig = parseAuthFile({ allowIncomplete: allowIncomplete || !!combinedConfig.apiKey })
 
   if (!combinedConfig.merchant && !allowIncomplete) {
     throw new MissingConfigurationError("Invalid configuration: Missing merchant ID")
