@@ -8,6 +8,9 @@ updates:
       prefix: "deps"
     open-pull-requests-limit: 10
     groups:
+      minor-updates:
+        update-types:
+          - "minor"
       patch-updates:
         update-types:
           - "patch"
