@@ -14,7 +14,7 @@ type RedeployOptions = {
 }
 
 export async function deploymentsRedeploy({ deploymentId, force }: RedeployOptions) {
-  let selectedDeployment = null
+  let selectedDeployment
   let selectedDeploymentId
 
   if (deploymentId) {

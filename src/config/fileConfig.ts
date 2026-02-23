@@ -29,10 +29,10 @@ export function parseConfigFile({
     return PartialPersistentConfigSchema.parse(rawConfig)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      throw new Error(`Invalid configuration file at ${configPath}: ${error.message}`)
+      throw new Error(`Invalid configuration file at ${configPath}: ${error.message}`, { cause: error })
     }
     if (error instanceof SyntaxError) {
-      throw new Error(`Invalid JSON in configuration file at ${configPath}: ${error.message}`)
+      throw new Error(`Invalid JSON in configuration file at ${configPath}: ${error.message}`, { cause: error })
     }
     throw error
   }
