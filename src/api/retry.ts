@@ -22,7 +22,9 @@ async function executeWithRetry<T>(
       if (operationType === "fetch") {
         Logger.error(`${chalk.red("✗")} ${chalk.cyan(filePath)}: ${errorMessage}`)
       }
-      throw new Error(`Failed to ${operationType} ${filePath} after ${MAX_RETRIES} retries: ${errorMessage}`)
+      throw new Error(`Failed to ${operationType} ${filePath} after ${MAX_RETRIES} retries: ${errorMessage}`, {
+        cause: error
+      })
     }
     const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount)
     Logger.warn(
