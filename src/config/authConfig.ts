@@ -32,10 +32,10 @@ export function parseAuthFile({ allowIncomplete }: { allowIncomplete?: boolean }
     return AuthConfigSchema.parse(rawConfig)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      throw new Error(`Invalid auth file at ${AuthConfigFilePath}: ${error.message}`)
+      throw new Error(`Invalid auth file at ${AuthConfigFilePath}: ${error.message}`, { cause: error })
     }
     if (error instanceof SyntaxError) {
-      throw new Error(`Invalid JSON in auth file at ${AuthConfigFilePath}: ${error.message}`)
+      throw new Error(`Invalid JSON in auth file at ${AuthConfigFilePath}: ${error.message}`, { cause: error })
     }
     throw error
   }
