@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-import { parseSearchTemplatesConfigFile } from "#config/searchTemplatesConfig.ts"
+import { SearchTemplatesConfigSchema } from "#config/schema.ts"
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
@@ -21,7 +21,7 @@ describe("Search Templates build / modern", () => {
       mockScript: { onBuild: vi.fn() }
     })
     setupMockConfig({
-      searchTemplates: await parseSearchTemplatesConfigFile({ projectPath: "." })
+      searchTemplates: { mode: "modern", data: SearchTemplatesConfigSchema.parse(manifest) }
     })
     await buildSearchTemplate({ watch: false })
     expect(manifest.onBuild).toHaveBeenCalled()
@@ -36,7 +36,7 @@ describe("Search Templates build / modern", () => {
       }
     })
     setupMockConfig({
-      searchTemplates: await parseSearchTemplatesConfigFile({ projectPath: "." })
+      searchTemplates: { mode: "modern", data: SearchTemplatesConfigSchema.parse(manifest) }
     })
     await buildSearchTemplate({ watch: true })
     expect(manifest.onBuildWatch).toHaveBeenCalled()
@@ -52,7 +52,7 @@ describe("Search Templates build / modern", () => {
       }
     })
     setupMockConfig({
-      searchTemplates: await parseSearchTemplatesConfigFile({ projectPath: "." })
+      searchTemplates: { mode: "modern", data: SearchTemplatesConfigSchema.parse(manifest) }
     })
 
     // Create a source file that contains Nosto import (required by push logic)
@@ -82,7 +82,7 @@ describe("Search Templates build / modern", () => {
       mockScript: { onBuild: vi.fn() }
     })
     setupMockConfig({
-      searchTemplates: await parseSearchTemplatesConfigFile({ projectPath: "." })
+      searchTemplates: { mode: "modern", data: SearchTemplatesConfigSchema.parse(manifest) }
     })
 
     // Create build output files that would be pushed if push was true
@@ -102,7 +102,7 @@ describe("Search Templates build / modern", () => {
       mockScript: { onBuild: vi.fn() }
     })
     setupMockConfig({
-      searchTemplates: await parseSearchTemplatesConfigFile({ projectPath: "." })
+      searchTemplates: { mode: "modern", data: SearchTemplatesConfigSchema.parse(manifest) }
     })
 
     // Create build output files that would be pushed if push was true
@@ -126,7 +126,7 @@ describe("Search Templates build / modern", () => {
       }
     })
     setupMockConfig({
-      searchTemplates: await parseSearchTemplatesConfigFile({ projectPath: "." })
+      searchTemplates: { mode: "modern", data: SearchTemplatesConfigSchema.parse(manifest) }
     })
 
     // Create build output files that would be pushed if not in watch mode
