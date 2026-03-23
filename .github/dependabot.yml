@@ -8,11 +8,9 @@ updates:
       prefix: "deps"
     open-pull-requests-limit: 10
     groups:
-      minor-updates:
+      minor-and-patch-updates:
         update-types:
           - "minor"
-      patch-updates:
-        update-types:
           - "patch"
       eslint:
         patterns:
