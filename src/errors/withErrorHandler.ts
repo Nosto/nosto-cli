@@ -22,6 +22,11 @@ export async function withErrorHandler(fn: () => void | Promise<void>): Promise<
       Logger.error(`HTTP Request failed:`)
       Logger.error(`- ${error.response.status} ${error.response.statusText}`)
       Logger.error(`- ${error.request.method} ${error.request.url}`)
+      try {
+        Logger.error(`- ${await error.response.text()}`)
+      } catch {
+        // response body may already be consumed
+      }
       printStack(error)
     } else if (error instanceof TimeoutError) {
       Logger.error(`HTTP Request timed out:`)

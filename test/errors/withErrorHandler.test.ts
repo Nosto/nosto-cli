@@ -70,8 +70,9 @@ describe("Error Handler", () => {
       throw new HTTPError(
         {
           status: 500,
-          statusText: "Internal Server Error"
-        } as Response,
+          statusText: "Internal Server Error",
+          text: () => Promise.resolve("Internal Server Error body")
+        } as unknown as Response,
         {
           method: "GET",
           url: "https://example.com/api"
@@ -80,8 +81,9 @@ describe("Error Handler", () => {
       )
     })
 
-    expect(() => withErrorHandler(mockFn)).not.toThrow()
+    await expect(withErrorHandler(mockFn)).resolves.not.toThrow()
     expect(terminal.getSpy("error")).toHaveBeenCalledWith("- GET https://example.com/api")
+    expect(terminal.getSpy("error")).toHaveBeenCalledWith("- Internal Server Error body")
   })
 
   it("should handle HTTPError", async () => {
