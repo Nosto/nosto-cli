@@ -70,8 +70,9 @@ describe("Error Handler", () => {
       throw new HTTPError(
         {
           status: 500,
-          statusText: "Internal Server Error"
-        } as Response,
+          statusText: "Internal Server Error",
+          text: () => Promise.resolve("Internal Server Error details")
+        } as unknown as Response,
         {
           method: "GET",
           url: "https://example.com/api"
@@ -80,8 +81,30 @@ describe("Error Handler", () => {
       )
     })
 
-    expect(() => withErrorHandler(mockFn)).not.toThrow()
+    await withErrorHandler(mockFn)
     expect(terminal.getSpy("error")).toHaveBeenCalledWith("- GET https://example.com/api")
+    expect(terminal.getSpy("error")).toHaveBeenCalledWith("- Internal Server Error details")
+  })
+
+  it("should handle HTTPError with empty response body", async () => {
+    const mockFn = vi.fn(() => {
+      throw new HTTPError(
+        {
+          status: 404,
+          statusText: "Not Found",
+          text: () => Promise.resolve("")
+        } as unknown as Response,
+        {
+          method: "GET",
+          url: "https://example.com/api"
+        } as Request,
+        {} as never
+      )
+    })
+
+    await withErrorHandler(mockFn)
+    expect(terminal.getSpy("error")).toHaveBeenCalledWith("- GET https://example.com/api")
+    expect(terminal.getSpy("error")).not.toHaveBeenCalledWith("- ")
   })
 
   it("should handle HTTPError", async () => {
