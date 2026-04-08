@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest"
+import { describe, expect, it, vi } from "vitest"
 
 import { parseSearchTemplatesConfigFile } from "#config/searchTemplatesConfig.ts"
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
@@ -13,9 +13,6 @@ const server = setupMockServer()
 const terminal = setupMockConsole()
 
 describe("Search Templates build / modern", () => {
-  beforeEach(() => {
-    setupMockStarterManifest()
-  })
   it("should build templates without watch mode", async () => {
     const manifest = setupMockStarterManifest({
       mockScript: { onBuild: vi.fn() }
