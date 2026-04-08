@@ -81,7 +81,7 @@ describe("Error Handler", () => {
       )
     })
 
-    await expect(withErrorHandler(mockFn)).resolves.not.toThrow()
+    await expect(withErrorHandler(mockFn)).resolves.toBeUndefined()
     expect(terminal.getSpy("error")).toHaveBeenCalledWith("- GET https://example.com/api")
     expect(terminal.getSpy("error")).toHaveBeenCalledWith("- Internal Server Error body")
   })
