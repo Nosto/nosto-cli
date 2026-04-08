@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from "vitest"
 
 import { OnStartDevProps } from "#config/schema.ts"
-import { parseSearchTemplatesConfigFile } from "#config/searchTemplatesConfig.ts"
 import { searchTemplateDevMode } from "#modules/search-templates/dev.ts"
 import * as pushCommandModule from "#modules/search-templates/push.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
@@ -15,7 +14,7 @@ describe("Search Templates dev mode / modern", () => {
       }
     })
     setupMockConfig({
-      searchTemplates: await parseSearchTemplatesConfigFile({ projectPath: "." })
+      searchTemplates: { mode: "modern", data: manifest }
     })
 
     await searchTemplateDevMode()
@@ -31,7 +30,7 @@ describe("Search Templates dev mode / modern", () => {
       }
     })
     setupMockConfig({
-      searchTemplates: await parseSearchTemplatesConfigFile({ projectPath: "." })
+      searchTemplates: { mode: "modern", data: manifest }
     })
 
     vi.spyOn(pushCommandModule, "pushSearchTemplate").mockImplementation(vi.fn())
