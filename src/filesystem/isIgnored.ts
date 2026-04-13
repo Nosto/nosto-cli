@@ -1,5 +1,5 @@
-import { Dirent } from "fs"
 import fs from "fs"
+import { Dirent } from "fs"
 import type { Ignore } from "ignore"
 import ignore from "ignore"
 import path from "path"
