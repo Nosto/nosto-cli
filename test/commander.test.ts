@@ -2,16 +2,16 @@ import { beforeEach, describe, expect, it, MockInstance, vi } from "vitest"
 
 import { clearCachedConfig, getCachedConfig } from "#config/config.ts"
 import { MissingConfigurationError } from "#errors/MissingConfigurationError.ts"
-import * as deployModule from "#modules/deployments/deploy.ts"
-import * as listModule from "#modules/deployments/list.ts"
-import * as redeployModule from "#modules/deployments/redeploy.ts"
-import * as rollbackModule from "#modules/deployments/rollback.ts"
 import * as login from "#modules/login.ts"
 import * as logout from "#modules/logout.ts"
 import * as build from "#modules/search-templates/build.ts"
+import * as deployModule from "#modules/search-templates/deploy.ts"
 import * as dev from "#modules/search-templates/dev.ts"
+import * as listModule from "#modules/search-templates/list.ts"
 import * as pull from "#modules/search-templates/pull.ts"
 import * as push from "#modules/search-templates/push.ts"
+import * as redeployModule from "#modules/search-templates/redeploy.ts"
+import * as rollbackModule from "#modules/search-templates/rollback.ts"
 import * as setup from "#modules/setup.ts"
 import * as status from "#modules/status.ts"
 
@@ -145,18 +145,18 @@ describe("commander", () => {
     })
   })
 
-  describe("nosto deployments list", () => {
+  describe("nosto search-templates list", () => {
     beforeEach(() => {
       fs.writeFile(".nosto.json", JSON.stringify({ apiKey: "123", merchant: "456" }))
     })
 
     it("should call the function", async () => {
-      await commander.run("nosto dp list")
+      await commander.run("nosto st list")
       expect(deploymentsListSpy).toHaveBeenCalled()
     })
 
     it("should work with alias", async () => {
-      await commander.run("nosto deployments list")
+      await commander.run("nosto search-templates list")
       expect(deploymentsListSpy).toHaveBeenCalled()
     })
 
@@ -165,17 +165,17 @@ describe("commander", () => {
         throw new Error("Unknown error")
       })
 
-      await commander.expect("nosto dp list").toThrow()
+      await commander.expect("nosto st list").toThrow()
     })
   })
 
-  describe("nosto deployments deploy", () => {
+  describe("nosto search-templates deploy", () => {
     beforeEach(() => {
       fs.writeFile(".nosto.json", JSON.stringify({ apiKey: "123", merchant: "456" }))
     })
 
     it("should call the function with default options", async () => {
-      await commander.run("nosto dp deploy")
+      await commander.run("nosto st deploy")
       expect(deploymentsDeploySpy).toHaveBeenCalledWith({
         description: undefined,
         force: false
@@ -183,7 +183,7 @@ describe("commander", () => {
     })
 
     it("should call the function with description", async () => {
-      await commander.run("nosto dp deploy -d test-deployment")
+      await commander.run("nosto st deploy -d test-deployment")
       expect(deploymentsDeploySpy).toHaveBeenCalledWith({
         description: "test-deployment",
         force: false
@@ -191,7 +191,7 @@ describe("commander", () => {
     })
 
     it("should call the function with force flag", async () => {
-      await commander.run("nosto dp deploy --force")
+      await commander.run("nosto st deploy --force")
       expect(deploymentsDeploySpy).toHaveBeenCalledWith({
         description: undefined,
         force: true
@@ -203,17 +203,17 @@ describe("commander", () => {
         throw new Error("Unknown error")
       })
 
-      await commander.expect("nosto dp deploy").toThrow()
+      await commander.expect("nosto st deploy").toThrow()
     })
   })
 
-  describe("nosto deployments redeploy", () => {
+  describe("nosto search-templates redeploy", () => {
     beforeEach(() => {
       fs.writeFile(".nosto.json", JSON.stringify({ apiKey: "123", merchant: "456" }))
     })
 
     it("should call the function with default options", async () => {
-      await commander.run("nosto dp redeploy")
+      await commander.run("nosto st redeploy")
       expect(deploymentsRedeploySpy).toHaveBeenCalledWith({
         deploymentId: undefined,
         force: false
@@ -221,7 +221,7 @@ describe("commander", () => {
     })
 
     it("should call the function with deployment ID", async () => {
-      await commander.run("nosto dp redeploy -i deployment-123")
+      await commander.run("nosto st redeploy -i deployment-123")
       expect(deploymentsRedeploySpy).toHaveBeenCalledWith({
         deploymentId: "deployment-123",
         force: false
@@ -229,7 +229,7 @@ describe("commander", () => {
     })
 
     it("should call the function with force flag", async () => {
-      await commander.run("nosto dp redeploy --force")
+      await commander.run("nosto st redeploy --force")
       expect(deploymentsRedeploySpy).toHaveBeenCalledWith({
         deploymentId: undefined,
         force: true
@@ -241,24 +241,24 @@ describe("commander", () => {
         throw new Error("Unknown error")
       })
 
-      await commander.expect("nosto dp redeploy").toThrow()
+      await commander.expect("nosto st redeploy").toThrow()
     })
   })
 
-  describe("nosto deployments disable", () => {
+  describe("nosto search-templates disable", () => {
     beforeEach(() => {
       fs.writeFile(".nosto.json", JSON.stringify({ apiKey: "123", merchant: "456" }))
     })
 
     it("should call the function with default options", async () => {
-      await commander.run("nosto dp disable")
+      await commander.run("nosto st disable")
       expect(deploymentsRollbackSpy).toHaveBeenCalledWith({
         force: false
       })
     })
 
     it("should call the function with force flag", async () => {
-      await commander.run("nosto dp disable --force")
+      await commander.run("nosto st disable --force")
       expect(deploymentsRollbackSpy).toHaveBeenCalledWith({
         force: true
       })
@@ -269,7 +269,7 @@ describe("commander", () => {
         throw new Error("Unknown error")
       })
 
-      await commander.expect("nosto dp disable").toThrow()
+      await commander.expect("nosto st disable").toThrow()
     })
   })
 

@@ -104,18 +104,33 @@ You can use `nosto help` and variations to obtain detailed and up-to-date inform
   - Reads the configuration and prints the general status
 - `st [projectPath]`
   - Alias: `search-templates [projectPath]`
-  - Search templates related commands
+  - Search templates and deployment related commands
   - `st pull [projectPath]`
     - Fetches the current remote state for the configured merchant
+    - Options: `-p, --paths <files...>` to fetch specific files; `-f, --force` to skip state check and pull all files; `--dry-run`
   - `st push [projectPath]`
-    - Pushes the local state to the remote for the configured merchant
+    - Builds locally and pushes the local state to the remote for the configured merchant
+    - Options: `-p, --paths <files...>` to push specific files; `-f, --force` to skip state check and push all files; `--dry-run`
   - `st build [projectPath]`
     - For a modern search-template project, it invokes the `onBuild` script in `nosto.config.ts`
     - For a legacy search-template project, it mirrors the hosted VSCode Web build workflow
+    - Options: `-w, --watch` to watch for changes and rebuild; `-p, --push` to automatically push build artifacts after building; `--dry-run`
   - `st dev [projectPath]`
     - Watches files, build and upload automatically
     - For a modern search-template project, it invokes the `onBuildWatch` script in `nosto.config.ts`
     - For a legacy search-template project, it uses esbuild to watch files, build and upload automatically. Only uploads build artifacts, not the sources.
+  - `st list [projectPath]`
+    - Lists all deployments for the configured merchant, showing their ID, status, creation date, user, and description
+  - `st deploy [projectPath]`
+    - Creates a new deployment from the remote `build` path
+    - Checks that local files match the remote before deploying; warns if the remote has changed since the last sync
+    - Options: `-d, --description <description>` to set a deployment description (alphanumeric, 1–200 chars); `-f, --force` to skip confirmation prompts
+  - `st redeploy [projectPath]`
+    - Reactivates an existing deployment (interactive selection or by ID)
+    - Options: `-i, --id <deploymentId>` to specify a deployment ID directly; `-f, --force` to skip confirmation prompts
+  - `st disable [projectPath]`
+    - Disables the currently active deployment
+    - Options: `-f, --force` to skip confirmation prompts
 
 ## External dependencies in legacy search-templates
 

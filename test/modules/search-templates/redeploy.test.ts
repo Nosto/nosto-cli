@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { deploymentsRedeploy, selectDeploymentInteractively } from "#modules/deployments/redeploy.ts"
+import { deploymentsRedeploy, selectDeploymentInteractively } from "#modules/search-templates/redeploy.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
 import { createMockDeployment } from "#test/utils/mockDeployment.ts"

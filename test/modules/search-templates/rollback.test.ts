@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { deploymentsRollback } from "#modules/deployments/rollback.ts"
+import { deploymentsRollback } from "#modules/search-templates/rollback.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
 import { mockRollbackDeployment, setupMockServer } from "#test/utils/mockServer.ts"

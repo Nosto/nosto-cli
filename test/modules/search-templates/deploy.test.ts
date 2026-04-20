@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 import * as calculateTreeHashModule from "#filesystem/calculateTreeHash.ts"
-import { deploymentsDeploy } from "#modules/deployments/deploy.ts"
+import { deploymentsDeploy } from "#modules/search-templates/deploy.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
 import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"

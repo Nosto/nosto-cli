@@ -3,16 +3,16 @@ import { Command } from "commander"
 import { loadConfig } from "#config/config.ts"
 import { Logger } from "#console/logger.ts"
 import { withErrorHandler } from "#errors/withErrorHandler.ts"
-import { deploymentsDeploy } from "#modules/deployments/deploy.ts"
-import { deploymentsList } from "#modules/deployments/list.ts"
-import { deploymentsRedeploy } from "#modules/deployments/redeploy.ts"
-import { deploymentsRollback } from "#modules/deployments/rollback.ts"
 import { loginToPlaycart } from "#modules/login.ts"
 import { removeLoginCredentials } from "#modules/logout.ts"
 import { buildSearchTemplate } from "#modules/search-templates/build.ts"
+import { deploymentsDeploy } from "#modules/search-templates/deploy.ts"
 import { searchTemplateDevMode } from "#modules/search-templates/dev.ts"
+import { deploymentsList } from "#modules/search-templates/list.ts"
 import { pullSearchTemplate } from "#modules/search-templates/pull.ts"
 import { pushSearchTemplate } from "#modules/search-templates/push.ts"
+import { deploymentsRedeploy } from "#modules/search-templates/redeploy.ts"
+import { deploymentsRollback } from "#modules/search-templates/rollback.ts"
 import { printSetupHelp } from "#modules/setup.ts"
 import { printStatus } from "#modules/status.ts"
 import { withSafeEnvironment } from "#utils/withSafeEnvironment.ts"
@@ -56,61 +56,6 @@ export async function runCLI(argv: string[]) {
     .action(async (projectPath = ".", options) => {
       await loadConfig({ options, allowIncomplete: true, projectPath })
       await withErrorHandler(() => printStatus(projectPath))
-    })
-
-  const deployments = program.command("dp").alias("deployments").description("Deployments related commands")
-
-  deployments
-    .command("list [projectPath]")
-    .description("List all deployments for a project")
-    .option("--verbose", "set log level to debug")
-    .action(async (projectPath = ".", options) => {
-      await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
-        await deploymentsList()
-      })
-    })
-
-  deployments
-    .command("deploy [projectPath]")
-    .description("Deploy a project")
-    .option("-d, --description <description>", "description for the deployment")
-    .option("--verbose", "set log level to debug")
-    .option("-f, --force", "skip confirmation prompt")
-    .action(async (projectPath = ".", options) => {
-      await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
-        await deploymentsDeploy({
-          description: options.description,
-          force: options.force ?? false
-        })
-      })
-    })
-
-  deployments
-    .command("redeploy [projectPath]")
-    .description("Redeploy an existing deployment")
-    .option("-i, --id <deploymentId>", "deployment ID to redeploy (skips interactive selection)")
-    .option("--verbose", "set log level to debug")
-    .option("-f, --force", "skip confirmation prompt")
-    .action(async (projectPath = ".", options) => {
-      await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
-        await deploymentsRedeploy({
-          deploymentId: options.id,
-          force: options.force ?? false
-        })
-      })
-    })
-
-  deployments
-    .command("disable [projectPath]")
-    .description("Disable the currently active deployment")
-    .option("--verbose", "set log level to debug")
-    .option("-f, --force", "skip confirmation prompt")
-    .action(async (projectPath = ".", options) => {
-      await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
-        await deploymentsRollback({
-          force: options.force ?? false
-        })
-      })
     })
 
   const searchTemplates = program
@@ -172,6 +117,59 @@ export async function runCLI(argv: string[]) {
     .action(async (projectPath = ".", options) => {
       await withSafeEnvironment({ projectPath, options }, async () => {
         await searchTemplateDevMode()
+      })
+    })
+
+  searchTemplates
+    .command("list [projectPath]")
+    .description("List all deployments for a project")
+    .option("--verbose", "set log level to debug")
+    .action(async (projectPath = ".", options) => {
+      await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
+        await deploymentsList()
+      })
+    })
+
+  searchTemplates
+    .command("deploy [projectPath]")
+    .description("Deploy a project")
+    .option("-d, --description <description>", "description for the deployment")
+    .option("--verbose", "set log level to debug")
+    .option("-f, --force", "skip confirmation prompt")
+    .action(async (projectPath = ".", options) => {
+      await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
+        await deploymentsDeploy({
+          description: options.description,
+          force: options.force ?? false
+        })
+      })
+    })
+
+  searchTemplates
+    .command("redeploy [projectPath]")
+    .description("Redeploy an existing deployment")
+    .option("-i, --id <deploymentId>", "deployment ID to redeploy (skips interactive selection)")
+    .option("--verbose", "set log level to debug")
+    .option("-f, --force", "skip confirmation prompt")
+    .action(async (projectPath = ".", options) => {
+      await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
+        await deploymentsRedeploy({
+          deploymentId: options.id,
+          force: options.force ?? false
+        })
+      })
+    })
+
+  searchTemplates
+    .command("disable [projectPath]")
+    .description("Disable the currently active deployment")
+    .option("--verbose", "set log level to debug")
+    .option("-f, --force", "skip confirmation prompt")
+    .action(async (projectPath = ".", options) => {
+      await withSafeEnvironment({ projectPath, options, skipSanityCheck: true }, async () => {
+        await deploymentsRollback({
+          force: options.force ?? false
+        })
       })
     })
 

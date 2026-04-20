@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { deploymentsList } from "#modules/deployments/list.ts"
+import { deploymentsList } from "#modules/search-templates/list.ts"
 import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { setupMockConsole } from "#test/utils/mockConsole.ts"
 import { createMockDeployment } from "#test/utils/mockDeployment.ts"
