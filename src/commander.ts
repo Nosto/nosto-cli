@@ -141,12 +141,14 @@ export async function runCLI(argv: string[]) {
     .option("--dry-run", "perform a dry run without making changes")
     .option("--verbose", "set log level to debug")
     .option("-f --force", "skip checking state, push all files")
+    .option("--full", "push source files in addition to build artifacts")
     .action(async (projectPath = ".", options) => {
       await withSafeEnvironment({ projectPath, options }, async () => {
         await buildSearchTemplate({ watch: false })
         await pushSearchTemplate({
           paths: options.paths ?? [],
-          force: options.force ?? false
+          force: options.force ?? false,
+          full: options.full ?? false
         })
       })
     })

@@ -385,19 +385,25 @@ describe("commander", () => {
       it("should call the build and push functions", async () => {
         await commander.run("nosto st push")
         expect(buildSpy).toHaveBeenCalledWith({ watch: false })
-        expect(pushSpy).toHaveBeenCalledWith({ force: false, paths: [] })
+        expect(pushSpy).toHaveBeenCalledWith({ force: false, full: false, paths: [] })
       })
 
       it("should call the function with short parameters", async () => {
         await commander.run("nosto st push -f -p build index.js")
         expect(buildSpy).toHaveBeenCalledWith({ watch: false })
-        expect(pushSpy).toHaveBeenCalledWith({ force: true, paths: ["build", "index.js"] })
+        expect(pushSpy).toHaveBeenCalledWith({ force: true, full: false, paths: ["build", "index.js"] })
       })
 
       it("should call the function with full parameters", async () => {
         await commander.run("nosto st push --force --paths build index.js")
         expect(buildSpy).toHaveBeenCalledWith({ watch: false })
-        expect(pushSpy).toHaveBeenCalledWith({ force: true, paths: ["build", "index.js"] })
+        expect(pushSpy).toHaveBeenCalledWith({ force: true, full: false, paths: ["build", "index.js"] })
+      })
+
+      it("should call the function with --full flag", async () => {
+        await commander.run("nosto st push --full")
+        expect(buildSpy).toHaveBeenCalledWith({ watch: false })
+        expect(pushSpy).toHaveBeenCalledWith({ force: false, full: true, paths: [] })
       })
 
       it("should rethrow errors", async () => {

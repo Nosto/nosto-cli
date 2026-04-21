@@ -16,21 +16,26 @@ type PushSearchTemplateOptions = {
   paths: string[]
   // Skip checking the hash and push all files.
   force: boolean
+  // Push source files in addition to build artifacts. Defaults to false.
+  full?: boolean
 }
 
 /**
  * Deploys templates to the specified target path.
  * Processes files in parallel with controlled concurrency and retry logic.
  */
-export async function pushSearchTemplate({ paths, force }: PushSearchTemplateOptions) {
+export async function pushSearchTemplate({ paths, force, full = false }: PushSearchTemplateOptions) {
   const { projectPath } = getCachedConfig()
   const targetFolder = path.resolve(projectPath)
 
   // List all files, excluding ignored and filtered by paths
   const { allFiles, unfilteredFileCount } = listAllFiles(targetFolder)
-  const files = allFiles.filter(
-    file => paths.length === 0 || paths.includes(file) || paths.find(p => file.startsWith(p + "/"))
-  )
+  const files = allFiles.filter(file => {
+    if (!full && !file.startsWith("build/")) {
+      return false
+    }
+    return paths.length === 0 || paths.includes(file) || paths.find(p => file.startsWith(p + "/"))
+  })
 
   // Found literally no files -> nothing to do.
   if (files.length === 0) {

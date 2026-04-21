@@ -14,7 +14,7 @@ describe("Push Search Template", () => {
   it("should throw error if target folder does not exist", async () => {
     setupMockConfig({ projectPath: "/nonexistent/path" })
 
-    await expect(pushSearchTemplate({ paths: [], force: true })).rejects.toThrow(
+    await expect(pushSearchTemplate({ paths: [], force: true, full: true })).rejects.toThrow(
       "ENOENT: no such file or directory, scandir '/nonexistent/path'"
     )
   })
@@ -25,7 +25,7 @@ describe("Push Search Template", () => {
       projectPath: "./file.txt"
     })
 
-    await expect(pushSearchTemplate({ paths: [], force: true })).rejects.toThrow(
+    await expect(pushSearchTemplate({ paths: [], force: true, full: true })).rejects.toThrow(
       "ENOTDIR: not a directory, scandir '/file.txt'"
     )
   })
@@ -39,6 +39,21 @@ describe("Push Search Template", () => {
     expect(terminal.getSpy("warn")).toHaveBeenCalledWith("No files to push. Exiting.")
   })
 
+  it("should only push build files by default", async () => {
+    fs.writeFile(".gitignore", "*.log")
+    fs.writeFile("index.js", "content with @nosto/preact")
+    fs.writeFile("file1.js", "file1 content")
+    fs.writeFile("build/index.js", "build content")
+    fs.writeFile("ignored.log", "log content")
+
+    mockPutSourceFile(server, { path: "build/index.js" })
+
+    await pushSearchTemplate({ paths: [], force: true })
+
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith("Pushing template from: /")
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith("Found 2 files to push (0 source, 2 built, 3 ignored).")
+  })
+
   it("should process files and display summary", async () => {
     fs.writeFile(".gitignore", "*.log")
     fs.writeFile("index.js", "content with @nosto/preact")
@@ -50,7 +65,7 @@ describe("Push Search Template", () => {
     mockPutSourceFile(server, { path: "file1.js" })
     mockPutSourceFile(server, { path: "file2.js" })
 
-    await pushSearchTemplate({ paths: [], force: true })
+    await pushSearchTemplate({ paths: [], force: true, full: true })
 
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Pushing template from: /")
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Found 4 files to push (3 source, 1 built, 1 ignored).")
@@ -64,7 +79,7 @@ describe("Push Search Template", () => {
     mockPutSourceFile(server, { path: "index.js" })
     mockPutSourceFile(server, { path: "build/index.js" })
 
-    await pushSearchTemplate({ paths: [], force: true })
+    await pushSearchTemplate({ paths: [], force: true, full: true })
 
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Pushing template from: /")
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Found 3 files to push (1 source, 2 built, 0 ignored).")
@@ -76,7 +91,7 @@ describe("Push Search Template", () => {
 
     terminal.setUserResponse("N")
 
-    await pushSearchTemplate({ paths: [], force: false })
+    await pushSearchTemplate({ paths: [], force: false, full: true })
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Push operation cancelled by user.")
   })
 
@@ -90,7 +105,7 @@ describe("Push Search Template", () => {
     mockPutSourceFile(server, { path: "file1.js" })
     mockPutSourceFile(server, { path: "file3.js" })
 
-    await pushSearchTemplate({ paths: ["index.js", "file1.js", "file3.js"], force: true })
+    await pushSearchTemplate({ paths: ["index.js", "file1.js", "file3.js"], force: true, full: true })
     expect(terminal.getSpy("warn")).not.toHaveBeenCalledWith("No files to push. Exiting.")
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Pushing template from: /")
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Found 4 files to push (3 source, 1 built, 0 ignored).")
@@ -115,7 +130,7 @@ describe("Push Search Template", () => {
       contentType: "raw"
     })
 
-    await pushSearchTemplate({ paths: [], force: false })
+    await pushSearchTemplate({ paths: [], force: false, full: true })
     expect(terminal.getSpy("success")).toHaveBeenCalledWith("Remote template is already up to date.")
     fs.expectFile("/.nostocache/hash").toContain("34a780ad578b997db55b260beb60b501f3e04d30ba1a51fcf43cd8dd1241780d")
   })
@@ -132,7 +147,7 @@ describe("Push Search Template", () => {
     mockPutSourceFile(server, { path: "index.js" })
     mockPutSourceFile(server, { path: "build/hash" })
 
-    await pushSearchTemplate({ paths: [], force: false })
+    await pushSearchTemplate({ paths: [], force: false, full: true })
 
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Pushing template from: /")
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Found 2 files to push (1 source, 1 built, 0 ignored).")
@@ -151,7 +166,7 @@ describe("Push Search Template", () => {
     mockPutSourceFile(server, { path: "index.js" })
     mockPutSourceFile(server, { path: "build/hash" })
 
-    await pushSearchTemplate({ paths: [], force: false })
+    await pushSearchTemplate({ paths: [], force: false, full: true })
 
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Pushing template from: /")
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Found 2 files to push (1 source, 1 built, 1 ignored).")
@@ -170,7 +185,7 @@ describe("Push Search Template", () => {
 
     terminal.setUserResponse("y")
 
-    await pushSearchTemplate({ paths: [], force: false })
+    await pushSearchTemplate({ paths: [], force: false, full: true })
 
     terminal.expect.user.toHaveBeenPromptedWith(
       "It seems that this is the first time you are pushing to this environment. Please make sure your local copy is up to date. Continue? (y/N):"
@@ -191,7 +206,7 @@ describe("Push Search Template", () => {
 
     terminal.setUserResponse("y")
 
-    await pushSearchTemplate({ paths: [], force: false })
+    await pushSearchTemplate({ paths: [], force: false, full: true })
 
     terminal.expect.user.toHaveBeenPromptedWith(
       "It seems that the template has been changed since your last push. Are you sure you want to continue? (y/N):"
@@ -211,7 +226,7 @@ describe("Push Search Template", () => {
 
     terminal.setUserResponse("y")
 
-    await pushSearchTemplate({ paths: [], force: false })
+    await pushSearchTemplate({ paths: [], force: false, full: true })
 
     terminal.expect.user.toHaveBeenPromptedWith(
       "It seems that this is the first time you are pushing to this environment. Please make sure your local copy is up to date. Continue? (y/N):"
@@ -229,7 +244,7 @@ describe("Push Search Template", () => {
 
     terminal.setUserResponse("N")
 
-    await pushSearchTemplate({ paths: [], force: false })
+    await pushSearchTemplate({ paths: [], force: false, full: true })
 
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Push operation cancelled by user.")
   })
@@ -246,7 +261,7 @@ describe("Push Search Template", () => {
 
     terminal.setUserResponse("N")
 
-    await pushSearchTemplate({ paths: [], force: false })
+    await pushSearchTemplate({ paths: [], force: false, full: true })
 
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Push operation cancelled by user.")
   })
