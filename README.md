@@ -103,13 +103,13 @@ You can use `nosto help` and variations to obtain detailed and up-to-date inform
   - `-m, --merchant <merchant>` — merchant to create config for
 - `status [projectPath]`
   - Reads the configuration and prints the general status
-- `dp [projectPath]`
-  - Alias: `deployments [projectPath]`
+- `dp`
+  - Alias: `deployments`
   - Deployments related commands
   - `dp list [projectPath]`
     - Lists all deployments for a merchant
   - `dp deploy [projectPath]`
-    - Promotes the current state to a new deployment
+    - Promotes the current remote state to a new deployment
       - Equivalent to the "Deploy latest and launch live" button in the Nosto dashboard
     - `-d, --description <description>` — description for the deployment
     - `-f, --force` — skip confirmation prompt
@@ -120,8 +120,8 @@ You can use `nosto help` and variations to obtain detailed and up-to-date inform
   - `dp disable [projectPath]`
     - Disables the currently active deployment
     - `-f, --force` — skip confirmation prompt
-- `st [projectPath]`
-  - Alias: `search-templates [projectPath]`
+- `st`
+  - Alias: `search-templates`
   - Search templates related commands
   - `st pull [projectPath]`
     - Fetches the current remote state for the configured merchant
