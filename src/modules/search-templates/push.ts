@@ -14,7 +14,7 @@ import { processInBatches } from "#filesystem/processInBatches.ts"
 
 type PushSearchTemplateOptions = {
   // Filter to only push these files. Ignored if empty.
-  paths: string[]
+  paths?: string[]
   // Skip checking the hash and push all files.
   force?: boolean
   // For modern templates, also push the sources to S3.
@@ -37,7 +37,7 @@ export async function pushSearchTemplate({
   }
 }
 
-async function performPushSearchTemplate({ paths, force }: Omit<PushSearchTemplateOptions, "sources">) {
+async function performPushSearchTemplate({ paths, force }: { paths: string[]; force?: boolean }) {
   const { projectPath } = getCachedConfig()
   const targetFolder = path.resolve(projectPath)
 
