@@ -9,20 +9,35 @@ import { Logger } from "#console/logger.ts"
 import { promptForConfirmation } from "#console/userPrompt.ts"
 import { calculateTreeHash } from "#filesystem/calculateTreeHash.ts"
 import { listAllFiles, readFileIfExists, writeFile } from "#filesystem/filesystem.ts"
+import { isModernTemplateProject } from "#filesystem/legacyUtils.ts"
 import { processInBatches } from "#filesystem/processInBatches.ts"
 
 type PushSearchTemplateOptions = {
   // Filter to only push these files. Ignored if empty.
-  paths: string[]
+  paths?: string[]
   // Skip checking the hash and push all files.
-  force: boolean
+  force?: boolean
+  // For modern templates, also push the sources to S3.
+  pushSources?: boolean
 }
 
 /**
  * Deploys templates to the specified target path.
  * Processes files in parallel with controlled concurrency and retry logic.
  */
-export async function pushSearchTemplate({ paths, force }: PushSearchTemplateOptions) {
+export async function pushSearchTemplate({
+  paths,
+  pushSources,
+  ...options
+}: Omit<PushSearchTemplateOptions, "paths"> & { paths?: string[] }) {
+  if (isModernTemplateProject() && !pushSources) {
+    await performPushSearchTemplate({ paths: paths ?? ["build"], ...options })
+  } else {
+    await performPushSearchTemplate({ paths: paths ?? [], ...options })
+  }
+}
+
+async function performPushSearchTemplate({ paths, force }: { paths: string[]; force?: boolean }) {
   const { projectPath } = getCachedConfig()
   const targetFolder = path.resolve(projectPath)
 
