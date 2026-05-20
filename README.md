@@ -100,22 +100,50 @@ You can use `nosto help` and variations to obtain detailed and up-to-date inform
   - Wipes the stored login credentials
 - `setup [projectPath]`
   - Prints setup information and creates a placeholder config file if needed
+  - `-m, --merchant <merchant>` — merchant to create config for
 - `status [projectPath]`
   - Reads the configuration and prints the general status
-- `st [projectPath]`
-  - Alias: `search-templates [projectPath]`
+- `dp`
+  - Alias: `deployments`
+  - Deployments related commands
+  - `dp list [projectPath]`
+    - Lists all deployments for a merchant
+  - `dp deploy [projectPath]`
+    - Promotes the current remote state to a new deployment
+      - Equivalent to the "Deploy latest and launch live" button in the Nosto dashboard
+    - `-d, --description <description>` — description for the deployment
+    - `-f, --force` — skip confirmation prompt
+  - `dp redeploy [projectPath]`
+    - Redeploys an existing deployment
+    - `-i, --id <deploymentId>` — deployment ID to redeploy (skips interactive selection)
+    - `-f, --force` — skip confirmation prompt
+  - `dp disable [projectPath]`
+    - Disables the currently active deployment
+    - `-f, --force` — skip confirmation prompt
+- `st`
+  - Alias: `search-templates`
   - Search templates related commands
   - `st pull [projectPath]`
     - Fetches the current remote state for the configured merchant
+    - `-p, --paths <files...>` — specific file paths to fetch
+    - `--dry-run` — perform a dry run without making changes
+    - `-f, --force` — skip checking state, pull all files
   - `st push [projectPath]`
     - Pushes the local state to the remote for the configured merchant
+    - `-p, --paths <files...>` — specific file paths to push
+    - `--dry-run` — perform a dry run without making changes
+    - `-f, --force` — skip checking state, push all files
   - `st build [projectPath]`
     - For a modern search-template project, it invokes the `onBuild` script in `nosto.config.ts`
     - For a legacy search-template project, it mirrors the hosted VSCode Web build workflow
+    - `-w, --watch` — watch for changes and rebuild
+    - `-p, --push` — automatically push build artifacts after building
+    - `--dry-run` — perform a dry run without making changes
   - `st dev [projectPath]`
-    - Watches files, build and upload automatically
+    - Builds the search-templates locally, watches for changes and continuously uploads
     - For a modern search-template project, it invokes the `onBuildWatch` script in `nosto.config.ts`
     - For a legacy search-template project, it uses esbuild to watch files, build and upload automatically. Only uploads build artifacts, not the sources.
+    - `--dry-run` — perform a dry run without making changes
 
 ## External dependencies in legacy search-templates
 
