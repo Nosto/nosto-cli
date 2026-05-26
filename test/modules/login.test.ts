@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest"
 import { AuthConfigFilePath } from "#config/authConfig.ts"
 import { loginToPlaycart } from "#modules/login.ts"
 import { setupMockAuthServer } from "#test/utils/mockAuthServer.ts"
-import { setupMockConfig } from "#test/utils/mockConfig.ts"
 import { setupMockFileSystem } from "#test/utils/mockFileSystem.ts"
 
 const fs = setupMockFileSystem()
