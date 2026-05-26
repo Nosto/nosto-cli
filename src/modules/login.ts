@@ -15,7 +15,7 @@ import { writeFile } from "#filesystem/filesystem.ts"
  * Playcart authentication flow works roughly as follows:
  * - Internal web server is created by the CLI, listening on an ephemeral port
  * - Browser page is opened to the Nosto login page with a redirect URI to localhost
- * - After successful login (with 2FA), the redirect will hit the internal server
+ * - After successful login, the redirect will hit the internal server
  * - The response parameters are parsed from the query parameters
  */
 export async function loginToPlaycart() {

@@ -9,6 +9,7 @@ export async function putSourceFile(path: string, data: string) {
   }
   await ky.put(getSourceUrl(`source/{env}/${path}`), {
     headers: getHeaders(),
-    body: data
+    body: data,
+    retry: 0
   })
 }

@@ -1,6 +1,7 @@
 import chalk from "chalk"
 
 import { Logger } from "#console/logger.ts"
+import { isRunningInTest } from "#utils/isRunningInTest.ts"
 
 import { createDeployment } from "./deployments/createDeployment.ts"
 import { putSourceFile } from "./source/putSourceFile.ts"
@@ -26,11 +27,14 @@ async function executeWithRetry<T>(
         cause: error
       })
     }
+
     const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount)
     Logger.warn(
       `${chalk.yellow("⟳")} Failed to ${operationType} ${chalk.cyan(filePath)}: Retrying in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`
     )
-    await new Promise(resolve => setTimeout(resolve, delay))
+
+    const delayWithTestOverride = isRunningInTest() ? 1 : delay
+    await new Promise(resolve => setTimeout(resolve, delayWithTestOverride))
     return executeWithRetry(operation, filePath, operationType, retryCount + 1)
   }
 }
