@@ -45,3 +45,8 @@ vi.mock("ora", () => {
     default: vi.fn(() => mockedSpinner)
   }
 })
+
+vi.mock("url", async importOriginal => {
+  const actual = await importOriginal<typeof import("url")>()
+  return { ...actual, pathToFileURL: (p: string) => ({ href: p }) }
+})
