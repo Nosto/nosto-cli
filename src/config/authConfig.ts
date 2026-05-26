@@ -30,7 +30,7 @@ export function parseAuthFile({ allowIncomplete }: { allowIncomplete?: boolean }
     const configContent = fs.readFileSync(AuthConfigFilePath, "utf-8")
     const rawConfig = JSON.parse(configContent)
     const config = AuthConfigSchema.parse(rawConfig)
-    if (config.expiresAt < new Date()) {
+    if (config.expiresAt < new Date() && !allowIncomplete) {
       throw new MissingConfigurationError("Auth token expired. Please run 'nosto login' again to refresh.")
     }
     return config

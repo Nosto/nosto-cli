@@ -137,6 +137,16 @@ describe("commander", () => {
       expect(statusSpy).toHaveBeenCalledWith("/path/to/project")
     })
 
+    it("should not throw on expired auth token", async () => {
+      vi.spyOn(logout, "removeLoginCredentials").mockRestore()
+      fs.writeFile(
+        AuthConfigFilePath,
+        JSON.stringify({ user: "test-user", token: "test-token", expiresAt: new Date(0) })
+      )
+      await commander.run("nosto status")
+      expect(statusSpy).toHaveBeenCalledWith(".")
+    })
+
     it("should handle MissingConfigurationError", async () => {
       vi.spyOn(status, "printStatus").mockImplementation(() => {
         throw new MissingConfigurationError("Missing configuration")
