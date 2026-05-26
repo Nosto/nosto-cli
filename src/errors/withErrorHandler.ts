@@ -7,14 +7,6 @@ import { Logger } from "#console/logger.ts"
 import { NostoError } from "./NostoError.ts"
 
 export async function withErrorHandler(fn: () => void | Promise<void>): Promise<void> {
-  function printStack(error: Error) {
-    const config = getCachedConfig()
-    if (config.verbose) {
-      Logger.raw(chalk.red(prettyPrintStack(error.stack)))
-    } else {
-      Logger.info(chalk.gray("Rerun with --verbose to see details"))
-    }
-  }
   try {
     await fn()
   } catch (error) {
@@ -22,7 +14,7 @@ export async function withErrorHandler(fn: () => void | Promise<void>): Promise<
       Logger.error(`HTTP Request failed:`)
       Logger.error(`- ${error.response.status} ${error.response.statusText}`)
       Logger.error(`- ${error.request.method} ${error.request.url}`)
-      Logger.error(`- ${await error.response.text()}`)
+      Logger.error(`- ${typeof error.data === "string" ? error.data : JSON.stringify(error.data)}`)
       printStack(error)
     } else if (error instanceof TimeoutError) {
       Logger.error(`HTTP Request timed out:`)
@@ -34,6 +26,15 @@ export async function withErrorHandler(fn: () => void | Promise<void>): Promise<
     } else {
       throw error
     }
+  }
+}
+
+function printStack(error: Error) {
+  const config = getCachedConfig()
+  if (config.verbose) {
+    Logger.raw(chalk.red(prettyPrintStack(error.stack)))
+  } else {
+    Logger.info(chalk.gray("Rerun with --verbose to see details"))
   }
 }
 

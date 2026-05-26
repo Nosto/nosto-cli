@@ -67,11 +67,10 @@ describe("Error Handler", () => {
 
   it("should handle HTTPError", async () => {
     const mockFn = vi.fn(() => {
-      throw new HTTPError(
+      const error = new HTTPError(
         {
           status: 500,
-          statusText: "Internal Server Error",
-          text: () => Promise.resolve("Internal Server Error body")
+          statusText: "Internal Server Error"
         } as unknown as Response,
         {
           method: "GET",
@@ -79,6 +78,8 @@ describe("Error Handler", () => {
         } as Request,
         {} as never
       )
+      error.data = "Internal Server Error body"
+      throw error
     })
 
     await expect(withErrorHandler(mockFn)).resolves.toBeUndefined()
