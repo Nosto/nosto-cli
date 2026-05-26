@@ -117,7 +117,8 @@ describe("Push Search Template", () => {
 
     mockPutSourceFile(server, { path: "index.js", error: { status: 500, message: "Upload failed" } })
 
-    await pushSearchTemplate({ paths: [], force: true })
+    terminal.setUserResponse("y")
+    await pushSearchTemplate({ paths: [], force: false })
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Pushing template from: /")
     expect(terminal.getSpy("info")).toHaveBeenCalledWith("Found 2 files to push (1 source, 1 built, 0 ignored).")
   })
