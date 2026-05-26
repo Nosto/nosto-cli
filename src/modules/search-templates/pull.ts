@@ -3,12 +3,11 @@ import fs from "fs"
 import path from "path"
 
 import { fetchWithRetry } from "#api/retry.ts"
-import { fetchSourceFile, fetchSourceFileIfExists } from "#api/source/fetchSourceFile.ts"
+import { fetchSourceFile } from "#api/source/fetchSourceFile.ts"
 import { listSourceFiles } from "#api/source/listSourceFiles.ts"
 import { getCachedConfig } from "#config/config.ts"
 import { Logger } from "#console/logger.ts"
 import { promptForConfirmation } from "#console/userPrompt.ts"
-import { calculateTreeHash } from "#filesystem/calculateTreeHash.ts"
 import { writeFile } from "#filesystem/filesystem.ts"
 import { processInBatches } from "#filesystem/processInBatches.ts"
 
@@ -26,15 +25,6 @@ type PullSearchTemplateOptions = {
 export async function pullSearchTemplate({ paths, force }: PullSearchTemplateOptions) {
   const { projectPath, dryRun } = getCachedConfig()
   const targetFolder = path.resolve(projectPath)
-
-  // If the local and remote hashes match, assume the content matches as well
-  const localHash = calculateTreeHash()
-  const remoteHash = await fetchSourceFileIfExists("build/hash")
-  if (localHash === remoteHash && !force) {
-    Logger.success("Local template is already up to date.")
-    writeFile(path.join(targetFolder, ".nostocache/hash"), localHash)
-    return
-  }
 
   Logger.info(`Fetching templates to: ${chalk.cyan(targetFolder)}`)
 
