@@ -29,7 +29,11 @@ export function parseAuthFile({ allowIncomplete }: { allowIncomplete?: boolean }
   try {
     const configContent = fs.readFileSync(AuthConfigFilePath, "utf-8")
     const rawConfig = JSON.parse(configContent)
-    return AuthConfigSchema.parse(rawConfig)
+    const config = AuthConfigSchema.parse(rawConfig)
+    if (config.expiresAt < new Date()) {
+      throw new MissingConfigurationError("Auth token expired. Please run 'nosto login' again to refresh.")
+    }
+    return config
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw new Error(`Invalid auth file at ${AuthConfigFilePath}: ${error.message}`, { cause: error })

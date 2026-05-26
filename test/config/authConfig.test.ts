@@ -47,6 +47,18 @@ describe("Auth Config", () => {
     expect(() => parseAuthFile({})).toThrowError(/Invalid auth file/)
   })
 
+  it("should throw an error for expired auth token", () => {
+    const config = {
+      user: "testuser@nosto.com",
+      token: "testtoken",
+      expiresAt: new Date(Date.now() - 1000 * 60 * 60)
+    } satisfies AuthConfig
+
+    fs.writeFile(fs.paths.authFile, config)
+
+    expect(() => parseAuthFile({})).toThrowError(/Auth token expired/)
+  })
+
   it("should throw an error for a malformed file", () => {
     fs.writeFile(fs.paths.authFile, "\xff\xfe\xff\xfe")
 

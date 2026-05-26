@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, MockInstance, vi } from "vitest"
 
+import { AuthConfigFilePath } from "#config/authConfig.ts"
 import { clearCachedConfig, getCachedConfig } from "#config/config.ts"
 import { MissingConfigurationError } from "#errors/MissingConfigurationError.ts"
 import * as deployModule from "#modules/deployments/deploy.ts"
@@ -61,6 +62,23 @@ describe("commander", () => {
     it("should load the config", async () => {
       await commander.run("nosto login --verbose")
       expect(getCachedConfig().verbose).toBe(true)
+    })
+
+    it("should not throw on expired auth token", async () => {
+      vi.spyOn(logout, "removeLoginCredentials").mockRestore()
+      fs.writeFile(
+        AuthConfigFilePath,
+        JSON.stringify({ user: "test-user", token: "test-token", expiresAt: new Date(0) })
+      )
+      await commander.run("nosto login")
+      expect(loginSpy).toHaveBeenCalledWith()
+    })
+
+    it("should not throw on malformed auth file", async () => {
+      vi.spyOn(logout, "removeLoginCredentials").mockRestore()
+      fs.writeFile(AuthConfigFilePath, "not-a-json")
+      await commander.run("nosto login")
+      expect(loginSpy).toHaveBeenCalledWith()
     })
   })
 
