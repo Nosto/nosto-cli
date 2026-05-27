@@ -26,6 +26,7 @@ export async function runCLI(argv: string[]) {
     .description("Login with your Nosto account")
     .option("--verbose", "set log level to debug")
     .action(async options => {
+      removeLoginCredentials()
       await loadConfig({ options, allowIncomplete: true, projectPath: "." })
       await withErrorHandler(async () => {
         await loginToPlaycart()
