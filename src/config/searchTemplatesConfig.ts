@@ -1,5 +1,6 @@
 import fs from "fs"
 import path from "path"
+import { pathToFileURL } from "url"
 import z from "zod"
 
 import { NostoError } from "#errors/NostoError.ts"
@@ -21,7 +22,7 @@ export async function parseSearchTemplatesConfigFile({
     }
   }
 
-  const defaultExport = await import(configPath).then(module => module.default)
+  const defaultExport = await import(pathToFileURL(configPath).href).then(module => module.default)
   const parsedScriptObject = SearchTemplatesConfigSchema.strict().safeParse(defaultExport)
   if (!parsedScriptObject.success) {
     throw new NostoError("Invalid nosto.config.ts file: " + z.treeifyError(parsedScriptObject.error))
