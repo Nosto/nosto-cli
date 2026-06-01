@@ -10,7 +10,9 @@ export const PersistentConfigSchema = z.object({
   apiUrl: z.string().default("https://api.nosto.com"),
   libraryUrl: z.string().default("https://d11ffvpvtnmt0d.cloudfront.net/library"),
   logLevel: z.enum(LogLevel).default("info"),
-  maxRequests: z.coerce.number().default(15)
+  maxRequests: z.coerce.number().default(15),
+  maxRetryCount: z.coerce.number().default(3),
+  retryDelay: z.coerce.number().default(1000)
 })
 
 // Config provided on runtime (CLI options)
@@ -35,7 +37,9 @@ export const EnvironmentConfigSchema = z.object({
   apiUrl: z.string().optional(),
   libraryUrl: z.string().optional(),
   logLevel: z.enum(LogLevel).optional(),
-  maxRequests: z.coerce.number().optional()
+  maxRequests: z.coerce.number().optional(),
+  maxRetryCount: z.coerce.number().optional(),
+  retryDelay: z.coerce.number().optional()
 })
 
 // Modern config, can be committed to repo (nosto.config.ts file)

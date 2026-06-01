@@ -14,7 +14,8 @@ export async function printStatus(projectPath: string) {
       throw error
     }
   }
-  const { apiKey, apiUrl, logLevel, maxRequests, auth, merchant, templatesEnv } = getCachedConfig()
+  const { apiKey, apiUrl, logLevel, maxRequests, maxRetryCount, retryDelay, auth, merchant, templatesEnv } =
+    getCachedConfig()
   const { user, token, expiresAt } = auth
 
   const notSet = chalk.redBright("Not set")
@@ -40,6 +41,8 @@ export async function printStatus(projectPath: string) {
   Logger.info(`  ${chalk.bold("API URL:")}       ${chalk.cyan(apiUrl)}`)
   Logger.info(`  ${chalk.bold("Log Level:")}     ${chalk.cyan(logLevel)}`)
   Logger.info(`  ${chalk.bold("Max Requests:")}  ${chalk.cyan(maxRequests)}`)
+  Logger.info(`  ${chalk.bold("Max Retries:")}   ${chalk.cyan(maxRetryCount)}`)
+  Logger.info(`  ${chalk.bold("Retry Delay:")}   ${chalk.cyan(retryDelay)}`)
 
   Logger.info("")
   const userAuthPresent = user && token && expiresAt.getTime() > 0

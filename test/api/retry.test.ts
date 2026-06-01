@@ -71,7 +71,7 @@ describe("API Retry", () => {
       await retryPromise
 
       expect(terminal.getSpy("warn")).toHaveBeenCalledWith(
-        expect.stringContaining("Failed to fetch test-file.txt: Retrying in 1000ms (attempt 1/3)")
+        expect.stringContaining("Failed to fetch test-file.txt: Retrying in 1ms (attempt 1/3)")
       )
     })
 
@@ -135,7 +135,7 @@ describe("API Retry", () => {
       await assertion
 
       expect(terminal.getSpy("warn")).toHaveBeenCalledWith(
-        expect.stringContaining("Failed to push test-file.txt: Retrying in 1000ms (attempt 1/3)")
+        expect.stringContaining("Failed to push test-file.txt: Retrying in 1ms (attempt 1/3)")
       )
     })
   })
