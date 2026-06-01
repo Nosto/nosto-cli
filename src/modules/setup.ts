@@ -54,7 +54,7 @@ export async function printSetupHelp(projectPath: string, options: Options) {
   Logger.info(`  • Default: ${chalk.green(defaultConfig.logLevel)}\n`)
 
   Logger.info(chalk.bold("Maximum Retry Count:"))
-  Logger.info(`  • Config file: ${chalk.cyan("retryCount")}`)
+  Logger.info(`  • Config file: ${chalk.cyan("maxRetryCount")}`)
   Logger.info(`  • Env variable: ${chalk.magenta(EnvVariables.maxRetryCount)}`)
   Logger.info(`  • If a network request fails, number of times to retry before giving up`)
   Logger.info(`  • Default: ${chalk.green(defaultConfig.maxRetryCount)}\n`)
