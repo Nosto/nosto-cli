@@ -15,6 +15,8 @@ export function setupMockConfig(overrides: Partial<Config> = {}) {
     libraryUrl: "https://library.nosto.com",
     dryRun: false,
     verbose: false,
+    maxRetryCount: 3,
+    retryDelay: 1,
     auth: {
       user: "",
       token: "",

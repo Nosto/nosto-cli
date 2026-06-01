@@ -48,8 +48,9 @@ export function setupMockFileSystem() {
       const content = {
         ...getDefaultConfig(),
         merchant: "test-merchant",
+        retryDelay: 1,
         ...overrides
-      }
+      } satisfies PersistentConfig
       writeFileContent(".nosto.json", JSON.stringify(content))
     },
     mockUserAuthentication: () => {
