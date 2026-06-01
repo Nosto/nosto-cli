@@ -7,7 +7,8 @@ const FetchSourceFileSchema = z.string()
 
 export async function fetchSourceFile(path: string) {
   const response = await ky.get(getSourceUrl(`source/{env}/${path}`), {
-    headers: getJsonHeaders()
+    headers: getJsonHeaders(),
+    retry: 0
   })
   const data = FetchSourceFileSchema.parse(await response.text())
   return data

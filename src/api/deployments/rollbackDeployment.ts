@@ -6,6 +6,7 @@ export async function rollbackDeployment() {
   const url = getSourceUrl(`deployment/{env}`)
 
   await ky.delete(url, {
-    headers: getJsonHeaders()
+    headers: getJsonHeaders(),
+    retry: 0
   })
 }

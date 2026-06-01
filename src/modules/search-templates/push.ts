@@ -56,11 +56,6 @@ async function performPushSearchTemplate({ paths, force }: { paths: string[]; fo
   // If the local and remote hashes match, assume the content matches as well
   const localHash = calculateTreeHash()
   const remoteHash = await fetchSourceFileIfExists("build/hash")
-  if (localHash === remoteHash && !force) {
-    Logger.success("Remote template is already up to date.")
-    writeFile(path.join(targetFolder, ".nostocache/hash"), localHash)
-    return
-  }
 
   /**
    * If remote hash is present, we can check if there are conflicts. If not, just show the warning anyway.

@@ -7,6 +7,7 @@ export async function createDeployment({ path, description }: { path: string; de
 
   await ky.post(url, {
     headers: getJsonHeaders(),
-    body: JSON.stringify({ description })
+    body: JSON.stringify({ description }),
+    retry: 0
   })
 }

@@ -119,15 +119,22 @@ describe("Pull Search Template", () => {
     fs.expectFile("index.js").toContain('"index.js content"')
   })
 
-  it("should abort if the remote template is already up to date", async () => {
+  it("should proceed even if the remote template is already up to date", async () => {
     fs.writeFile("index.js", "old content")
+    mockListSourceFiles(server, {
+      response: [{ path: "index.js", size: 10 }]
+    })
     mockFetchSourceFile(server, {
       path: "build/hash",
       response: "34a780ad578b997db55b260beb60b501f3e04d30ba1a51fcf43cd8dd1241780d",
       contentType: "raw"
     })
+    mockFetchSourceFile(server, {
+      path: "index.js",
+      response: "index.js content"
+    })
 
     await pullSearchTemplate({ paths: [], force: false })
-    expect(terminal.getSpy("success")).toHaveBeenCalledWith("Local template is already up to date.")
+    expect(terminal.getSpy("info")).toHaveBeenCalledWith("Fetching templates to: /")
   })
 })
