@@ -7,7 +7,9 @@ export const EnvVariables = {
   apiUrl: "NOSTO_API_URL",
   libraryUrl: "NOSTO_LIBRARY_URL",
   logLevel: "NOSTO_LOG_LEVEL",
-  maxRequests: "NOSTO_MAX_REQUESTS"
+  maxRequests: "NOSTO_MAX_REQUESTS",
+  maxRetryCount: "NOSTO_MAX_RETRY_COUNT",
+  retryDelay: "NOSTO_RETRY_DELAY"
 } satisfies Record<keyof EnvironmentConfig, string>
 
 export function getEnvConfig(): EnvironmentConfig {

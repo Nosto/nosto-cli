@@ -173,14 +173,6 @@ npm run test:ui
 npm run test:coverage
 ```
 
-## Known issues
-
-### Search templates push reports no files changed
-
-Running `nosto st push` after `nosto st dev` without changing any files will stop early with the "No files to push" message due to the hashing mechanism not taking the pushed paths into account properly.
-
-**Workaround**: Use `nosto st push -f` or change any of the files to update the hash.
-
 ## Contributions
 
 We welcome both internal and external contributions to this project! Feel free to request bugfixes, open issues or PRs for review. Nosto is actively maintaining this project, and we will process your contributions as soon as possible.

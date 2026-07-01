@@ -12,7 +12,7 @@ export default defineConfig({
     environment: "node",
     include: ["test/**/*.test.ts"],
     exclude: ["node_modules", "dist"],
-    setupFiles: ["test/setup.ts"],
+    setupFiles: ["test/setup.ts", "test/setupConfig.ts"],
     mockReset: true,
     restoreMocks: true,
     reporters: ["default"],

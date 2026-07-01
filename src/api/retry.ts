@@ -1,13 +1,10 @@
 import chalk from "chalk"
 
+import { getCachedConfig } from "#config/config.ts"
 import { Logger } from "#console/logger.ts"
-import { isRunningInTest } from "#utils/isRunningInTest.ts"
 
 import { createDeployment } from "./deployments/createDeployment.ts"
 import { putSourceFile } from "./source/putSourceFile.ts"
-
-const MAX_RETRIES = 3
-const INITIAL_RETRY_DELAY = 1000 // 1 second
 
 async function executeWithRetry<T>(
   operation: () => Promise<T>,
@@ -15,26 +12,27 @@ async function executeWithRetry<T>(
   operationType: "fetch" | "push",
   retryCount = 0
 ): Promise<T> {
+  const config = getCachedConfig()
+
   try {
     return await operation()
   } catch (error: unknown) {
-    if (retryCount >= MAX_RETRIES) {
+    if (retryCount >= config.maxRetryCount) {
       const errorMessage = error instanceof Error ? error.message : String(error)
       if (operationType === "fetch") {
         Logger.error(`${chalk.red("✗")} ${chalk.cyan(filePath)}: ${errorMessage}`)
       }
-      throw new Error(`Failed to ${operationType} ${filePath} after ${MAX_RETRIES} retries: ${errorMessage}`, {
+      throw new Error(`Failed to ${operationType} ${filePath} after ${retryCount} retries: ${errorMessage}`, {
         cause: error
       })
     }
 
-    const delay = INITIAL_RETRY_DELAY * Math.pow(2, retryCount)
+    const delay = config.retryDelay * Math.pow(2, retryCount)
     Logger.warn(
-      `${chalk.yellow("⟳")} Failed to ${operationType} ${chalk.cyan(filePath)}: Retrying in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`
+      `${chalk.yellow("⟳")} Failed to ${operationType} ${chalk.cyan(filePath)}: Retrying in ${delay}ms (attempt ${retryCount + 1}/${config.maxRetryCount})`
     )
 
-    const delayWithTestOverride = isRunningInTest() ? 1 : delay
-    await new Promise(resolve => setTimeout(resolve, delayWithTestOverride))
+    await new Promise(resolve => setTimeout(resolve, delay))
     return executeWithRetry(operation, filePath, operationType, retryCount + 1)
   }
 }

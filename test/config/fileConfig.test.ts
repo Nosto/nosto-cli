@@ -30,6 +30,8 @@ describe("File Config", () => {
         libraryUrl: "https://d11ffvpvtnmt0d.cloudfront.net/library",
         logLevel: "debug",
         maxRequests: 15,
+        maxRetryCount: 3,
+        retryDelay: 1000,
         merchant: "another-merchant",
         templatesEnv: "main"
       })
