@@ -19,7 +19,7 @@ import { withSafeEnvironment } from "#utils/withSafeEnvironment.ts"
 
 export async function runCLI(argv: string[]) {
   const program = new Command()
-  program.name("nostocli").version("1.0.0").description("Nosto CLI tool. Use `nostocli setup` to get started.")
+  program.name("nosto").version("1.0.0").description("Nosto CLI tool. Use `nosto setup` to get started.")
 
   program
     .command("login")
